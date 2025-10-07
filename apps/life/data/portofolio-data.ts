@@ -1,10 +1,9 @@
 import { PortfolioItem } from "./types";
 
-// Pastikan Anda memiliki setidaknya 1 data di sini
 export const portfolioItems: PortfolioItem[] = [
   {
     id: "1",
-    image: "https://placehold.co/600x800",
+    image: "/assets/portofolios/1.png",
     title: "Project Alpha",
     createdBy: "Creative Studio",
     year: "2023",
@@ -13,17 +12,16 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "2",
-    image: "https://placehold.co/600x600",
+    image: "/assets/portofolios/2.png",
     title: "Project Bravo",
     createdBy: "Design Wizards",
     year: "2022",
     category: "Web Design",
     description: "Responsive and modern website design for a startup.",
   },
-  // Tambahkan 3 item lagi agar totalnya 5
   {
     id: "3",
-    image: "https://placehold.co/600x900",
+    image: "/assets/portofolios/3.png",
     title: "Project Charlie",
     createdBy: "Pixel Perfect Inc.",
     year: "2023",
@@ -32,7 +30,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "4",
-    image: "https://placehold.co/600x700",
+    image: "/assets/portofolios/4.png",
     title: "Project Delta",
     createdBy: "Artisan Digital",
     year: "2021",
@@ -41,11 +39,29 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "5",
-    image: "https://placehold.co/600x850",
+    image: "/assets/portofolios/5.png",
     title: "Project Echo",
     createdBy: "Creative Studio",
     year: "2024",
     category: "Branding",
     description: "Brand identity development for a new fashion label.",
+  },
+  {
+    id: "6",
+    image: "/assets/portofolios/6.png",
+    title: "Project Foxtrot",
+    createdBy: "Design Wizards",
+    year: "2023",
+    category: "UI/UX",
+    description: "User experience design for e-commerce platform.",
+  },
+  {
+    id: "7",
+    image: "/assets/portofolios/7.png",
+    title: "Project Golf",
+    createdBy: "Pixel Perfect Inc.",
+    year: "2024",
+    category: "Photography",
+    description: "Professional photography for lifestyle brand.",
   },
 ];

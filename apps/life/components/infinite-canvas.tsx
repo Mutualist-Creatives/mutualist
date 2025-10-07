@@ -9,6 +9,8 @@ import React, {
 } from "react";
 import { portfolioItems } from "@/data/portofolio-data";
 import { PortfolioCard } from "@/components/portofolio-card";
+import { FixedButton } from "@/components/fixed-button";
+import { fixedButtonData } from "@/data/fixed-button-data";
 
 // --- KONFIGURASI GRID ---
 const COLUMN_COUNT = 7;
@@ -24,6 +26,7 @@ export function InfiniteCanvas() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [bgColor, setBgColor] = useState("#EEEBE2");
   const containerRef = useRef<HTMLDivElement>(null);
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
@@ -99,7 +102,8 @@ export function InfiniteCanvas() {
   return (
     <div
       ref={containerRef}
-      className="w-full h-screen overflow-hidden bg-neutral-100 cursor-grab active:cursor-grabbing"
+      className="w-full h-screen overflow-hidden cursor-grab active:cursor-grabbing transition-colors duration-500"
+      style={{ backgroundColor: bgColor }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -123,10 +127,12 @@ export function InfiniteCanvas() {
               transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
             }}
           >
-            <PortfolioCard />
+            <PortfolioCard item={item} />
           </div>
         ))}
       </div>
+
+      <FixedButton buttons={fixedButtonData} onColorChange={setBgColor} />
     </div>
   );
 }
