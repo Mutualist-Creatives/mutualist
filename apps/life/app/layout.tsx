@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { Instrument_Sans, Instrument_Serif } from "next/font/google";
+import {
+  Instrument_Sans,
+  Instrument_Serif,
+  Redacted_Script,
+} from "next/font/google";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -9,6 +13,12 @@ const instrumentSans = Instrument_Sans({
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const redactedScript = Redacted_Script({
+  variable: "--font-redacted-script",
   subsets: ["latin"],
   weight: ["400"],
 });
@@ -26,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${instrumentSans.variable} ${instrumentSerif.variable} antialiased`}
+        className={`${instrumentSans.variable} ${instrumentSerif.variable} ${redactedScript.variable} antialiased`}
       >
         {children}
       </body>

@@ -2,7 +2,7 @@
 
 export interface PortfolioItem {
   id: string;
-  image: string;
+  images: string[];
   title: string;
   createdBy: string;
   year: string;

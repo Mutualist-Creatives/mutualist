@@ -16,6 +16,7 @@ interface FixedButtonProps {
   buttons?: ButtonData[];
   onColorChange?: (color: string) => void;
   onSettingsOpenChange?: (isOpen: boolean) => void;
+  onRedactedToggle?: (isRedacted: boolean) => void;
 }
 
 const colorOptions = [
@@ -38,7 +39,6 @@ const defaultButtons: ButtonData[] = [
     id: "typography",
     type: "text",
     label: "Typography",
-    onClick: () => console.log("Typography clicked"),
   },
   {
     id: "menu",
@@ -52,12 +52,15 @@ export function FixedButton({
   buttons = defaultButtons,
   onColorChange,
   onSettingsOpenChange,
+  onRedactedToggle,
 }: FixedButtonProps) {
   const [currentBgColor, setCurrentBgColor] = useState("#EEEBE2");
   const [isColorMenuOpen, setIsColorMenuOpen] = useState(false);
   const [shouldRenderMenu, setShouldRenderMenu] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [showHamburgerIcon, setShowHamburgerIcon] = useState(true);
+  const [isRedacted, setIsRedacted] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const colorMenuRef = useRef<HTMLDivElement>(null);
   const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const settingsPanelRef = useRef<HTMLDivElement>(null);
@@ -72,6 +75,21 @@ export function FixedButton({
       setShouldRenderMenu(true);
     }
   }, [isColorMenuOpen]);
+
+  useEffect(() => {
+    // ESC key handler for settings
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isSettingsOpen && !isAnimating) {
+        handleSettingsClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isSettingsOpen, isAnimating]);
 
   useEffect(() => {
     if (colorMenuRef.current) {
@@ -113,8 +131,11 @@ export function FixedButton({
   };
 
   const handleSettingsClick = () => {
+    if (isAnimating) return; // Prevent action during animation
+
     if (!isSettingsOpen) {
       setIsSettingsOpen(true);
+      setIsAnimating(true);
       if (onSettingsOpenChange) onSettingsOpenChange(true);
 
       // Hide hamburger icon immediately
@@ -149,6 +170,7 @@ export function FixedButton({
           duration: 0.8,
           ease: "power2.out",
           onComplete: () => {
+            setIsAnimating(false);
             // Animate X icon and links after morph complete
             const topElements = [xIconRef.current, ...linksRef.current].filter(
               Boolean
@@ -184,42 +206,8 @@ export function FixedButton({
       }
     } else {
       setIsSettingsOpen(false);
+      setIsAnimating(true);
       if (onSettingsOpenChange) onSettingsOpenChange(false);
-
-      // Animate X to hamburger before closing
-      if (xIconRef.current) {
-        const lines = xIconRef.current.querySelectorAll(".x-line");
-        const timeline = gsap.timeline();
-
-        // Morph X back to hamburger
-        timeline.to(lines[0], {
-          rotation: 0,
-          y: -6,
-          duration: 0.3,
-          ease: "power2.inOut",
-        });
-        timeline.to(
-          lines[1],
-          {
-            rotation: 0,
-            y: 6,
-            duration: 0.3,
-            ease: "power2.inOut",
-          },
-          "<"
-        );
-
-        // Add middle line
-        timeline.to(
-          xIconRef.current,
-          {
-            onStart: () => {
-              setShowHamburgerIcon(true);
-            },
-          },
-          ">"
-        );
-      }
 
       // Fade in other buttons
       const otherButtons = otherButtonsRef.current.filter(Boolean);
@@ -227,11 +215,10 @@ export function FixedButton({
         opacity: 1,
         duration: 0.3,
         ease: "power2.in",
-        delay: 0.3,
       });
 
       if (settingsButtonRef.current) {
-        const timeline = gsap.timeline({ delay: 0.3 });
+        const timeline = gsap.timeline();
 
         // Reverse: Kembali ke tinggi normal
         timeline.to(settingsButtonRef.current, {
@@ -245,6 +232,11 @@ export function FixedButton({
           width: 48,
           duration: 0.6,
           ease: "power2.in",
+          onComplete: () => {
+            // Show hamburger icon only after animation complete
+            setShowHamburgerIcon(true);
+            setIsAnimating(false);
+          },
         });
       }
     }
@@ -320,7 +312,13 @@ export function FixedButton({
                 ? () => setIsColorMenuOpen(!isColorMenuOpen)
                 : button.type === "hamburger"
                   ? handleSettingsClick
-                  : button.onClick
+                  : button.type === "text"
+                    ? () => {
+                        const newRedacted = !isRedacted;
+                        setIsRedacted(newRedacted);
+                        if (onRedactedToggle) onRedactedToggle(newRedacted);
+                      }
+                    : button.onClick
             }
             className={`w-12 h-12 rounded-xl shadow-lg hover:shadow-xl transition-shadow origin-bottom-right ${
               button.type === "hamburger" && isSettingsOpen
@@ -354,6 +352,18 @@ export function FixedButton({
                     className="x-line absolute w-7 h-0.5 bg-white rounded-full left-0 top-1/2 -translate-y-1/2"
                     style={{ transform: "translateY(-50%) rotate(-45deg)" }}
                   />
+                </div>
+              </button>
+
+              {/* X Close Button */}
+              <button
+                ref={xIconRef}
+                onClick={handleSettingsClick}
+                className="absolute top-12 left-12 w-8 h-8 flex items-center justify-center opacity-0 hover:opacity-50 transition-opacity cursor-pointer"
+              >
+                <div className="relative w-7 h-7">
+                  <div className="absolute w-7 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
+                  <div className="absolute w-7 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
                 </div>
               </button>
 

@@ -3,7 +3,7 @@ import { PortfolioItem } from "./types";
 export const portfolioItems: PortfolioItem[] = [
   {
     id: "1",
-    image: "/assets/portofolios/1.png",
+    images: ["/assets/portofolios/1.png"],
     title: "Project Alpha",
     createdBy: "Creative Studio",
     year: "2023",
@@ -12,7 +12,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "2",
-    image: "/assets/portofolios/2.png",
+    images: ["/assets/portofolios/2.png"],
     title: "Project Bravo",
     createdBy: "Design Wizards",
     year: "2022",
@@ -21,7 +21,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "3",
-    image: "/assets/portofolios/3.png",
+    images: ["/assets/portofolios/3.png"],
     title: "Project Charlie",
     createdBy: "Pixel Perfect Inc.",
     year: "2023",
@@ -30,7 +30,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "4",
-    image: "/assets/portofolios/4.png",
+    images: ["/assets/portofolios/4.png"],
     title: "Project Delta",
     createdBy: "Artisan Digital",
     year: "2021",
@@ -39,7 +39,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "5",
-    image: "/assets/portofolios/5.png",
+    images: ["/assets/portofolios/5.png"],
     title: "Project Echo",
     createdBy: "Creative Studio",
     year: "2024",
@@ -48,7 +48,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "6",
-    image: "/assets/portofolios/6.png",
+    images: ["/assets/portofolios/6.png"],
     title: "Project Foxtrot",
     createdBy: "Design Wizards",
     year: "2023",
@@ -57,7 +57,7 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "7",
-    image: "/assets/portofolios/7.png",
+    images: ["/assets/portofolios/7.png"],
     title: "Project Golf",
     createdBy: "Pixel Perfect Inc.",
     year: "2024",

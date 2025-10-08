@@ -11,6 +11,8 @@ import { portfolioItems } from "@/data/portofolio-data";
 import { PortfolioCard } from "@/components/portofolio-card";
 import { FixedButton } from "@/components/fixed-button";
 import { fixedButtonData } from "@/data/fixed-button-data";
+import { ProjectModal } from "@/components/project-modal";
+import { PortfolioItem } from "@/data/types";
 
 // --- KONFIGURASI GRID ---
 const COLUMN_COUNT = 7;
@@ -28,6 +30,10 @@ export function InfiniteCanvas() {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [bgColor, setBgColor] = useState("#EEEBE2");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isRedacted, setIsRedacted] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(
+    null
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
 
@@ -117,7 +123,9 @@ export function InfiniteCanvas() {
   return (
     <div
       ref={containerRef}
-      className="w-full h-screen overflow-hidden cursor-grab active:cursor-grabbing transition-colors duration-500"
+      className={`w-full h-screen overflow-hidden cursor-grab active:cursor-grabbing transition-colors duration-500 ${
+        isRedacted ? "font-redacted" : ""
+      }`}
       style={{ backgroundColor: bgColor }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -142,7 +150,10 @@ export function InfiniteCanvas() {
               transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
             }}
           >
-            <PortfolioCard item={item} />
+            <PortfolioCard
+              item={item}
+              onClick={() => setSelectedProject(item)}
+            />
           </div>
         ))}
       </div>
@@ -152,8 +163,17 @@ export function InfiniteCanvas() {
           buttons={fixedButtonData}
           onColorChange={setBgColor}
           onSettingsOpenChange={setIsSettingsOpen}
+          onRedactedToggle={setIsRedacted}
         />
       </div>
+
+      {/* Project Modal */}
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </div>
   );
 }
