@@ -63,7 +63,7 @@ export function FixedButton({
   const settingsPanelRef = useRef<HTMLDivElement>(null);
   const otherButtonsRef = useRef<(HTMLDivElement | null)[]>([]);
   const hamburgerIconRef = useRef<HTMLDivElement>(null);
-  const xIconRef = useRef<HTMLDivElement>(null);
+  const xIconRef = useRef<HTMLButtonElement>(null);
   const linksRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const categoriesRef = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -186,16 +186,52 @@ export function FixedButton({
       setIsSettingsOpen(false);
       if (onSettingsOpenChange) onSettingsOpenChange(false);
 
+      // Animate X to hamburger before closing
+      if (xIconRef.current) {
+        const lines = xIconRef.current.querySelectorAll(".x-line");
+        const timeline = gsap.timeline();
+
+        // Morph X back to hamburger
+        timeline.to(lines[0], {
+          rotation: 0,
+          y: -6,
+          duration: 0.3,
+          ease: "power2.inOut",
+        });
+        timeline.to(
+          lines[1],
+          {
+            rotation: 0,
+            y: 6,
+            duration: 0.3,
+            ease: "power2.inOut",
+          },
+          "<"
+        );
+
+        // Add middle line
+        timeline.to(
+          xIconRef.current,
+          {
+            onStart: () => {
+              setShowHamburgerIcon(true);
+            },
+          },
+          ">"
+        );
+      }
+
       // Fade in other buttons
       const otherButtons = otherButtonsRef.current.filter(Boolean);
       gsap.to(otherButtons, {
         opacity: 1,
         duration: 0.3,
         ease: "power2.in",
+        delay: 0.3,
       });
 
       if (settingsButtonRef.current) {
-        const timeline = gsap.timeline();
+        const timeline = gsap.timeline({ delay: 0.3 });
 
         // Reverse: Kembali ke tinggi normal
         timeline.to(settingsButtonRef.current, {
@@ -209,10 +245,6 @@ export function FixedButton({
           width: 48,
           duration: 0.6,
           ease: "power2.in",
-          onComplete: () => {
-            // Show hamburger icon after animation complete
-            setShowHamburgerIcon(true);
-          },
         });
       }
     }
@@ -234,19 +266,6 @@ export function FixedButton({
           </span>
         );
       case "hamburger":
-        if (isSettingsOpen) {
-          return (
-            <div
-              ref={xIconRef}
-              className="absolute top-12 left-12 w-8 h-8 flex items-center justify-center opacity-0"
-            >
-              <div className="relative w-7 h-7">
-                <div className="absolute w-7 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
-                <div className="absolute w-7 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
-              </div>
-            </div>
-          );
-        }
         return showHamburgerIcon ? (
           <div ref={hamburgerIconRef} className="flex flex-col gap-1.5">
             <div className="w-5 h-0.5 bg-white rounded-full" />
@@ -316,8 +335,28 @@ export function FixedButton({
           {button.type === "hamburger" && isSettingsOpen && (
             <div
               ref={settingsPanelRef}
-              className="absolute inset-0 p-12 pointer-events-auto"
+              className="absolute inset-0 p-12 pointer-events-auto cursor-default"
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseMove={(e) => e.stopPropagation()}
             >
+              {/* X Close Button */}
+              <button
+                ref={xIconRef}
+                onClick={handleSettingsClick}
+                className="absolute top-12 left-12 w-8 h-8 flex items-center justify-center opacity-0 hover:opacity-50 transition-opacity cursor-pointer"
+              >
+                <div className="relative w-7 h-7">
+                  <div
+                    className="x-line absolute w-7 h-0.5 bg-white rounded-full left-0 top-1/2 -translate-y-1/2"
+                    style={{ transform: "translateY(-50%) rotate(45deg)" }}
+                  />
+                  <div
+                    className="x-line absolute w-7 h-0.5 bg-white rounded-full left-0 top-1/2 -translate-y-1/2"
+                    style={{ transform: "translateY(-50%) rotate(-45deg)" }}
+                  />
+                </div>
+              </button>
+
               {/* Top right links */}
               <div className="absolute top-12 right-12 flex flex-col items-end gap-2 font-sans text-sm">
                 <a
@@ -359,7 +398,7 @@ export function FixedButton({
               </div>
 
               {/* Bottom right categories */}
-              <div className="absolute bottom-12 right-12 flex flex-col items-end gap-8">
+              <div className="absolute bottom-22 right-12 flex flex-col items-end gap-8">
                 {(() => {
                   const uniqueCategories = [
                     "All",
@@ -373,19 +412,33 @@ export function FixedButton({
                       ref={(el) => {
                         categoriesRef.current[index] = el;
                       }}
-                      className="hover:opacity-70 transition-opacity opacity-0 flex items-start gap-2"
+                      className="opacity-0 flex items-start gap-2 group transition-all duration-300 cursor-pointer"
                     >
                       <span
-                        className="font-sans text-xs"
+                        className="font-sans text-xs group-hover:text-base transition-all duration-300"
                         style={{ color: "#808080" }}
                       >
-                        ({String((index + 1) * 10).padStart(3, "0")})
+                        <span className="group-hover:hidden">
+                          ({String((index + 1) * 10).padStart(4, "0")})
+                        </span>
+                        <span
+                          className="hidden group-hover:inline"
+                          style={{ color: "#9FEDFF" }}
+                        >
+                          ({String((index + 1) * 10).padStart(4, "0")})
+                        </span>
                       </span>
                       <span
-                        className="font-serif text-3xl leading-none"
+                        className="font-serif text-3xl leading-none group-hover:text-4xl transition-all duration-300"
                         style={{ color: "#808080" }}
                       >
-                        {category}
+                        <span className="group-hover:hidden">{category}</span>
+                        <span
+                          className="hidden group-hover:inline"
+                          style={{ color: "#FFF" }}
+                        >
+                          {category}
+                        </span>
                       </span>
                     </button>
                   ));
