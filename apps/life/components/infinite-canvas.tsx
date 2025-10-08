@@ -27,7 +27,9 @@ export function InfiniteCanvas() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [bgColor, setBgColor] = useState("#EEEBE2");
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const settingsAreaRef = useRef<HTMLDivElement>(null);
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
   useEffect(() => {
@@ -86,6 +88,19 @@ export function InfiniteCanvas() {
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {
     if (e.button !== 0) return;
+
+    // Check if click is inside settings area
+    if (isSettingsOpen && settingsAreaRef.current) {
+      const rect = settingsAreaRef.current.getBoundingClientRect();
+      const isInsideSettings =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom;
+
+      if (isInsideSettings) return; // Don't start dragging if inside settings
+    }
+
     setIsDragging(true);
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
@@ -132,7 +147,13 @@ export function InfiniteCanvas() {
         ))}
       </div>
 
-      <FixedButton buttons={fixedButtonData} onColorChange={setBgColor} />
+      <div ref={settingsAreaRef}>
+        <FixedButton
+          buttons={fixedButtonData}
+          onColorChange={setBgColor}
+          onSettingsOpenChange={setIsSettingsOpen}
+        />
+      </div>
     </div>
   );
 }
