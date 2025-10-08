@@ -148,51 +148,53 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             />
           </div>
 
-          {/* Carousel Arrows - Always show */}
-          <div className="absolute bottom-12 left-12 flex gap-4">
-            <button
-              onClick={handlePrevImage}
-              disabled={images.length <= 1}
-              className="w-12 h-12 rounded-full bg-black/80 hover:bg-black flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+          {/* Carousel Arrows - Only show if multiple images */}
+          {images.length > 1 && (
+            <div className="absolute bottom-12 left-12 flex gap-4">
+              <button
+                onClick={handlePrevImage}
+                className="w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg"
+                style={{ backgroundColor: "#121212" }}
               >
-                <path
-                  d="M12 4L6 10L12 16"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={handleNextImage}
-              disabled={images.length <= 1}
-              className="w-12 h-12 rounded-full bg-black/80 hover:bg-black flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15 18L9 12L15 6"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg"
+                style={{ backgroundColor: "#121212" }}
               >
-                <path
-                  d="M8 4L14 10L8 16"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9 18L15 12L9 6"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Right Side - Content 40% */}
