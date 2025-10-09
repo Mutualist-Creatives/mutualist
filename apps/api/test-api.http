@@ -1,0 +1,42 @@
+### Test API Endpoints
+### Base URL: http://localhost:3002/api
+
+### 1. Health Check
+GET http://localhost:3002/api
+
+### 2. Get All Portfolios
+GET http://localhost:3002/api/portfolios
+
+### 3. Get Categories
+GET http://localhost:3002/api/portfolios/categories
+
+### 4. Get Single Portfolio (replace {id} with actual ID)
+GET http://localhost:3002/api/portfolios/{id}
+
+### 5. Create Portfolio
+POST http://localhost:3002/api/portfolios
+Content-Type: application/json
+
+{
+  "title": "Test Project",
+  "createdBy": "John Doe",
+  "year": "2024",
+  "category": "Web Development",
+  "description": "This is a test project description",
+  "images": [
+    "https://example.com/image1.jpg",
+    "https://example.com/image2.jpg"
+  ]
+}
+
+### 6. Update Portfolio (replace {id} with actual ID)
+PUT http://localhost:3002/api/portfolios/{id}
+Content-Type: application/json
+
+{
+  "title": "Updated Project Title",
+  "description": "Updated description"
+}
+
+### 7. Delete Portfolio (replace {id} with actual ID)
+DELETE http://localhost:3002/api/portfolios/{id}

@@ -57,7 +57,11 @@ export const portfolioItems: PortfolioItem[] = [
   },
   {
     id: "7",
-    images: ["/assets/portofolios/7.png"],
+    images: [
+      "/assets/portofolios/7.png",
+      "/assets/portofolios/6.png",
+      "/assets/portofolios/3.png",
+    ],
     title: "Project Golf",
     createdBy: "Pixel Perfect Inc.",
     year: "2024",

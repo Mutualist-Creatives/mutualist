@@ -2,21 +2,46 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { PortfolioItem } from "@/data/types";
 import { gsap } from "gsap";
 
-interface ProjectModalProps {
-  project: PortfolioItem;
+interface PortfolioPreviewModalProps {
+  title: string;
+  createdBy: string;
+  year: string;
+  category: string;
+  description: string;
+  images: string[];
   onClose: () => void;
 }
 
-export function ProjectModal({ project, onClose }: ProjectModalProps) {
+// Helper function to validate URL
+function isValidUrl(url: string) {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function PortfolioPreviewModal({
+  title,
+  createdBy,
+  year,
+  category,
+  description,
+  images,
+  onClose,
+}: PortfolioPreviewModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const images = project.images;
   const imageRef = React.useRef<HTMLDivElement>(null);
   const modalRef = React.useRef<HTMLDivElement>(null);
   const backdropRef = React.useRef<HTMLDivElement>(null);
+
+  const validImages = images.filter(
+    (img) => img.trim() !== "" && isValidUrl(img)
+  );
 
   React.useEffect(() => {
     // Animate modal on mount
@@ -47,7 +72,6 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     window.addEventListener("keydown", handleEscape);
 
     return () => {
-      // Re-enable body scroll on unmount
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
@@ -79,7 +103,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   };
 
   const handlePrevImage = () => {
-    if (isTransitioning || images.length <= 1) return;
+    if (isTransitioning || validImages.length <= 1) return;
     setIsTransitioning(true);
 
     if (imageRef.current) {
@@ -88,7 +112,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         duration: 0.3,
         onComplete: () => {
           setCurrentImageIndex((prev) =>
-            prev === 0 ? images.length - 1 : prev - 1
+            prev === 0 ? validImages.length - 1 : prev - 1
           );
           gsap.to(imageRef.current, {
             opacity: 1,
@@ -101,7 +125,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   };
 
   const handleNextImage = () => {
-    if (isTransitioning || images.length <= 1) return;
+    if (isTransitioning || validImages.length <= 1) return;
     setIsTransitioning(true);
 
     if (imageRef.current) {
@@ -110,7 +134,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         duration: 0.3,
         onComplete: () => {
           setCurrentImageIndex((prev) =>
-            prev === images.length - 1 ? 0 : prev + 1
+            prev === validImages.length - 1 ? 0 : prev + 1
           );
           gsap.to(imageRef.current, {
             opacity: 1,
@@ -132,24 +156,29 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
         ref={modalRef}
         className="w-[90vw] h-[85vh] bg-white rounded-2xl overflow-hidden flex shadow-2xl"
         onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onMouseMove={(e) => e.stopPropagation()}
-        onWheel={(e) => e.stopPropagation()}
       >
         {/* Left Side - Image 60% */}
         <div className="w-[60%] relative bg-neutral-100">
           <div ref={imageRef} className="relative w-full h-full">
-            <Image
-              src={images[currentImageIndex]}
-              alt={project.title}
-              fill
-              className="object-cover"
-              sizes="60vw"
-            />
+            {validImages.length > 0 ? (
+              <Image
+                src={validImages[currentImageIndex]}
+                alt={title || "Preview"}
+                fill
+                className="object-cover"
+                sizes="60vw"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-gray-400 text-lg">
+                  No image available
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Carousel Arrows - Only show if multiple images */}
-          {images.length > 1 && (
+          {validImages.length > 1 && (
             <div className="absolute bottom-12 left-12 flex gap-4">
               <button
                 onClick={handlePrevImage}
@@ -220,7 +249,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               <div>
                 <p className="font-sans text-sm text-neutral-400 mb-1">Title</p>
                 <h2 className="font-serif text-3xl text-white">
-                  {project.title}
+                  {title || "Untitled"}
                 </h2>
               </div>
 
@@ -229,13 +258,15 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                   Created by
                 </p>
                 <p className="font-serif text-xl text-white">
-                  {project.createdBy}
+                  {createdBy || "Unknown"}
                 </p>
               </div>
 
               <div>
                 <p className="font-sans text-sm text-neutral-400 mb-1">Year</p>
-                <p className="font-serif text-xl text-white">{project.year}</p>
+                <p className="font-serif text-xl text-white">
+                  {year || new Date().getFullYear()}
+                </p>
               </div>
 
               <div>
@@ -243,7 +274,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                   Category
                 </p>
                 <p className="font-serif text-xl text-white">
-                  {project.category}
+                  {category || "Uncategorized"}
                 </p>
               </div>
             </div>
@@ -252,7 +283,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           {/* Bottom Section - Description */}
           <div className="p-12">
             <p className="font-serif text-lg text-white leading-relaxed">
-              {project.description}
+              {description || "No description provided."}
             </p>
           </div>
         </div>
