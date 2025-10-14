@@ -1,11 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UploadService } from '../upload/upload.service';
 import { CreatePortfolioDto } from './dto/create-portfolio.dto';
 import { UpdatePortfolioDto } from './dto/update-portfolio.dto';
 
 @Injectable()
 export class PortfolioService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private uploadService: UploadService,
+  ) {}
 
   async create(createPortfolioDto: CreatePortfolioDto) {
     return this.prisma.portfolio.create({
@@ -32,7 +36,23 @@ export class PortfolioService {
   }
 
   async update(id: string, updatePortfolioDto: UpdatePortfolioDto) {
-    await this.findOne(id); // Check if exists
+    const existingPortfolio = await this.findOne(id); // Check if exists
+
+    // If images are being updated, delete old images that are not in the new list
+    if (updatePortfolioDto.images) {
+      const oldImages = existingPortfolio.images || [];
+      const newImages = updatePortfolioDto.images;
+
+      // Find images that are being removed
+      const imagesToDelete = oldImages.filter(
+        (oldImg) => !newImages.includes(oldImg),
+      );
+
+      // Delete removed images from storage
+      if (imagesToDelete.length > 0) {
+        await this.uploadService.deleteMultipleFiles(imagesToDelete);
+      }
+    }
 
     return this.prisma.portfolio.update({
       where: { id },
@@ -41,8 +61,25 @@ export class PortfolioService {
   }
 
   async remove(id: string) {
-    await this.findOne(id); // Check if exists
+    const portfolio = await this.findOne(id); // Check if exists
 
+    // Delete images from Supabase storage first
+    if (portfolio.images && portfolio.images.length > 0) {
+      try {
+        console.log(
+          `Deleting ${portfolio.images.length} images for portfolio ${id}`,
+        );
+        await this.uploadService.deleteMultipleFiles(portfolio.images);
+        console.log('Images deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete images from storage:', error);
+        throw new Error(
+          `Failed to delete images from storage: ${error.message}`,
+        );
+      }
+    }
+
+    // Delete portfolio from database
     return this.prisma.portfolio.delete({
       where: { id },
     });

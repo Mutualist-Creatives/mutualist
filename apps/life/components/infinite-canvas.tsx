@@ -13,6 +13,7 @@ import { FixedButton } from "@/components/fixed-button";
 import { fixedButtonData } from "@/data/fixed-button-data";
 import { ProjectModal } from "@/components/project-modal";
 import { PortfolioItem } from "@/data/types";
+import { portfolioApi, Portfolio } from "@/lib/api";
 
 // --- KONFIGURASI GRID ---
 const COLUMN_COUNT = 7;
@@ -34,8 +35,33 @@ export function InfiniteCanvas() {
   const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(
     null
   );
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
+
+  // FETCH DATA DARI API
+  useEffect(() => {
+    const fetchPortfolios = async () => {
+      setIsLoading(true);
+      const data = await portfolioApi.getAll();
+      // Fallback ke data statis jika API gagal atau kosong
+      if (data.length > 0) {
+        setPortfolios(data);
+      } else {
+        // Convert PortfolioItem to Portfolio format
+        const fallbackData: Portfolio[] = portfolioItems.map((item) => ({
+          ...item,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }));
+        setPortfolios(fallbackData);
+      }
+      setIsLoading(false);
+    };
+
+    fetchPortfolios();
+  }, []);
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
   useEffect(() => {
@@ -48,7 +74,7 @@ export function InfiniteCanvas() {
 
   // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
   let visibleItems = [];
-  if (containerRef.current) {
+  if (containerRef.current && portfolios.length > 0) {
     const viewport = containerRef.current.getBoundingClientRect();
     const buffer = 200; // Buffer untuk render mulus
 
@@ -70,7 +96,7 @@ export function InfiniteCanvas() {
         // --- KUNCI INFINITE LOOP ---
         // Gunakan Aritmatika Modular (%) untuk membungkus indeks
         const itemIndex = Math.abs(row * COLUMN_COUNT + col);
-        const baseItem = portfolioItems[itemIndex % portfolioItems.length];
+        const baseItem = portfolios[itemIndex % portfolios.length];
 
         // Tentukan posisi X dan Y absolut dari kartu ini
         const x = col * FULL_COLUMN_WIDTH;
@@ -133,6 +159,20 @@ export function InfiniteCanvas() {
       onMouseLeave={handleMouseUp}
       onWheel={handleWheel}
     >
+      {/* Loading State */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-gray-600 text-lg">Loading portfolios...</div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && portfolios.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-gray-600 text-lg">No portfolios found</div>
+        </div>
+      )}
+
       <div
         className="relative w-full h-full"
         style={{
@@ -140,22 +180,23 @@ export function InfiniteCanvas() {
         }}
       >
         {/* Render hanya item yang terlihat */}
-        {visibleItems.map((item) => (
-          <div
-            key={item.uniqueId}
-            style={{
-              position: "absolute",
-              width: CARD_WIDTH,
-              height: CARD_HEIGHT,
-              transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
-            }}
-          >
-            <PortfolioCard
-              item={item}
-              onClick={() => setSelectedProject(item)}
-            />
-          </div>
-        ))}
+        {!isLoading &&
+          visibleItems.map((item) => (
+            <div
+              key={item.uniqueId}
+              style={{
+                position: "absolute",
+                width: CARD_WIDTH,
+                height: CARD_HEIGHT,
+                transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
+              }}
+            >
+              <PortfolioCard
+                item={item}
+                onClick={() => setSelectedProject(item)}
+              />
+            </div>
+          ))}
       </div>
 
       <div ref={settingsAreaRef}>
