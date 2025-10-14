@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Save, X, AlertCircle, Eye, Plus, Trash2 } from "lucide-react";
+import { Save, X, AlertCircle, Eye, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { PortfolioPreviewCard } from "@/components/portfolio-preview-card";
 import { PortfolioPreviewModal } from "@/components/portfolio-preview-modal";
@@ -35,6 +35,12 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
   const [images, setImages] = useState<string[]>(
     portfolio?.images && portfolio.images.length > 0 ? portfolio.images : [""]
   );
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>(
+    portfolio?.images && portfolio.images.length > 0
+      ? Array(portfolio.images.length).fill(null)
+      : [null]
+  );
+  const [uploading, setUploading] = useState(false);
 
   // Helper function to validate URL
   const isValidUrl = (url: string) => {
@@ -56,29 +62,115 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
   // Image handlers
   const addImageField = () => {
     setImages([...images, ""]);
+    setImageFiles([...imageFiles, null]);
   };
 
   const removeImageField = (index: number) => {
     if (images.length > 1) {
       setImages(images.filter((_, i) => i !== index));
+      setImageFiles(imageFiles.filter((_, i) => i !== index));
     }
   };
 
   const updateImageField = (index: number, value: string) => {
     const newImages = [...images];
-    newImages[index] = value;
+    newImages[index] = value || "";
     setImages(newImages);
+  };
+
+  const handleFileSelect = (index: number, file: File | null) => {
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only image files are allowed (JPEG, PNG, GIF, WebP)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error("File size must not exceed 5MB");
+      return;
+    }
+
+    // Store file in state (not uploaded yet)
+    const newFiles = [...imageFiles];
+    newFiles[index] = file;
+    setImageFiles(newFiles);
+
+    // Create temporary preview URL
+    const previewUrl = URL.createObjectURL(file);
+    const newImages = [...images];
+    newImages[index] = previewUrl;
+    setImages(newImages);
+
+    toast.success(`File "${file.name}" selected. Will be uploaded on save.`);
+  };
+
+  const uploadFiles = async (): Promise<string[]> => {
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
+    const uploadedUrls: string[] = [];
+
+    for (let i = 0; i < images.length; i++) {
+      const file = imageFiles[i];
+      const imageUrl = images[i];
+
+      // If it's a file, upload it
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("bucket", "portfolio-images");
+
+        const res = await fetch(`${apiUrl}/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        const data = await res.json();
+        uploadedUrls.push(data.publicUrl);
+      } else if (imageUrl && imageUrl.trim()) {
+        // If it's already a URL (not a blob), keep it
+        if (!imageUrl.startsWith("blob:")) {
+          uploadedUrls.push(imageUrl);
+        }
+      }
+    }
+
+    return uploadedUrls;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setUploading(true);
     setError("");
 
     try {
+      // Step 1: Upload all files first
+      toast.info("Uploading images...");
+      const uploadedImageUrls = await uploadFiles();
+
+      if (uploadedImageUrls.length === 0) {
+        throw new Error("At least one image is required");
+      }
+
+      // Step 2: Save portfolio with uploaded URLs
       const data = {
         ...formData,
-        images: images.filter((img) => img.trim()),
+        images: uploadedImageUrls,
       };
 
       const apiUrl =
@@ -118,6 +210,7 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
@@ -237,38 +330,76 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
                     size="sm"
                     onClick={addImageField}
                     className="gap-2"
+                    disabled={loading || uploading}
                   >
                     <Plus className="h-4 w-4" />
                     Add Image
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Add image URLs. First image will be used as preview.
+                  Upload images or paste URLs. First image will be used as
+                  preview.
                 </p>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {images.map((image, index) => (
-                    <div key={index} className="flex gap-2">
-                      <div className="flex-1">
-                        <Input
-                          value={image}
-                          onChange={(e) =>
-                            updateImageField(index, e.target.value)
-                          }
-                          placeholder={`Image URL ${index + 1}`}
-                          className="font-mono text-sm"
-                          required={index === 0}
-                        />
+                    <div key={index} className="space-y-2">
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Input
+                            value={image}
+                            onChange={(e) =>
+                              updateImageField(index, e.target.value)
+                            }
+                            placeholder={`Image URL ${index + 1} or upload file`}
+                            className="font-mono text-sm"
+                            required={index === 0 && !image}
+                            disabled={loading || uploading}
+                          />
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const input = document.createElement("input");
+                            input.type = "file";
+                            input.accept = "image/*";
+                            input.onchange = (e) => {
+                              const file = (e.target as HTMLInputElement)
+                                .files?.[0];
+                              if (file) handleFileSelect(index, file);
+                            };
+                            input.click();
+                          }}
+                          disabled={loading || uploading}
+                          className="shrink-0"
+                          title="Select file to upload"
+                        >
+                          <Upload className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeImageField(index)}
+                          disabled={images.length === 1 || loading || uploading}
+                          className="shrink-0"
+                          title="Remove image"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeImageField(index)}
-                        disabled={images.length === 1}
-                        className="shrink-0"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {imageFiles[index] && (
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Upload className="h-3 w-3" />
+                            <span>{imageFiles[index]?.name}</span>
+                          </div>
+                          <span className="text-xs">
+                            {(imageFiles[index]!.size / 1024).toFixed(1)} KB
+                          </span>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -277,20 +408,26 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
           </Tabs>
 
           <div className="flex gap-4 pt-4 border-t">
-            <Button type="submit" disabled={loading} className="gap-2">
+            <Button
+              type="submit"
+              disabled={loading || uploading}
+              className="gap-2"
+            >
               <Save className="h-4 w-4" />
-              {loading
-                ? "Saving..."
-                : portfolio
-                  ? "Update Portfolio"
-                  : "Create Portfolio"}
+              {uploading
+                ? "Uploading..."
+                : loading
+                  ? "Saving..."
+                  : portfolio
+                    ? "Update Portfolio"
+                    : "Create Portfolio"}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
               className="gap-2"
-              disabled={loading}
+              disabled={loading || uploading}
             >
               <X className="h-4 w-4" />
               Cancel
