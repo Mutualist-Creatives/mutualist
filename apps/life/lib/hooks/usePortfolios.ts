@@ -15,26 +15,37 @@ export function usePortfolios() {
     "/api/portfolios",
     portfolioApi.getAll,
     {
+      // OPTIMISTIC UI: Show static data immediately on first load
+      fallbackData: fallbackData,
+
+      // Revalidate immediately on mount to fetch fresh data
+      revalidateOnMount: true,
+
       // Revalidate on focus
       revalidateOnFocus: true,
+
       // Revalidate on reconnect
       revalidateOnReconnect: true,
+
       // Refresh every 30 seconds (auto-update)
       refreshInterval: 30000,
-      // Keep previous data while revalidating
+
+      // Keep previous data while revalidating (smooth transitions)
       keepPreviousData: true,
-      // Fallback to static data if API fails
-      fallbackData: fallbackData,
+
       // Dedupe requests within 2 seconds
       dedupingInterval: 2000,
+
       // Error retry configuration
       errorRetryCount: 3,
       errorRetryInterval: 5000,
-      // On error, use fallback data
-      onError: (err) => {
-        console.error("SWR Error:", err);
+
+      // On error, silently fallback to static data
+      onError: () => {
+        // Silently use fallback data
       },
-      // Success callback - log when data updates
+
+      // Success callback
       onSuccess: () => {
         // Portfolios updated successfully
       },
@@ -43,9 +54,9 @@ export function usePortfolios() {
 
   return {
     portfolios: data || fallbackData,
-    isLoading,
+    isLoading: false, // Never show loading state (optimistic UI)
     isError: error,
-    isValidating, // For showing update indicator
+    isValidating, // For showing subtle update indicator
     mutate, // For manual revalidation
   };
 }

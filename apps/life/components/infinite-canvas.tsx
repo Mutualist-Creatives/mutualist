@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, MouseEvent, useEffect, useMemo } from "react";
+import { gsap } from "gsap";
 import { PortfolioCard } from "@/components/portofolio-card";
 import { FixedButton } from "@/components/fixed-button";
 import { fixedButtonData } from "@/data/fixed-button-data";
@@ -20,12 +21,14 @@ export function InfiniteCanvas() {
     null
   );
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
+  const cardsRef = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  // USE SWR HOOK FOR DATA FETCHING
-  const { portfolios: allPortfolios, isLoading, isError } = usePortfolios();
+  // USE SWR HOOK FOR DATA FETCHING (Optimistic UI - instant display)
+  const { portfolios: allPortfolios, isValidating } = usePortfolios();
 
   // FILTER PORTFOLIOS BY CATEGORY
   const portfolios = selectedCategory
@@ -75,6 +78,37 @@ export function InfiniteCanvas() {
       }
     };
   }, []);
+
+  // ANIMATE CARDS WHEN API DATA IS READY
+  useEffect(() => {
+    // Only animate once when data first loads from API
+    if (!isValidating && !hasAnimated && cardsRef.current.size > 0) {
+      setHasAnimated(true);
+
+      // Get all card elements
+      const cards = Array.from(cardsRef.current.values());
+
+      // Stagger fade animation
+      gsap.fromTo(
+        cards,
+        {
+          opacity: 0.7,
+          scale: 0.98,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.4,
+          stagger: {
+            amount: 0.6, // Total stagger duration
+            from: "random", // Random order for organic feel
+            ease: "power2.out",
+          },
+          ease: "power2.out",
+        }
+      );
+    }
+  }, [isValidating, hasAnimated]);
 
   // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
   // Optimized with stable object references to prevent unnecessary re-renders
@@ -188,29 +222,18 @@ export function InfiniteCanvas() {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      {/* Loading State */}
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-gray-600 text-lg">Loading portfolios...</div>
-        </div>
-      )}
-
-      {/* Error State */}
-      {isError && !isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-gray-600 text-lg mb-2">
-              Failed to load portfolios
-            </div>
-            <div className="text-gray-500 text-sm">
-              Showing cached data. Will retry automatically.
-            </div>
+      {/* Subtle Update Indicator - Only show when revalidating in background */}
+      {isValidating && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+          <div className="bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 shadow-lg">
+            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+            <span>Syncing...</span>
           </div>
         </div>
       )}
 
-      {/* Empty State */}
-      {!isLoading && !isError && portfolios.length === 0 && (
+      {/* Empty State - Only if truly no data */}
+      {portfolios.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-gray-600 text-lg">No portfolios found</div>
         </div>
@@ -223,25 +246,31 @@ export function InfiniteCanvas() {
           willChange: isDragging ? "transform" : "auto",
         }}
       >
-        {/* Render hanya item yang terlihat */}
-        {!isLoading &&
-          visibleItems.map((item) => (
-            <div
-              key={item.uniqueId}
-              style={{
-                position: "absolute",
-                width: CANVAS_CONFIG.CARD_WIDTH,
-                height: CANVAS_CONFIG.CARD_HEIGHT,
-                transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
-                willChange: "transform",
-              }}
-            >
-              <PortfolioCard
-                item={item.item}
-                onClick={() => setSelectedProject(item.item)}
-              />
-            </div>
-          ))}
+        {/* Render hanya item yang terlihat - Always render (optimistic UI) */}
+        {visibleItems.map((item) => (
+          <div
+            key={item.uniqueId}
+            ref={(el) => {
+              if (el) {
+                cardsRef.current.set(item.uniqueId, el);
+              } else {
+                cardsRef.current.delete(item.uniqueId);
+              }
+            }}
+            style={{
+              position: "absolute",
+              width: CANVAS_CONFIG.CARD_WIDTH,
+              height: CANVAS_CONFIG.CARD_HEIGHT,
+              transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
+              willChange: "transform",
+            }}
+          >
+            <PortfolioCard
+              item={item.item}
+              onClick={() => setSelectedProject(item.item)}
+            />
+          </div>
+        ))}
       </div>
 
       <div ref={settingsAreaRef}>
