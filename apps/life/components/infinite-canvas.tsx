@@ -7,13 +7,12 @@ import React, {
   MouseEvent,
   useEffect,
 } from "react";
-import { portfolioItems } from "@/data/portofolio-data";
 import { PortfolioCard } from "@/components/portofolio-card";
 import { FixedButton } from "@/components/fixed-button";
 import { fixedButtonData } from "@/data/fixed-button-data";
 import { ProjectModal } from "@/components/project-modal";
-import { PortfolioItem } from "@/data/types";
-import { portfolioApi, Portfolio } from "@/lib/api";
+import { Portfolio } from "@/data/types";
+import { usePortfolios } from "@/lib/hooks/usePortfolios";
 
 // --- KONFIGURASI GRID ---
 const COLUMN_COUNT = 7;
@@ -32,36 +31,14 @@ export function InfiniteCanvas() {
   const [bgColor, setBgColor] = useState("#EEEBE2");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRedacted, setIsRedacted] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<PortfolioItem | null>(
+  const [selectedProject, setSelectedProject] = useState<Portfolio | null>(
     null
   );
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
 
-  // FETCH DATA DARI API
-  useEffect(() => {
-    const fetchPortfolios = async () => {
-      setIsLoading(true);
-      const data = await portfolioApi.getAll();
-      // Fallback ke data statis jika API gagal atau kosong
-      if (data.length > 0) {
-        setPortfolios(data);
-      } else {
-        // Convert PortfolioItem to Portfolio format
-        const fallbackData: Portfolio[] = portfolioItems.map((item) => ({
-          ...item,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }));
-        setPortfolios(fallbackData);
-      }
-      setIsLoading(false);
-    };
-
-    fetchPortfolios();
-  }, []);
+  // USE SWR HOOK FOR DATA FETCHING
+  const { portfolios, isLoading, isError } = usePortfolios();
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
   useEffect(() => {
@@ -73,7 +50,7 @@ export function InfiniteCanvas() {
   }, []);
 
   // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
-  let visibleItems = [];
+  const visibleItems = [];
   if (containerRef.current && portfolios.length > 0) {
     const viewport = containerRef.current.getBoundingClientRect();
     const buffer = 200; // Buffer untuk render mulus
@@ -166,8 +143,22 @@ export function InfiniteCanvas() {
         </div>
       )}
 
+      {/* Error State */}
+      {isError && !isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-gray-600 text-lg mb-2">
+              Failed to load portfolios
+            </div>
+            <div className="text-gray-500 text-sm">
+              Showing cached data. Will retry automatically.
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Empty State */}
-      {!isLoading && portfolios.length === 0 && (
+      {!isLoading && !isError && portfolios.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-gray-600 text-lg">No portfolios found</div>
         </div>

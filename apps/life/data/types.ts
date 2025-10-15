@@ -1,11 +1,16 @@
 // apps/life/data/types.ts
 
-export interface PortfolioItem {
+export interface Portfolio {
   id: string;
-  images: string[];
   title: string;
   createdBy: string;
   year: string;
   category: string;
   description: string;
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
 }
+
+// Alias for backward compatibility
+export type PortfolioItem = Portfolio;

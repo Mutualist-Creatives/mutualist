@@ -1,58 +1,71 @@
+import { Portfolio } from "@/data/types";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
 
-export interface Portfolio {
-  id: string;
-  title: string;
-  createdBy: string;
-  year: string;
-  category: string;
-  description: string;
-  images: string[];
-  createdAt: string;
-  updatedAt: string;
+// Retry configuration
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+// Helper function for exponential backoff retry
+async function fetchWithRetry<T>(
+  url: string,
+  options: RequestInit = {},
+  retries = MAX_RETRIES
+): Promise<T> {
+  try {
+    const res = await fetch(url, {
+      ...options,
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+
+    return res.json();
+  } catch (error) {
+    if (retries > 0) {
+      // Exponential backoff: wait longer with each retry
+      const delay = RETRY_DELAY * (MAX_RETRIES - retries + 1);
+      console.warn(
+        `Fetch failed, retrying in ${delay}ms... (${retries} retries left)`,
+        error
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return fetchWithRetry<T>(url, options, retries - 1);
+    }
+    throw error;
+  }
 }
 
 export const portfolioApi = {
   async getAll(): Promise<Portfolio[]> {
     try {
-      const res = await fetch(`${API_URL}/portfolios`, {
-        cache: "no-store",
-        next: { revalidate: 0 },
-      });
-      if (!res.ok) {
-        console.error("Failed to fetch portfolios:", res.statusText);
-        return [];
-      }
-      return res.json();
+      return await fetchWithRetry<Portfolio[]>(`${API_URL}/portfolios`);
     } catch (error) {
       console.error("Error fetching portfolios:", error);
-      return [];
+      throw error; // Throw error so SWR can handle it
     }
   },
 
-  async getById(id: string): Promise<Portfolio | null> {
+  async getById(id: string): Promise<Portfolio> {
     try {
-      const res = await fetch(`${API_URL}/portfolios/${id}`, {
-        cache: "no-store",
-      });
-      if (!res.ok) return null;
-      return res.json();
+      return await fetchWithRetry<Portfolio>(`${API_URL}/portfolios/${id}`);
     } catch (error) {
       console.error("Error fetching portfolio:", error);
-      return null;
+      throw error;
     }
   },
 
   async getCategories(): Promise<string[]> {
     try {
-      const res = await fetch(`${API_URL}/portfolios/categories`, {
-        cache: "no-store",
-      });
-      if (!res.ok) return [];
-      return res.json();
+      return await fetchWithRetry<string[]>(`${API_URL}/portfolios/categories`);
     } catch (error) {
       console.error("Error fetching categories:", error);
-      return [];
+      throw error;
     }
   },
 };
+
+// SWR fetcher function
+export const fetcher = (url: string) => fetch(url).then((res) => res.json());

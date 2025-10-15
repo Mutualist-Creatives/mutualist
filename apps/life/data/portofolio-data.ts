@@ -1,6 +1,6 @@
-import { PortfolioItem } from "./types";
+import { Portfolio } from "./types";
 
-export const portfolioItems: PortfolioItem[] = [
+export const portfolioItems: Portfolio[] = [
   {
     id: "1",
     images: ["/assets/portofolios/1.png"],
@@ -9,6 +9,8 @@ export const portfolioItems: PortfolioItem[] = [
     year: "2023",
     category: "Branding",
     description: "A complete branding overhaul for a leading tech company.",
+    createdAt: "2023-01-15T00:00:00.000Z",
+    updatedAt: "2023-01-15T00:00:00.000Z",
   },
   {
     id: "2",
@@ -18,6 +20,8 @@ export const portfolioItems: PortfolioItem[] = [
     year: "2022",
     category: "Web Design",
     description: "Responsive and modern website design for a startup.",
+    createdAt: "2022-06-20T00:00:00.000Z",
+    updatedAt: "2022-06-20T00:00:00.000Z",
   },
   {
     id: "3",
@@ -27,6 +31,8 @@ export const portfolioItems: PortfolioItem[] = [
     year: "2023",
     category: "Mobile App",
     description: "Intuitive mobile application for the finance sector.",
+    createdAt: "2023-03-10T00:00:00.000Z",
+    updatedAt: "2023-03-10T00:00:00.000Z",
   },
   {
     id: "4",
@@ -36,6 +42,8 @@ export const portfolioItems: PortfolioItem[] = [
     year: "2021",
     category: "Illustration",
     description: "A series of vibrant illustrations for a marketing campaign.",
+    createdAt: "2021-09-05T00:00:00.000Z",
+    updatedAt: "2021-09-05T00:00:00.000Z",
   },
   {
     id: "5",
@@ -45,6 +53,8 @@ export const portfolioItems: PortfolioItem[] = [
     year: "2024",
     category: "Branding",
     description: "Brand identity development for a new fashion label.",
+    createdAt: "2024-01-12T00:00:00.000Z",
+    updatedAt: "2024-01-12T00:00:00.000Z",
   },
   {
     id: "6",
@@ -54,6 +64,8 @@ export const portfolioItems: PortfolioItem[] = [
     year: "2023",
     category: "UI/UX",
     description: "User experience design for e-commerce platform.",
+    createdAt: "2023-07-22T00:00:00.000Z",
+    updatedAt: "2023-07-22T00:00:00.000Z",
   },
   {
     id: "7",
@@ -67,5 +79,7 @@ export const portfolioItems: PortfolioItem[] = [
     year: "2024",
     category: "Photography",
     description: "Professional photography for lifestyle brand.",
+    createdAt: "2024-02-18T00:00:00.000Z",
+    updatedAt: "2024-02-18T00:00:00.000Z",
   },
 ];

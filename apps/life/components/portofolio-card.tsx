@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { PortfolioItem } from "@/data/types";
+import { Portfolio } from "@/data/types";
 
 interface PortfolioCardProps {
-  item?: PortfolioItem;
+  item?: Portfolio;
   style?: React.CSSProperties;
   onClick?: () => void;
 }

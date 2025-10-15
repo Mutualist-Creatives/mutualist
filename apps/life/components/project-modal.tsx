@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { PortfolioItem } from "@/data/types";
+import { Portfolio } from "@/data/types";
 import { gsap } from "gsap";
 
 interface ProjectModalProps {
-  project: PortfolioItem;
+  project: Portfolio;
   onClose: () => void;
 }
 
