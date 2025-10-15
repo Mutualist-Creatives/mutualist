@@ -1,13 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useRef,
-  WheelEvent,
-  MouseEvent,
-  useEffect,
-  useMemo,
-} from "react";
+import React, { useState, useRef, MouseEvent, useEffect, useMemo } from "react";
 import { PortfolioCard } from "@/components/portofolio-card";
 import { FixedButton } from "@/components/fixed-button";
 import { fixedButtonData } from "@/data/fixed-button-data";
@@ -31,21 +24,6 @@ export function InfiniteCanvas() {
   const settingsAreaRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
 
-  // 🔍 PERFORMANCE LOGGING
-  const renderCountRef = useRef(0);
-  const lastLogTimeRef = useRef(Date.now());
-
-  useEffect(() => {
-    renderCountRef.current++;
-
-    const now = Date.now();
-    if (now - lastLogTimeRef.current >= 1000) {
-      console.log(`📊 InfiniteCanvas renders/sec: ${renderCountRef.current}`);
-      renderCountRef.current = 0;
-      lastLogTimeRef.current = now;
-    }
-  });
-
   // USE SWR HOOK FOR DATA FETCHING
   const { portfolios: allPortfolios, isLoading, isError } = usePortfolios();
 
@@ -65,8 +43,24 @@ export function InfiniteCanvas() {
 
     // Add wheel event listener with passive: false to allow preventDefault
     const container = containerRef.current;
+    const nativeWheelHandler = (e: Event) => {
+      const wheelEvent = e as globalThis.WheelEvent;
+      wheelEvent.preventDefault();
+
+      // Throttle wheel events with RAF
+      if (rafIdRef.current !== null) return;
+
+      rafIdRef.current = requestAnimationFrame(() => {
+        setPosition((p) => ({
+          x: p.x - wheelEvent.deltaX,
+          y: p.y - wheelEvent.deltaY,
+        }));
+        rafIdRef.current = null;
+      });
+    };
+
     if (container) {
-      container.addEventListener("wheel", handleWheel as any, {
+      container.addEventListener("wheel", nativeWheelHandler, {
         passive: false,
       });
     }
@@ -77,18 +71,13 @@ export function InfiniteCanvas() {
         cancelAnimationFrame(rafIdRef.current);
       }
       if (container) {
-        container.removeEventListener("wheel", handleWheel as any);
+        container.removeEventListener("wheel", nativeWheelHandler);
       }
     };
   }, []);
 
   // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
   // Optimized with stable object references to prevent unnecessary re-renders
-
-  // 🔍 PERFORMANCE LOGGING: Measure calculation time
-  const calcStartTime = performance.now();
-
-  // Calculate visible items with stable references
   const visibleItems = useMemo(() => {
     const items: Array<{
       item: Portfolio;
@@ -141,14 +130,6 @@ export function InfiniteCanvas() {
       }
     }
 
-    // 🔍 PERFORMANCE LOGGING
-    const calcTime = performance.now() - calcStartTime;
-    if (calcTime > 5) {
-      console.warn(
-        `⚠️ Slow calculation: ${calcTime.toFixed(2)}ms for ${items.length} items`
-      );
-    }
-
     return items;
   }, [position.x, position.y, portfolios]);
 
@@ -187,28 +168,7 @@ export function InfiniteCanvas() {
     if (rafIdRef.current !== null) return;
 
     rafIdRef.current = requestAnimationFrame(() => {
-      const updateStart = performance.now();
       setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-      const updateTime = performance.now() - updateStart;
-
-      // 🔍 PERFORMANCE LOGGING: Log slow updates
-      if (updateTime > 16) {
-        console.warn(
-          `⚠️ Slow position update: ${updateTime.toFixed(2)}ms (should be <16ms for 60fps)`
-        );
-      }
-
-      rafIdRef.current = null;
-    });
-  };
-  const handleWheel = (e: WheelEvent) => {
-    e.preventDefault();
-
-    // Throttle wheel events with RAF
-    if (rafIdRef.current !== null) return;
-
-    rafIdRef.current = requestAnimationFrame(() => {
-      setPosition((p) => ({ x: p.x - e.deltaX, y: p.y - e.deltaY }));
       rafIdRef.current = null;
     });
   };

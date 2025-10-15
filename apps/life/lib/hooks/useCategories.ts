@@ -29,10 +29,8 @@ export function useCategories() {
         console.error("Error fetching categories:", err);
       },
       // Success callback
-      onSuccess: (newData) => {
-        if (newData && newData.length > 0) {
-          console.log("Categories updated:", newData);
-        }
+      onSuccess: () => {
+        // Categories updated successfully
       },
     }
   );

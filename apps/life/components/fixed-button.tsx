@@ -42,7 +42,7 @@ const defaultButtons: ButtonData[] = [
     id: "menu",
     type: "hamburger",
     label: "Menu",
-    onClick: () => console.log("Menu clicked"),
+    onClick: () => {}, // TODO: Implement menu functionality
   },
 ];
 

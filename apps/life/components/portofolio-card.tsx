@@ -13,16 +13,6 @@ export const PortfolioCard = React.memo(function PortfolioCard({
   style,
   onClick,
 }: PortfolioCardProps) {
-  // 🔍 PERFORMANCE LOGGING
-  const renderCountRef = React.useRef(0);
-  renderCountRef.current++;
-
-  if (renderCountRef.current % 100 === 0) {
-    console.log(
-      `🎴 PortfolioCard ${item?.id} rendered ${renderCountRef.current} times`
-    );
-  }
-
   if (!item) {
     return (
       <div

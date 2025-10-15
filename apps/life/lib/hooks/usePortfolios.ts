@@ -35,10 +35,8 @@ export function usePortfolios() {
         console.error("SWR Error:", err);
       },
       // Success callback - log when data updates
-      onSuccess: (newData) => {
-        if (newData && newData.length > 0) {
-          console.log(`✅ Portfolios updated: ${newData.length} items`);
-        }
+      onSuccess: () => {
+        // Portfolios updated successfully
       },
     }
   );
