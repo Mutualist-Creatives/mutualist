@@ -1,5 +1,4 @@
 import React from "react";
-import Image from "next/image";
 import { Portfolio } from "@/data/types";
 
 interface PortfolioCardProps {
@@ -14,6 +13,16 @@ export const PortfolioCard = React.memo(function PortfolioCard({
   style,
   onClick,
 }: PortfolioCardProps) {
+  // 🔍 PERFORMANCE LOGGING
+  const renderCountRef = React.useRef(0);
+  renderCountRef.current++;
+
+  if (renderCountRef.current % 100 === 0) {
+    console.log(
+      `🎴 PortfolioCard ${item?.id} rendered ${renderCountRef.current} times`
+    );
+  }
+
   if (!item) {
     return (
       <div
@@ -30,16 +39,11 @@ export const PortfolioCard = React.memo(function PortfolioCard({
       className="h-[320px] w-[240px] rounded-lg overflow-hidden bg-white cursor-pointer group relative"
     >
       <div className="relative w-full h-full">
-        <Image
+        <img
           src={item.images[0]}
           alt={item.title}
-          fill
-          className="object-cover transition-all duration-300 group-hover:brightness-50"
-          sizes="240px"
-          quality={75}
+          className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-50"
           loading="lazy"
-          placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
         />
       </div>
 

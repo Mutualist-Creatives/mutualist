@@ -31,6 +31,21 @@ export function InfiniteCanvas() {
   const settingsAreaRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
 
+  // 🔍 PERFORMANCE LOGGING
+  const renderCountRef = useRef(0);
+  const lastLogTimeRef = useRef(Date.now());
+
+  useEffect(() => {
+    renderCountRef.current++;
+
+    const now = Date.now();
+    if (now - lastLogTimeRef.current >= 1000) {
+      console.log(`📊 InfiniteCanvas renders/sec: ${renderCountRef.current}`);
+      renderCountRef.current = 0;
+      lastLogTimeRef.current = now;
+    }
+  });
+
   // USE SWR HOOK FOR DATA FETCHING
   const { portfolios: allPortfolios, isLoading, isError } = usePortfolios();
 
@@ -48,19 +63,40 @@ export function InfiniteCanvas() {
     const initialY = window.innerHeight / 2 - CANVAS_CONFIG.CARD_HEIGHT / 2;
     setPosition({ x: initialX, y: initialY });
 
-    // Cleanup RAF on unmount
+    // Add wheel event listener with passive: false to allow preventDefault
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener("wheel", handleWheel as any, {
+        passive: false,
+      });
+    }
+
+    // Cleanup
     return () => {
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
+      }
+      if (container) {
+        container.removeEventListener("wheel", handleWheel as any);
       }
     };
   }, []);
 
   // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
-  // Optimized with useMemo to prevent unnecessary recalculations
+  // Optimized with stable object references to prevent unnecessary re-renders
+
+  // 🔍 PERFORMANCE LOGGING: Measure calculation time
+  const calcStartTime = performance.now();
+
+  // Calculate visible items with stable references
   const visibleItems = useMemo(() => {
-    const items: Array<Portfolio & { uniqueId: string; x: number; y: number }> =
-      [];
+    const items: Array<{
+      item: Portfolio;
+      uniqueId: string;
+      x: number;
+      y: number;
+    }> = [];
+
     if (!containerRef.current || portfolios.length === 0) return items;
 
     const viewport = containerRef.current.getBoundingClientRect();
@@ -95,14 +131,24 @@ export function InfiniteCanvas() {
           y += CANVAS_CONFIG.STAGGER_OFFSET;
         }
 
+        // Use stable object reference (don't spread baseItem)
         items.push({
-          ...baseItem,
+          item: baseItem, // Reuse same object reference
           uniqueId: `${baseItem.id}-${col}-${row}`,
           x: x,
           y: y,
         });
       }
     }
+
+    // 🔍 PERFORMANCE LOGGING
+    const calcTime = performance.now() - calcStartTime;
+    if (calcTime > 5) {
+      console.warn(
+        `⚠️ Slow calculation: ${calcTime.toFixed(2)}ms for ${items.length} items`
+      );
+    }
+
     return items;
   }, [position.x, position.y, portfolios]);
 
@@ -141,7 +187,17 @@ export function InfiniteCanvas() {
     if (rafIdRef.current !== null) return;
 
     rafIdRef.current = requestAnimationFrame(() => {
+      const updateStart = performance.now();
       setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+      const updateTime = performance.now() - updateStart;
+
+      // 🔍 PERFORMANCE LOGGING: Log slow updates
+      if (updateTime > 16) {
+        console.warn(
+          `⚠️ Slow position update: ${updateTime.toFixed(2)}ms (should be <16ms for 60fps)`
+        );
+      }
+
       rafIdRef.current = null;
     });
   };
@@ -163,12 +219,14 @@ export function InfiniteCanvas() {
       className={`w-full h-screen overflow-hidden cursor-grab active:cursor-grabbing transition-colors duration-500 ${
         isRedacted ? "font-redacted" : ""
       }`}
-      style={{ backgroundColor: bgColor }}
+      style={{
+        backgroundColor: bgColor,
+        contain: "layout style paint",
+      }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onWheel={handleWheel}
     >
       {/* Loading State */}
       {isLoading && (
@@ -202,6 +260,7 @@ export function InfiniteCanvas() {
         className="relative w-full h-full"
         style={{
           transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+          willChange: isDragging ? "transform" : "auto",
         }}
       >
         {/* Render hanya item yang terlihat */}
@@ -214,11 +273,12 @@ export function InfiniteCanvas() {
                 width: CANVAS_CONFIG.CARD_WIDTH,
                 height: CANVAS_CONFIG.CARD_HEIGHT,
                 transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
+                willChange: "transform",
               }}
             >
               <PortfolioCard
-                item={item}
-                onClick={() => setSelectedProject(item)}
+                item={item.item}
+                onClick={() => setSelectedProject(item.item)}
               />
             </div>
           ))}
