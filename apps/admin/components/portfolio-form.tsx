@@ -9,10 +9,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Save, X, AlertCircle, Eye, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { PortfolioPreviewCard } from "@/components/portfolio-preview-card";
 import { PortfolioPreviewModal } from "@/components/portfolio-preview-modal";
+import { PORTFOLIO_CATEGORIES } from "@/lib/constants";
 
 interface PortfolioFormProps {
   portfolio?: Portfolio;
@@ -284,17 +292,26 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
                 <Label htmlFor="category">
                   Category <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="category"
-                  required
+                <Select
                   value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, category: value })
                   }
-                  placeholder="e.g., Branding, Web Design, Mobile App"
-                />
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PORTFOLIO_CATEGORIES.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <p className="text-xs text-muted-foreground">
-                  Choose an existing category or create a new one
+                  Choose from predefined categories
                 </p>
               </div>
             </TabsContent>
