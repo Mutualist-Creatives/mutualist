@@ -353,7 +353,7 @@ export function FixedButton({
               </button>
 
               {/* Top right links */}
-              <div className="absolute top-12 right-12 flex flex-col items-end gap-2 font-sans text-sm">
+              <div className="absolute top-12 right-12 flex flex-col items-end text-xs gap-6 font-sans text-sm hover:text-white">
                 <a
                   ref={(el) => {
                     linksRef.current[0] = el;
@@ -393,7 +393,7 @@ export function FixedButton({
               </div>
 
               {/* Bottom right categories */}
-              <div className="absolute bottom-22 right-12 flex flex-col items-end gap-8">
+              <div className="absolute bottom-22 right-12 flex flex-col items-end gap-9">
                 {/* Update Indicator */}
                 {isValidating && (
                   <div className="flex items-center gap-2 mb-2 opacity-70">
@@ -447,7 +447,7 @@ export function FixedButton({
                         </span>
                       </span>
                       <span
-                        className="font-serif text-3xl leading-none group-hover:text-4xl transition-all duration-300"
+                        className="font-serif text-2xl leading-none group-hover:text-3xl transition-all duration-300"
                         style={{
                           color: isSelected ? "#FFF" : "#808080",
                         }}

@@ -40,8 +40,8 @@ export const PortfolioCard = React.memo(function PortfolioCard({
       {/* Hover Overlay with VIEW button */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="px-6 py-2 border border-white rounded-full">
-          <span className="font-sans text-white text-xs font-medium uppercase tracking-wider">
-            VIEW
+          <span className="font-sans text-white text-xs uppercase font-medium tracking-wider">
+            view
           </span>
         </div>
       </div>

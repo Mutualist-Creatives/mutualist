@@ -4,6 +4,7 @@ import React, { useState, useRef, MouseEvent, useEffect, useMemo } from "react";
 import { gsap } from "gsap";
 import { PortfolioCard } from "@/components/portofolio-card";
 import { FixedButton } from "@/components/fixed-button";
+import { Logo } from "@/components/logo";
 import { fixedButtonData } from "@/data/fixed-button-data";
 import { ProjectModal } from "@/components/project-modal";
 import { Portfolio } from "@/data/types";
@@ -223,14 +224,14 @@ export function InfiniteCanvas() {
       onMouseLeave={handleMouseUp}
     >
       {/* Subtle Update Indicator - Only show when revalidating in background */}
-      {isValidating && (
+      {/* {isValidating && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
           <div className="bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm flex items-center gap-2 shadow-lg">
             <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
             <span>Syncing...</span>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Empty State - Only if truly no data */}
       {portfolios.length === 0 && (
@@ -273,6 +274,10 @@ export function InfiniteCanvas() {
         ))}
       </div>
 
+      {/* Logo - Bottom Left */}
+      <Logo />
+
+      {/* Fixed Buttons - Bottom Right */}
       <div ref={settingsAreaRef}>
         <FixedButton
           buttons={fixedButtonData}

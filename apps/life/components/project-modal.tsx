@@ -222,31 +222,31 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             {/* Project Info */}
             <div className="space-y-6">
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">Title</p>
-                <h2 className="font-serif text-3xl text-white">
+                <p className="font-sans text-xs text-neutral-400 mb-1">Title</p>
+                <h2 className="font-serif text-2xl text-white">
                   {project.title}
                 </h2>
               </div>
 
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">
+                <p className="font-sans text-xs text-neutral-400 mb-1">
                   Created by
                 </p>
-                <p className="font-serif text-xl text-white">
+                <p className="font-serif text-2xl text-white">
                   {project.createdBy}
                 </p>
               </div>
 
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">Year</p>
-                <p className="font-serif text-xl text-white">{project.year}</p>
+                <p className="font-sans text-xs text-neutral-400 mb-1">Year</p>
+                <p className="font-serif text-2xl text-white">{project.year}</p>
               </div>
 
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">
+                <p className="font-sans text-xs text-neutral-400 mb-1">
                   Category
                 </p>
-                <p className="font-serif text-xl text-white">
+                <p className="font-serif text-2xl text-white">
                   {project.category}
                 </p>
               </div>
@@ -255,7 +255,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
           {/* Bottom Section - Description */}
           <div className="p-12">
-            <p className="font-serif text-lg text-white leading-relaxed">
+            <p className="font-serif text-2xl text-white leading-relaxed">
               {project.description}
             </p>
           </div>
