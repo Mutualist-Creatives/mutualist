@@ -45,7 +45,7 @@ export class PortfolioService {
 
       // Find images that are being removed
       const imagesToDelete = oldImages.filter(
-        (oldImg) => !newImages.includes(oldImg),
+        (oldImg: string) => !newImages.includes(oldImg),
       );
 
       // Delete removed images from storage
@@ -73,8 +73,10 @@ export class PortfolioService {
         console.log('Images deleted successfully');
       } catch (error) {
         console.error('Failed to delete images from storage:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
         throw new Error(
-          `Failed to delete images from storage: ${error.message}`,
+          `Failed to delete images from storage: ${errorMessage}`,
         );
       }
     }
@@ -90,7 +92,9 @@ export class PortfolioService {
       select: { category: true },
     });
 
-    const categories = [...new Set(portfolios.map((p) => p.category))];
+    const categories = [
+      ...new Set(portfolios.map((p: { category: string }) => p.category)),
+    ];
     return categories;
   }
 }

@@ -6,8 +6,8 @@ Untuk fitur upload dan delete images di Supabase, install dependencies berikut:
 
 ```bash
 cd apps/api
-npm install @supabase/supabase-js multer
-npm install -D @types/multer
+bun add @supabase/supabase-js multer
+bun add -d @types/multer
 ```
 
 ## Dependencies Explanation
@@ -22,8 +22,10 @@ Tambahkan ke `apps/api/.env`:
 
 ```env
 SUPABASE_URL=https://aqmiasmqtueuqvdsgiez.supabase.co
-SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_KEY=your_supabase_service_key
 ```
+
+**Note:** Gunakan `SUPABASE_SERVICE_KEY` (bukan ANON_KEY) untuk backend karena memiliki full access untuk delete operations.
 
 Dapatkan credentials dari Supabase Dashboard:
 
@@ -36,7 +38,7 @@ Dapatkan credentials dari Supabase Dashboard:
 Restart API server:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 API akan support:
