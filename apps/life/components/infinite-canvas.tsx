@@ -286,6 +286,7 @@ export function InfiniteCanvas() {
           onRedactedToggle={setIsRedacted}
           onCategoryChange={setSelectedCategory}
           selectedCategory={selectedCategory}
+          portfolios={allPortfolios}
         />
       </div>
 

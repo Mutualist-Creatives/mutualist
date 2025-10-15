@@ -1,11 +1,9 @@
 import useSWR from "swr";
 import { portfolioApi } from "@/lib/api";
-import { portfolioItems } from "@/data/portofolio-data";
+import { PORTFOLIO_CATEGORIES } from "@/lib/categories";
 
-// Fallback categories from static data
-const fallbackCategories = Array.from(
-  new Set(portfolioItems.map((item) => item.category))
-);
+// Use fixed categories as fallback
+const fallbackCategories = [...PORTFOLIO_CATEGORIES];
 
 export function useCategories() {
   const { data, error, isLoading, mutate, isValidating } = useSWR<string[]>(

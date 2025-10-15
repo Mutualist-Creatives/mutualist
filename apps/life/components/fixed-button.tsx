@@ -8,6 +8,7 @@ import {
   DEFAULT_BG_COLOR,
   BUTTON_BG_COLOR,
 } from "@/lib/constants";
+import { PORTFOLIO_CATEGORIES } from "@/lib/categories";
 
 interface ButtonData {
   id: string;
@@ -24,6 +25,7 @@ interface FixedButtonProps {
   onRedactedToggle?: (isRedacted: boolean) => void;
   onCategoryChange?: (category: string | null) => void;
   selectedCategory?: string | null;
+  portfolios?: any[]; // For counting items per category
 }
 
 const defaultButtons: ButtonData[] = [
@@ -53,6 +55,7 @@ export function FixedButton({
   onRedactedToggle,
   onCategoryChange,
   selectedCategory = null,
+  portfolios = [],
 }: FixedButtonProps) {
   const [currentBgColor, setCurrentBgColor] = useState(DEFAULT_BG_COLOR);
   const [isColorMenuOpen, setIsColorMenuOpen] = useState(false);
@@ -70,8 +73,9 @@ export function FixedButton({
   const linksRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const categoriesRef = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Fetch categories from API with auto-update
-  const { categories, isValidating } = useCategories();
+  // Use fixed categories (always show all, even if empty)
+  const { isValidating } = useCategories();
+  const categories = PORTFOLIO_CATEGORIES;
 
   useEffect(() => {
     if (isColorMenuOpen) {
@@ -395,19 +399,30 @@ export function FixedButton({
               {/* Bottom right categories */}
               <div className="absolute bottom-22 right-12 flex flex-col items-end gap-9">
                 {/* Update Indicator */}
-                {isValidating && (
+                {/* {isValidating && (
                   <div className="flex items-center gap-2 mb-2 opacity-70">
                     <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
                     <span className="text-xs text-gray-400">
                       Checking for updates...
                     </span>
                   </div>
-                )}
+                )} */}
 
                 {["All", ...categories].map((category, index) => {
                   const isSelected =
                     (category === "All" && selectedCategory === null) ||
                     category === selectedCategory;
+
+                  // Count portfolios in this category
+                  const count =
+                    category === "All"
+                      ? portfolios.length
+                      : portfolios.filter((p) => p.category === category)
+                          .length;
+
+                  // Disable if no content (except "All")
+                  const isEmpty = count === 0;
+                  const isDisabled = isEmpty && category !== "All";
 
                   return (
                     <button
@@ -416,57 +431,90 @@ export function FixedButton({
                         categoriesRef.current[index] = el;
                       }}
                       onClick={() => {
-                        if (onCategoryChange) {
+                        if (!isDisabled && onCategoryChange) {
                           onCategoryChange(
                             category === "All" ? null : category
                           );
                         }
                       }}
-                      className="opacity-0 flex items-start gap-2 group transition-all duration-300 cursor-pointer"
+                      disabled={isDisabled}
+                      className={`opacity-0 flex items-start gap-2 transition-all duration-300 ${
+                        isDisabled
+                          ? "cursor-not-allowed"
+                          : "group cursor-pointer"
+                      }`}
                     >
                       <span
-                        className="font-sans text-xs group-hover:text-base transition-all duration-300"
+                        className={`font-sans text-xs transition-all duration-300 ${
+                          isDisabled ? "" : "group-hover:text-base"
+                        }`}
                         style={{
-                          color: isSelected ? "#9FEDFF" : "#808080",
+                          color: isSelected
+                            ? "#9FEDFF"
+                            : isDisabled
+                              ? "#404040"
+                              : "#808080",
                         }}
                       >
                         <span
                           className={
-                            isSelected ? "hidden" : "group-hover:hidden"
+                            isSelected
+                              ? "hidden"
+                              : isDisabled
+                                ? ""
+                                : "group-hover:hidden"
                           }
                         >
-                          ({String((index + 1) * 10).padStart(4, "0")})
+                          ({String(count).padStart(3, "0")})
                         </span>
-                        <span
-                          className={
-                            isSelected ? "inline" : "hidden group-hover:inline"
-                          }
-                          style={{ color: "#9FEDFF" }}
-                        >
-                          ({String((index + 1) * 10).padStart(4, "0")})
-                        </span>
+                        {!isDisabled && (
+                          <span
+                            className={
+                              isSelected
+                                ? "inline"
+                                : "hidden group-hover:inline"
+                            }
+                            style={{ color: "#9FEDFF" }}
+                          >
+                            ({String(count).padStart(3, "0")})
+                          </span>
+                        )}
                       </span>
                       <span
-                        className="font-serif text-2xl leading-none group-hover:text-3xl transition-all duration-300"
+                        className={`font-serif text-2xl leading-none transition-all duration-300 ${
+                          isDisabled ? "" : "group-hover:text-3xl"
+                        }`}
                         style={{
-                          color: isSelected ? "#FFF" : "#808080",
+                          color: isSelected
+                            ? "#FFF"
+                            : isDisabled
+                              ? "#404040"
+                              : "#808080",
                         }}
                       >
                         <span
                           className={
-                            isSelected ? "hidden" : "group-hover:hidden"
+                            isSelected
+                              ? "hidden"
+                              : isDisabled
+                                ? ""
+                                : "group-hover:hidden"
                           }
                         >
                           {category}
                         </span>
-                        <span
-                          className={
-                            isSelected ? "inline" : "hidden group-hover:inline"
-                          }
-                          style={{ color: "#FFF" }}
-                        >
-                          {category}
-                        </span>
+                        {!isDisabled && (
+                          <span
+                            className={
+                              isSelected
+                                ? "inline"
+                                : "hidden group-hover:inline"
+                            }
+                            style={{ color: "#FFF" }}
+                          >
+                            {category}
+                          </span>
+                        )}
                       </span>
                     </button>
                   );
