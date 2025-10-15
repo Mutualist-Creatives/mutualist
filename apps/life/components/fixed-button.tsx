@@ -3,6 +3,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useCategories } from "@/lib/hooks/useCategories";
+import {
+  COLOR_OPTIONS,
+  DEFAULT_BG_COLOR,
+  BUTTON_BG_COLOR,
+} from "@/lib/constants";
 
 interface ButtonData {
   id: string;
@@ -21,21 +26,12 @@ interface FixedButtonProps {
   selectedCategory?: string | null;
 }
 
-const colorOptions = [
-  "#FFF",
-  "#EEEBE2",
-  "#F3DA01",
-  "#009F6F",
-  "#770040",
-  "#000",
-];
-
 const defaultButtons: ButtonData[] = [
   {
     id: "color-changer",
     type: "color",
     label: "Change Background Color",
-    color: "#EEEBE2",
+    color: DEFAULT_BG_COLOR,
   },
   {
     id: "typography",
@@ -58,7 +54,7 @@ export function FixedButton({
   onCategoryChange,
   selectedCategory = null,
 }: FixedButtonProps) {
-  const [currentBgColor, setCurrentBgColor] = useState("#EEEBE2");
+  const [currentBgColor, setCurrentBgColor] = useState(DEFAULT_BG_COLOR);
   const [isColorMenuOpen, setIsColorMenuOpen] = useState(false);
   const [shouldRenderMenu, setShouldRenderMenu] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -294,14 +290,13 @@ export function FixedButton({
               ref={colorMenuRef}
               className="absolute bottom-0 right-16 flex flex-row-reverse gap-3"
             >
-              {colorOptions
-                .filter((color) => color !== currentBgColor)
-                .map((color) => (
+              {COLOR_OPTIONS.filter((color) => color !== currentBgColor).map(
+                (color) => (
                   <button
                     key={color}
                     onClick={() => handleColorChange(color)}
                     className="color-option w-12 h-12 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow opacity-0"
-                    style={{ backgroundColor: "#121212" }}
+                    style={{ backgroundColor: BUTTON_BG_COLOR }}
                     aria-label={`Change color to ${color}`}
                   >
                     <div
@@ -309,7 +304,8 @@ export function FixedButton({
                       style={{ backgroundColor: color }}
                     />
                   </button>
-                ))}
+                )
+              )}
             </div>
           )}
           <button
@@ -332,7 +328,7 @@ export function FixedButton({
                 ? "items-start justify-start pointer-events-none"
                 : "flex items-center justify-center"
             }`}
-            style={{ backgroundColor: "#121212" }}
+            style={{ backgroundColor: BUTTON_BG_COLOR }}
             aria-label={button.label}
           >
             {renderButtonContent(button)}

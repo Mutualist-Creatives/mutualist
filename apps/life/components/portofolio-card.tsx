@@ -1,3 +1,4 @@
+import React from "react";
 import Image from "next/image";
 import { Portfolio } from "@/data/types";
 
@@ -7,7 +8,12 @@ interface PortfolioCardProps {
   onClick?: () => void;
 }
 
-export function PortfolioCard({ item, style, onClick }: PortfolioCardProps) {
+// Memoized to prevent unnecessary re-renders
+export const PortfolioCard = React.memo(function PortfolioCard({
+  item,
+  style,
+  onClick,
+}: PortfolioCardProps) {
   if (!item) {
     return (
       <div
@@ -43,4 +49,4 @@ export function PortfolioCard({ item, style, onClick }: PortfolioCardProps) {
       </div>
     </div>
   );
-}
+});

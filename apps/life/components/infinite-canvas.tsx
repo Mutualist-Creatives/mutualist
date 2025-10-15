@@ -6,6 +6,7 @@ import React, {
   WheelEvent,
   MouseEvent,
   useEffect,
+  useMemo,
 } from "react";
 import { PortfolioCard } from "@/components/portofolio-card";
 import { FixedButton } from "@/components/fixed-button";
@@ -13,22 +14,13 @@ import { fixedButtonData } from "@/data/fixed-button-data";
 import { ProjectModal } from "@/components/project-modal";
 import { Portfolio } from "@/data/types";
 import { usePortfolios } from "@/lib/hooks/usePortfolios";
-
-// --- KONFIGURASI GRID ---
-const COLUMN_COUNT = 7;
-const CARD_WIDTH = 240;
-const CARD_HEIGHT = 320;
-const GAP = 48;
-const STAGGER_OFFSET = 96;
-
-const FULL_COLUMN_WIDTH = CARD_WIDTH + GAP;
-const FULL_CARD_HEIGHT = CARD_HEIGHT + GAP;
+import { CANVAS_CONFIG, DEFAULT_BG_COLOR } from "@/lib/constants";
 
 export function InfiniteCanvas() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const [bgColor, setBgColor] = useState("#EEEBE2");
+  const [bgColor, setBgColor] = useState(DEFAULT_BG_COLOR);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isRedacted, setIsRedacted] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Portfolio | null>(
@@ -50,16 +42,21 @@ export function InfiniteCanvas() {
   useEffect(() => {
     // Kita tengahkan di posisi (0,0) dari dunia virtual kita
     const initialX =
-      window.innerWidth / 2 - (COLUMN_COUNT * FULL_COLUMN_WIDTH) / 2;
-    const initialY = window.innerHeight / 2 - CARD_HEIGHT / 2; // Cukup tengahkan 1 kartu
+      window.innerWidth / 2 -
+      (CANVAS_CONFIG.COLUMN_COUNT * CANVAS_CONFIG.FULL_COLUMN_WIDTH) / 2;
+    const initialY = window.innerHeight / 2 - CANVAS_CONFIG.CARD_HEIGHT / 2;
     setPosition({ x: initialX, y: initialY });
   }, []);
 
   // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
-  const visibleItems = [];
-  if (containerRef.current && portfolios.length > 0) {
+  // Optimized with useMemo to prevent unnecessary recalculations
+  const visibleItems = useMemo(() => {
+    const items: Array<Portfolio & { uniqueId: string; x: number; y: number }> =
+      [];
+    if (!containerRef.current || portfolios.length === 0) return items;
+
     const viewport = containerRef.current.getBoundingClientRect();
-    const buffer = 200; // Buffer untuk render mulus
+    const buffer = CANVAS_CONFIG.VIEWPORT_BUFFER;
 
     // Tentukan batas-batas viewport di dalam dunia virtual kita
     const viewLeft = -position.x - buffer;
@@ -68,29 +65,29 @@ export function InfiniteCanvas() {
     const viewBottom = -position.y + viewport.height + buffer;
 
     // Tentukan kolom dan baris mana saja yang masuk ke dalam viewport
-    const startCol = Math.floor(viewLeft / FULL_COLUMN_WIDTH);
-    const endCol = Math.ceil(viewRight / FULL_COLUMN_WIDTH);
-    const startRow = Math.floor(viewTop / FULL_CARD_HEIGHT);
-    const endRow = Math.ceil(viewBottom / FULL_CARD_HEIGHT);
+    const startCol = Math.floor(viewLeft / CANVAS_CONFIG.FULL_COLUMN_WIDTH);
+    const endCol = Math.ceil(viewRight / CANVAS_CONFIG.FULL_COLUMN_WIDTH);
+    const startRow = Math.floor(viewTop / CANVAS_CONFIG.FULL_CARD_HEIGHT);
+    const endRow = Math.ceil(viewBottom / CANVAS_CONFIG.FULL_CARD_HEIGHT);
 
     // Loop hanya pada kolom dan baris yang terlihat
     for (let col = startCol; col < endCol; col++) {
       for (let row = startRow; row < endRow; row++) {
         // --- KUNCI INFINITE LOOP ---
         // Gunakan Aritmatika Modular (%) untuk membungkus indeks
-        const itemIndex = Math.abs(row * COLUMN_COUNT + col);
+        const itemIndex = Math.abs(row * CANVAS_CONFIG.COLUMN_COUNT + col);
         const baseItem = portfolios[itemIndex % portfolios.length];
 
         // Tentukan posisi X dan Y absolut dari kartu ini
-        const x = col * FULL_COLUMN_WIDTH;
-        let y = row * FULL_CARD_HEIGHT;
+        const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
+        let y = row * CANVAS_CONFIG.FULL_CARD_HEIGHT;
 
         // Terapkan efek stagger pada kolom ganjil
         if (Math.abs(col) % 2 === 1) {
-          y += STAGGER_OFFSET;
+          y += CANVAS_CONFIG.STAGGER_OFFSET;
         }
 
-        visibleItems.push({
+        items.push({
           ...baseItem,
           uniqueId: `${baseItem.id}-${col}-${row}`,
           x: x,
@@ -98,7 +95,8 @@ export function InfiniteCanvas() {
         });
       }
     }
-  }
+    return items;
+  }, [position.x, position.y, portfolios]);
 
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {
@@ -183,8 +181,8 @@ export function InfiniteCanvas() {
               key={item.uniqueId}
               style={{
                 position: "absolute",
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
+                width: CANVAS_CONFIG.CARD_WIDTH,
+                height: CANVAS_CONFIG.CARD_HEIGHT,
                 transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
               }}
             >
