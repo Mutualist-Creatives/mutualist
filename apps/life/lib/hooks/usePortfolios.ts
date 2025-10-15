@@ -11,7 +11,7 @@ const fallbackData: Portfolio[] = portfolioItems.map((item) => ({
 }));
 
 export function usePortfolios() {
-  const { data, error, isLoading, mutate } = useSWR<Portfolio[]>(
+  const { data, error, isLoading, mutate, isValidating } = useSWR<Portfolio[]>(
     "/api/portfolios",
     portfolioApi.getAll,
     {
@@ -19,7 +19,7 @@ export function usePortfolios() {
       revalidateOnFocus: true,
       // Revalidate on reconnect
       revalidateOnReconnect: true,
-      // Refresh every 30 seconds
+      // Refresh every 30 seconds (auto-update)
       refreshInterval: 30000,
       // Keep previous data while revalidating
       keepPreviousData: true,
@@ -34,6 +34,12 @@ export function usePortfolios() {
       onError: (err) => {
         console.error("SWR Error:", err);
       },
+      // Success callback - log when data updates
+      onSuccess: (newData) => {
+        if (newData && newData.length > 0) {
+          console.log(`✅ Portfolios updated: ${newData.length} items`);
+        }
+      },
     }
   );
 
@@ -41,6 +47,7 @@ export function usePortfolios() {
     portfolios: data || fallbackData,
     isLoading,
     isError: error,
+    isValidating, // For showing update indicator
     mutate, // For manual revalidation
   };
 }

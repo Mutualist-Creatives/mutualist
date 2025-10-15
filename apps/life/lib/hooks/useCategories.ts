@@ -8,17 +8,31 @@ const fallbackCategories = Array.from(
 );
 
 export function useCategories() {
-  const { data, error, isLoading } = useSWR<string[]>(
+  const { data, error, isLoading, mutate, isValidating } = useSWR<string[]>(
     "/api/portfolios/categories",
     portfolioApi.getCategories,
     {
-      revalidateOnFocus: false,
+      // Revalidate when user returns to tab
+      revalidateOnFocus: true,
+      // Revalidate when network reconnects
       revalidateOnReconnect: true,
-      // Categories don't change often, cache for 5 minutes
-      dedupingInterval: 300000,
+      // Auto-refresh every 60 seconds (check for new categories)
+      refreshInterval: 60000,
+      // Keep previous data while revalidating
+      keepPreviousData: true,
+      // Dedupe requests within 10 seconds
+      dedupingInterval: 10000,
+      // Fallback to static data
       fallbackData: fallbackCategories,
+      // Error handling
       onError: (err) => {
         console.error("Error fetching categories:", err);
+      },
+      // Success callback
+      onSuccess: (newData) => {
+        if (newData && newData.length > 0) {
+          console.log("Categories updated:", newData);
+        }
       },
     }
   );
@@ -27,5 +41,7 @@ export function useCategories() {
     categories: data || fallbackCategories,
     isLoading,
     isError: error,
+    isValidating, // For showing update indicator
+    mutate, // For manual refresh
   };
 }

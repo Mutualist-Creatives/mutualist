@@ -34,11 +34,17 @@ export function InfiniteCanvas() {
   const [selectedProject, setSelectedProject] = useState<Portfolio | null>(
     null
   );
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
 
   // USE SWR HOOK FOR DATA FETCHING
-  const { portfolios, isLoading, isError } = usePortfolios();
+  const { portfolios: allPortfolios, isLoading, isError } = usePortfolios();
+
+  // FILTER PORTFOLIOS BY CATEGORY
+  const portfolios = selectedCategory
+    ? allPortfolios.filter((p) => p.category === selectedCategory)
+    : allPortfolios;
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
   useEffect(() => {
@@ -196,6 +202,8 @@ export function InfiniteCanvas() {
           onColorChange={setBgColor}
           onSettingsOpenChange={setIsSettingsOpen}
           onRedactedToggle={setIsRedacted}
+          onCategoryChange={setSelectedCategory}
+          selectedCategory={selectedCategory}
         />
       </div>
 

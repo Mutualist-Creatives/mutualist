@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
-import { portfolioItems } from "@/data/portofolio-data";
+import { useCategories } from "@/lib/hooks/useCategories";
 
 interface ButtonData {
   id: string;
@@ -17,6 +17,8 @@ interface FixedButtonProps {
   onColorChange?: (color: string) => void;
   onSettingsOpenChange?: (isOpen: boolean) => void;
   onRedactedToggle?: (isRedacted: boolean) => void;
+  onCategoryChange?: (category: string | null) => void;
+  selectedCategory?: string | null;
 }
 
 const colorOptions = [
@@ -53,6 +55,8 @@ export function FixedButton({
   onColorChange,
   onSettingsOpenChange,
   onRedactedToggle,
+  onCategoryChange,
+  selectedCategory = null,
 }: FixedButtonProps) {
   const [currentBgColor, setCurrentBgColor] = useState("#EEEBE2");
   const [isColorMenuOpen, setIsColorMenuOpen] = useState(false);
@@ -69,6 +73,9 @@ export function FixedButton({
   const xIconRef = useRef<HTMLButtonElement>(null);
   const linksRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const categoriesRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Fetch categories from API with auto-update
+  const { categories, isValidating } = useCategories();
 
   useEffect(() => {
     if (isColorMenuOpen) {
@@ -344,24 +351,6 @@ export function FixedButton({
                 className="absolute top-12 left-12 w-8 h-8 flex items-center justify-center opacity-0 hover:opacity-50 transition-opacity cursor-pointer"
               >
                 <div className="relative w-7 h-7">
-                  <div
-                    className="x-line absolute w-7 h-0.5 bg-white rounded-full left-0 top-1/2 -translate-y-1/2"
-                    style={{ transform: "translateY(-50%) rotate(45deg)" }}
-                  />
-                  <div
-                    className="x-line absolute w-7 h-0.5 bg-white rounded-full left-0 top-1/2 -translate-y-1/2"
-                    style={{ transform: "translateY(-50%) rotate(-45deg)" }}
-                  />
-                </div>
-              </button>
-
-              {/* X Close Button */}
-              <button
-                ref={xIconRef}
-                onClick={handleSettingsClick}
-                className="absolute top-12 left-12 w-8 h-8 flex items-center justify-center opacity-0 hover:opacity-50 transition-opacity cursor-pointer"
-              >
-                <div className="relative w-7 h-7">
                   <div className="absolute w-7 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
                   <div className="absolute w-7 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
                 </div>
@@ -409,30 +398,53 @@ export function FixedButton({
 
               {/* Bottom right categories */}
               <div className="absolute bottom-22 right-12 flex flex-col items-end gap-8">
-                {(() => {
-                  const uniqueCategories = [
-                    "All",
-                    ...Array.from(
-                      new Set(portfolioItems.map((item) => item.category))
-                    ),
-                  ];
-                  return uniqueCategories.map((category, index) => (
+                {/* Update Indicator */}
+                {isValidating && (
+                  <div className="flex items-center gap-2 mb-2 opacity-70">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
+                    <span className="text-xs text-gray-400">
+                      Checking for updates...
+                    </span>
+                  </div>
+                )}
+
+                {["All", ...categories].map((category, index) => {
+                  const isSelected =
+                    (category === "All" && selectedCategory === null) ||
+                    category === selectedCategory;
+
+                  return (
                     <button
                       key={category}
                       ref={(el) => {
                         categoriesRef.current[index] = el;
                       }}
+                      onClick={() => {
+                        if (onCategoryChange) {
+                          onCategoryChange(
+                            category === "All" ? null : category
+                          );
+                        }
+                      }}
                       className="opacity-0 flex items-start gap-2 group transition-all duration-300 cursor-pointer"
                     >
                       <span
                         className="font-sans text-xs group-hover:text-base transition-all duration-300"
-                        style={{ color: "#808080" }}
+                        style={{
+                          color: isSelected ? "#9FEDFF" : "#808080",
+                        }}
                       >
-                        <span className="group-hover:hidden">
+                        <span
+                          className={
+                            isSelected ? "hidden" : "group-hover:hidden"
+                          }
+                        >
                           ({String((index + 1) * 10).padStart(4, "0")})
                         </span>
                         <span
-                          className="hidden group-hover:inline"
+                          className={
+                            isSelected ? "inline" : "hidden group-hover:inline"
+                          }
                           style={{ color: "#9FEDFF" }}
                         >
                           ({String((index + 1) * 10).padStart(4, "0")})
@@ -440,19 +452,29 @@ export function FixedButton({
                       </span>
                       <span
                         className="font-serif text-3xl leading-none group-hover:text-4xl transition-all duration-300"
-                        style={{ color: "#808080" }}
+                        style={{
+                          color: isSelected ? "#FFF" : "#808080",
+                        }}
                       >
-                        <span className="group-hover:hidden">{category}</span>
                         <span
-                          className="hidden group-hover:inline"
+                          className={
+                            isSelected ? "hidden" : "group-hover:hidden"
+                          }
+                        >
+                          {category}
+                        </span>
+                        <span
+                          className={
+                            isSelected ? "inline" : "hidden group-hover:inline"
+                          }
                           style={{ color: "#FFF" }}
                         >
                           {category}
                         </span>
                       </span>
                     </button>
-                  ));
-                })()}
+                  );
+                })}
               </div>
             </div>
           )}
