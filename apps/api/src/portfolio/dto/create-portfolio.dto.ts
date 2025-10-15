@@ -13,9 +13,10 @@ export class CreatePortfolioDto {
   @IsNotEmpty()
   year: string;
 
-  @IsString()
+  @IsArray()
+  @IsString({ each: true })
   @IsNotEmpty()
-  category: string;
+  categories: string[];
 
   @IsString()
   @IsNotEmpty()

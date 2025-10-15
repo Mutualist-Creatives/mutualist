@@ -89,12 +89,14 @@ export class PortfolioService {
 
   async getCategories() {
     const portfolios = await this.prisma.portfolio.findMany({
-      select: { category: true },
+      select: { categories: true },
     });
 
-    const categories = [
-      ...new Set(portfolios.map((p: { category: string }) => p.category)),
-    ];
+    // Flatten array of arrays and get unique categories
+    const allCategories = portfolios.flatMap(
+      (p: { categories: string[] }) => p.categories || [],
+    );
+    const categories = [...new Set(allCategories)];
     return categories;
   }
 }
