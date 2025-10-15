@@ -29,6 +29,7 @@ export function InfiniteCanvas() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
+  const rafIdRef = useRef<number | null>(null);
 
   // USE SWR HOOK FOR DATA FETCHING
   const { portfolios: allPortfolios, isLoading, isError } = usePortfolios();
@@ -46,6 +47,13 @@ export function InfiniteCanvas() {
       (CANVAS_CONFIG.COLUMN_COUNT * CANVAS_CONFIG.FULL_COLUMN_WIDTH) / 2;
     const initialY = window.innerHeight / 2 - CANVAS_CONFIG.CARD_HEIGHT / 2;
     setPosition({ x: initialX, y: initialY });
+
+    // Cleanup RAF on unmount
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
   }, []);
 
   // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
@@ -117,14 +125,36 @@ export function InfiniteCanvas() {
     setIsDragging(true);
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
-  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    // Cancel any pending RAF
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+  };
+
   const handleMouseMove = (e: MouseEvent) => {
     if (!isDragging) return;
-    setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+
+    // Throttle with requestAnimationFrame for smooth 60fps
+    if (rafIdRef.current !== null) return;
+
+    rafIdRef.current = requestAnimationFrame(() => {
+      setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+      rafIdRef.current = null;
+    });
   };
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
-    setPosition((p) => ({ x: p.x - e.deltaX, y: p.y - e.deltaY }));
+
+    // Throttle wheel events with RAF
+    if (rafIdRef.current !== null) return;
+
+    rafIdRef.current = requestAnimationFrame(() => {
+      setPosition((p) => ({ x: p.x - e.deltaX, y: p.y - e.deltaY }));
+      rafIdRef.current = null;
+    });
   };
 
   return (
