@@ -5,7 +5,7 @@ export interface Portfolio {
   title: string;
   createdBy: string;
   year: string;
-  category: string;
+  categories: string[]; // Changed from category to categories (array)
   description: string;
   images: string[];
   createdAt: string;

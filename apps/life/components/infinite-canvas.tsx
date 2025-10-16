@@ -31,9 +31,9 @@ export function InfiniteCanvas() {
   // USE SWR HOOK FOR DATA FETCHING (Optimistic UI - instant display)
   const { portfolios: allPortfolios, isValidating } = usePortfolios();
 
-  // FILTER PORTFOLIOS BY CATEGORY
+  // FILTER PORTFOLIOS BY CATEGORY (OR logic - show if ANY category matches)
   const portfolios = selectedCategory
-    ? allPortfolios.filter((p) => p.category === selectedCategory)
+    ? allPortfolios.filter((p) => p.categories.includes(selectedCategory))
     : allPortfolios;
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL

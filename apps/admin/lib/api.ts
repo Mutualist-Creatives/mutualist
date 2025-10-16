@@ -5,7 +5,7 @@ export interface Portfolio {
   title: string;
   createdBy: string;
   year: string;
-  category: string;
+  categories: string[]; // Changed from category to categories
   description: string;
   images: string[];
   createdAt: string;
@@ -16,7 +16,7 @@ export interface CreatePortfolioDto {
   title: string;
   createdBy: string;
   year: string;
-  category: string;
+  categories: string[]; // Changed from category to categories
   description: string;
   images: string[];
 }
@@ -25,7 +25,7 @@ export interface UpdatePortfolioDto {
   title?: string;
   createdBy?: string;
   year?: string;
-  category?: string;
+  categories?: string[]; // Changed from category to categories
   description?: string;
   images?: string[];
 }

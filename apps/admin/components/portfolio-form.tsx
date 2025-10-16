@@ -36,7 +36,7 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
     title: portfolio?.title || "",
     createdBy: portfolio?.createdBy || "",
     year: portfolio?.year || new Date().getFullYear().toString(),
-    category: portfolio?.category || "",
+    categories: portfolio?.categories || [],
     description: portfolio?.description || "",
   });
 
@@ -167,6 +167,11 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
     setError("");
 
     try {
+      // Validate categories
+      if (formData.categories.length === 0) {
+        throw new Error("At least one category is required");
+      }
+
       // Step 1: Upload all files first
       toast.info("Uploading images...");
       const uploadedImageUrls = await uploadFiles();
@@ -289,30 +294,45 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">
-                  Category <span className="text-red-500">*</span>
+                <Label>
+                  Categories <span className="text-red-500">*</span>
                 </Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, category: value })
-                  }
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PORTFOLIO_CATEGORIES.map((category) => (
-                      <SelectItem key={category} value={category}>
+                <div className="border rounded-md p-4 space-y-2">
+                  {PORTFOLIO_CATEGORIES.map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`category-${category}`}
+                        checked={formData.categories.includes(category)}
+                        onChange={(e) => {
+                          const newCategories = e.target.checked
+                            ? [...formData.categories, category]
+                            : formData.categories.filter((c) => c !== category);
+                          setFormData({
+                            ...formData,
+                            categories: newCategories,
+                          });
+                        }}
+                        className="w-4 h-4 rounded border-gray-300"
+                      />
+                      <label
+                        htmlFor={`category-${category}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
                         {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </label>
+                    </div>
+                  ))}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Choose from predefined categories
+                  Select one or more categories ({formData.categories.length}{" "}
+                  selected)
                 </p>
+                {formData.categories.length === 0 && (
+                  <p className="text-xs text-red-500">
+                    At least one category is required
+                  </p>
+                )}
               </div>
             </TabsContent>
 

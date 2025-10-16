@@ -413,12 +413,13 @@ export function FixedButton({
                     (category === "All" && selectedCategory === null) ||
                     category === selectedCategory;
 
-                  // Count portfolios in this category
+                  // Count portfolios in this category (OR logic - count if ANY category matches)
                   const count =
                     category === "All"
                       ? portfolios.length
-                      : portfolios.filter((p) => p.category === category)
-                          .length;
+                      : portfolios.filter((p) =>
+                          p.categories.includes(category)
+                        ).length;
 
                   // Disable if no content (except "All")
                   const isEmpty = count === 0;

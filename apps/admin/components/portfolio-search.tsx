@@ -40,7 +40,7 @@ export function PortfolioSearch({ portfolios }: { portfolios: Portfolio[] }) {
 
   // Get unique categories
   const categories = useMemo(() => {
-    const cats = [...new Set(portfolios.map((p) => p.category))];
+    const cats = [...new Set(portfolios.flatMap((p) => p.categories))];
     return cats.sort();
   }, [portfolios]);
 
@@ -53,7 +53,8 @@ export function PortfolioSearch({ portfolios }: { portfolios: Portfolio[] }) {
         portfolio.createdBy.toLowerCase().includes(search.toLowerCase());
 
       const matchesCategory =
-        categoryFilter === "all" || portfolio.category === categoryFilter;
+        categoryFilter === "all" ||
+        portfolio.categories.includes(categoryFilter);
 
       return matchesSearch && matchesCategory;
     });
@@ -144,7 +145,11 @@ export function PortfolioSearch({ portfolios }: { portfolios: Portfolio[] }) {
                   </CardTitle>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="secondary">{portfolio.category}</Badge>
+                  {portfolio.categories.map((category) => (
+                    <Badge key={category} variant="secondary">
+                      {category}
+                    </Badge>
+                  ))}
                   <span className="text-sm text-muted-foreground">
                     {portfolio.year}
                   </span>
