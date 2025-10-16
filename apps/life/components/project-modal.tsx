@@ -13,6 +13,7 @@ interface ProjectModalProps {
 export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [imageWidth, setImageWidth] = useState<number | null>(null);
   const images = project.images;
   const imageRef = React.useRef<HTMLDivElement>(null);
   const modalRef = React.useRef<HTMLDivElement>(null);
@@ -125,30 +126,41 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default p-[72px]"
       onClick={handleClose}
     >
       <div
         ref={modalRef}
-        className="w-[90vw] h-[85vh] bg-white rounded-2xl overflow-hidden flex shadow-2xl"
+        className="w-auto h-full bg-white rounded-2xl overflow-hidden flex shadow-2xl"
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
         onMouseMove={(e) => e.stopPropagation()}
         onWheel={(e) => e.stopPropagation()}
       >
-        {/* Left Side - Image 60% */}
-        <div className="w-[60%] relative bg-neutral-100">
+        {/* Left Side - Image maintains aspect ratio */}
+        <div
+          className="relative h-full overflow-hidden"
+          style={{ width: imageWidth ? `${imageWidth}px` : "auto" }}
+        >
           <div ref={imageRef} className="relative w-full h-full">
             <Image
               src={images[currentImageIndex]}
               alt={project.title}
               fill
               className="object-cover"
-              sizes="60vw"
+              style={{ objectPosition: "center" }}
+              sizes="(max-width: 1200px) 60vw, 50vw"
               quality={85}
               priority={currentImageIndex === 0}
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+              onLoadingComplete={(img) => {
+                // Calculate width based on image aspect ratio and modal height
+                const modalHeight = modalRef.current?.clientHeight || 0;
+                const aspectRatio = img.naturalWidth / img.naturalHeight;
+                const calculatedWidth = modalHeight * aspectRatio;
+                setImageWidth(calculatedWidth);
+              }}
             />
           </div>
 
@@ -201,9 +213,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           )}
         </div>
 
-        {/* Right Side - Content 40% */}
+        {/* Right Side - Content fixed width */}
         <div
-          className="w-[40%] flex flex-col"
+          className="w-[528px] flex flex-col flex-shrink-0"
           style={{ backgroundColor: "#121212" }}
         >
           {/* Top Section */}
