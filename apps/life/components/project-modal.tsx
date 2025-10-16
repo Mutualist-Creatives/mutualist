@@ -244,10 +244,10 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
               <div>
                 <p className="font-sans text-xs text-neutral-400 mb-1">
-                  Category
+                  {project.categories.length > 1 ? "Categories" : "Category"}
                 </p>
                 <p className="font-serif text-2xl text-white">
-                  {project.category}
+                  {project.categories.join(", ")}
                 </p>
               </div>
             </div>
