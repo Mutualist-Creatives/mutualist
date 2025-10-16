@@ -13,11 +13,12 @@ interface ProjectModalProps {
 export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [imageWidth, setImageWidth] = useState<number | null>(null);
+  const [imageWidth, setImageWidth] = useState<number>(700); // Placeholder width
   const images = project.images;
   const imageRef = React.useRef<HTMLDivElement>(null);
   const modalRef = React.useRef<HTMLDivElement>(null);
   const backdropRef = React.useRef<HTMLDivElement>(null);
+  const imageContainerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     // Animate modal on mount
@@ -139,8 +140,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
       >
         {/* Left Side - Image maintains aspect ratio */}
         <div
+          ref={imageContainerRef}
           className="relative h-full overflow-hidden"
-          style={{ width: imageWidth ? `${imageWidth}px` : "auto" }}
+          style={{ width: `${imageWidth}px` }}
         >
           <div ref={imageRef} className="relative w-full h-full">
             <Image
@@ -155,11 +157,28 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               onLoadingComplete={(img) => {
-                // Calculate width based on image aspect ratio and modal height
+                // Calculate actual width based on image aspect ratio
                 const modalHeight = modalRef.current?.clientHeight || 0;
                 const aspectRatio = img.naturalWidth / img.naturalHeight;
                 const calculatedWidth = modalHeight * aspectRatio;
-                setImageWidth(calculatedWidth);
+
+                // Animate width change smoothly
+                if (
+                  imageContainerRef.current &&
+                  calculatedWidth !== imageWidth
+                ) {
+                  gsap.to(imageContainerRef.current, {
+                    width: calculatedWidth,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    onUpdate: () => {
+                      // Update state for consistency
+                      const currentWidth =
+                        imageContainerRef.current?.offsetWidth || imageWidth;
+                      setImageWidth(currentWidth);
+                    },
+                  });
+                }
               }}
             />
           </div>
