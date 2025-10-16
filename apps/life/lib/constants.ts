@@ -3,7 +3,7 @@ export const CANVAS_CONFIG = {
   // Grid layout
   COLUMN_COUNT: 7,
   CARD_WIDTH: 240,
-  CARD_HEIGHT: 320,
+  CARD_HEIGHT: 320, // Estimated average height for auto-sized images (reduced for tighter initial layout)
   GAP: 48,
   STAGGER_OFFSET: 96,
 

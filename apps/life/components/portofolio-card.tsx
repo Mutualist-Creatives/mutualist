@@ -5,6 +5,7 @@ interface PortfolioCardProps {
   item?: Portfolio;
   style?: React.CSSProperties;
   onClick?: () => void;
+  onHeightChange?: (height: number) => void;
 }
 
 // Memoized to prevent unnecessary re-renders
@@ -12,30 +13,50 @@ export const PortfolioCard = React.memo(function PortfolioCard({
   item,
   style,
   onClick,
+  onHeightChange,
 }: PortfolioCardProps) {
+  const cardRef = React.useRef<HTMLDivElement>(null);
+
+  // Report height after image loads
+  React.useEffect(() => {
+    if (!cardRef.current || !onHeightChange) return;
+
+    const img = cardRef.current.querySelector("img");
+    if (!img) return;
+
+    const reportHeight = () => {
+      if (cardRef.current) {
+        onHeightChange(cardRef.current.offsetHeight);
+      }
+    };
+
+    if (img.complete) {
+      reportHeight();
+    } else {
+      img.addEventListener("load", reportHeight);
+      return () => img.removeEventListener("load", reportHeight);
+    }
+  }, [item, onHeightChange]);
+
   if (!item) {
     return (
-      <div
-        style={style}
-        className="h-[320px] w-[240px] rounded-lg bg-gray-300"
-      />
+      <div style={style} className="h-auto w-[240px] rounded-lg bg-gray-300" />
     );
   }
 
   return (
     <div
+      ref={cardRef}
       style={style}
       onClick={onClick}
-      className="h-[320px] w-[240px] rounded-lg overflow-hidden bg-white cursor-pointer group relative"
+      className="h-auto w-[240px] rounded-lg overflow-hidden bg-white cursor-pointer group relative"
     >
-      <div className="relative w-full h-full">
-        <img
-          src={item.images[0]}
-          alt={item.title}
-          className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:brightness-50"
-          loading="lazy"
-        />
-      </div>
+      <img
+        src={item.images[0]}
+        alt={item.title}
+        className="w-full h-auto object-cover transition-all duration-300 group-hover:brightness-50"
+        loading="lazy"
+      />
 
       {/* Hover Overlay with VIEW button */}
       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

@@ -9,6 +9,8 @@ import { fixedButtonData } from "@/data/fixed-button-data";
 import { ProjectModal } from "@/components/project-modal";
 import { Portfolio } from "@/data/types";
 import { usePortfolios } from "@/lib/hooks/usePortfolios";
+import { useImageDimensions } from "@/lib/hooks/useImageDimensions";
+import { getImageHeight } from "@/lib/image-dimensions";
 import { CANVAS_CONFIG, DEFAULT_BG_COLOR } from "@/lib/constants";
 
 export function InfiniteCanvas() {
@@ -23,10 +25,12 @@ export function InfiniteCanvas() {
   );
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [layoutVersion, setLayoutVersion] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
   const cardsRef = useRef<Map<string, HTMLDivElement>>(new Map());
+  const imageHeightsRef = useRef<Map<string, number>>(new Map());
 
   // USE SWR HOOK FOR DATA FETCHING (Optimistic UI - instant display)
   const { portfolios: allPortfolios, isValidating } = usePortfolios();
@@ -35,6 +39,9 @@ export function InfiniteCanvas() {
   const portfolios = selectedCategory
     ? allPortfolios.filter((p) => p.categories.includes(selectedCategory))
     : allPortfolios;
+
+  // PRELOAD IMAGE DIMENSIONS
+  const { loadedCount } = useImageDimensions(portfolios);
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
   useEffect(() => {
@@ -89,19 +96,17 @@ export function InfiniteCanvas() {
       // Get all card elements
       const cards = Array.from(cardsRef.current.values());
 
-      // Stagger fade animation
+      // Stagger fade animation (no scale to prevent layout shift)
       gsap.fromTo(
         cards,
         {
-          opacity: 0.7,
-          scale: 0.98,
+          opacity: 0,
         },
         {
           opacity: 1,
-          scale: 1,
-          duration: 0.4,
+          duration: 0.5,
           stagger: {
-            amount: 0.6, // Total stagger duration
+            amount: 0.8, // Total stagger duration
             from: "random", // Random order for organic feel
             ease: "power2.out",
           },
@@ -111,8 +116,7 @@ export function InfiniteCanvas() {
     }
   }, [isValidating, hasAnimated]);
 
-  // --- LOGIKA UTAMA: HITUNG ITEM YANG TERLIHAT SECARA DINAMIS ---
-  // Optimized with stable object references to prevent unnecessary re-renders
+  // --- LOGIKA UTAMA: MASONRY LAYOUT DENGAN TINGGI ASLI ---
   const visibleItems = useMemo(() => {
     const items: Array<{
       item: Portfolio;
@@ -126,47 +130,111 @@ export function InfiniteCanvas() {
     const viewport = containerRef.current.getBoundingClientRect();
     const buffer = CANVAS_CONFIG.VIEWPORT_BUFFER;
 
-    // Tentukan batas-batas viewport di dalam dunia virtual kita
+    // Viewport boundaries
     const viewLeft = -position.x - buffer;
     const viewRight = -position.x + viewport.width + buffer;
     const viewTop = -position.y - buffer;
     const viewBottom = -position.y + viewport.height + buffer;
 
-    // Tentukan kolom dan baris mana saja yang masuk ke dalam viewport
+    // Track cumulative height per column for masonry layout
+    const columnHeights = new Map<number, number>();
+
+    // Calculate which columns are visible
     const startCol = Math.floor(viewLeft / CANVAS_CONFIG.FULL_COLUMN_WIDTH);
     const endCol = Math.ceil(viewRight / CANVAS_CONFIG.FULL_COLUMN_WIDTH);
-    const startRow = Math.floor(viewTop / CANVAS_CONFIG.FULL_CARD_HEIGHT);
-    const endRow = Math.ceil(viewBottom / CANVAS_CONFIG.FULL_CARD_HEIGHT);
 
-    // Loop hanya pada kolom dan baris yang terlihat
+    // For each column, stack items vertically based on actual heights
     for (let col = startCol; col < endCol; col++) {
-      for (let row = startRow; row < endRow; row++) {
-        // --- KUNCI INFINITE LOOP ---
-        // Gunakan Aritmatika Modular (%) untuk membungkus indeks
-        const itemIndex = Math.abs(row * CANVAS_CONFIG.COLUMN_COUNT + col);
+      // Apply stagger offset for odd columns
+      const staggerOffset =
+        Math.abs(col) % 2 === 1 ? CANVAS_CONFIG.STAGGER_OFFSET : 0;
+
+      // --- RENDER DOWNWARDS (positive direction) ---
+      let currentY = staggerOffset;
+      let itemIndexInColumn = 0;
+
+      // Keep adding items downward until we're past the bottom of viewport
+      while (currentY < viewBottom + buffer) {
+        const itemIndex = Math.abs(
+          itemIndexInColumn * CANVAS_CONFIG.COLUMN_COUNT + col
+        );
         const baseItem = portfolios[itemIndex % portfolios.length];
+        const uniqueId = `${baseItem.id}-${col}-${itemIndexInColumn}`;
 
-        // Tentukan posisi X dan Y absolut dari kartu ini
-        const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
-        let y = row * CANVAS_CONFIG.FULL_CARD_HEIGHT;
+        // Get height: 1) rendered, 2) preloaded, 3) estimated
+        const renderedHeight = imageHeightsRef.current.get(uniqueId);
+        const preloadedHeight = baseItem.images[0]
+          ? getImageHeight(baseItem.images[0], CANVAS_CONFIG.CARD_WIDTH)
+          : null;
+        const cardHeight =
+          renderedHeight || preloadedHeight || CANVAS_CONFIG.CARD_HEIGHT;
 
-        // Terapkan efek stagger pada kolom ganjil
-        if (Math.abs(col) % 2 === 1) {
-          y += CANVAS_CONFIG.STAGGER_OFFSET;
+        // Only add if this item intersects with viewport
+        if (currentY + cardHeight >= viewTop - buffer) {
+          const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
+
+          items.push({
+            item: baseItem,
+            uniqueId,
+            x,
+            y: currentY,
+          });
         }
 
-        // Use stable object reference (don't spread baseItem)
-        items.push({
-          item: baseItem, // Reuse same object reference
-          uniqueId: `${baseItem.id}-${col}-${row}`,
-          x: x,
-          y: y,
-        });
+        // Move to next position in column
+        currentY += cardHeight + CANVAS_CONFIG.GAP;
+        itemIndexInColumn++;
+
+        // Safety break to prevent infinite loop
+        if (itemIndexInColumn > 1000) break;
+      }
+
+      // --- RENDER UPWARDS (negative direction) ---
+      currentY = staggerOffset - CANVAS_CONFIG.GAP;
+      itemIndexInColumn = -1;
+
+      // Keep adding items upward until we're past the top of viewport
+      while (currentY > viewTop - buffer) {
+        const itemIndex = Math.abs(
+          itemIndexInColumn * CANVAS_CONFIG.COLUMN_COUNT + col
+        );
+        const baseItem = portfolios[itemIndex % portfolios.length];
+        const uniqueId = `${baseItem.id}-${col}-${itemIndexInColumn}`;
+
+        // Get height: 1) rendered, 2) preloaded, 3) estimated
+        const renderedHeight = imageHeightsRef.current.get(uniqueId);
+        const preloadedHeight = baseItem.images[0]
+          ? getImageHeight(baseItem.images[0], CANVAS_CONFIG.CARD_WIDTH)
+          : null;
+        const cardHeight =
+          renderedHeight || preloadedHeight || CANVAS_CONFIG.CARD_HEIGHT;
+
+        // Position card above current Y
+        const cardY = currentY - cardHeight;
+
+        // Only add if this item intersects with viewport
+        if (cardY <= viewBottom + buffer) {
+          const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
+
+          items.push({
+            item: baseItem,
+            uniqueId,
+            x,
+            y: cardY,
+          });
+        }
+
+        // Move to next position upward
+        currentY = cardY - CANVAS_CONFIG.GAP;
+        itemIndexInColumn--;
+
+        // Safety break to prevent infinite loop
+        if (itemIndexInColumn < -1000) break;
       }
     }
 
     return items;
-  }, [position.x, position.y, portfolios]);
+  }, [position.x, position.y, portfolios, layoutVersion, loadedCount]);
 
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {
@@ -261,7 +329,7 @@ export function InfiniteCanvas() {
             style={{
               position: "absolute",
               width: CANVAS_CONFIG.CARD_WIDTH,
-              height: CANVAS_CONFIG.CARD_HEIGHT,
+              height: "auto",
               transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
               willChange: "transform",
             }}
@@ -269,6 +337,14 @@ export function InfiniteCanvas() {
             <PortfolioCard
               item={item.item}
               onClick={() => setSelectedProject(item.item)}
+              onHeightChange={(height) => {
+                const prevHeight = imageHeightsRef.current.get(item.uniqueId);
+                imageHeightsRef.current.set(item.uniqueId, height);
+                // Force re-layout if height changed significantly
+                if (!prevHeight || Math.abs(prevHeight - height) > 10) {
+                  setLayoutVersion((v) => v + 1);
+                }
+              }}
             />
           </div>
         ))}
