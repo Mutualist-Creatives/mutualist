@@ -13,8 +13,7 @@ model Portfolio {
   title       String
   createdBy   String
   year        String
-  category    String   // Keep temporarily for migration
-  categories  String[] @default([]) // New field
+  categories  String[] // Multiple categories (array)
   description String   @db.Text
   images      String[]
   createdAt   DateTime @default(now())
