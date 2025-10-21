@@ -14,6 +14,21 @@ declare global {
 }
 
 export default async (req: express.Request, res: express.Response) => {
+  // Set CORS headers explicitly for Vercel
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+  );
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (!global.nestApp) {
     const app = await NestFactory.create(
       AppModule,
