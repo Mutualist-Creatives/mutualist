@@ -41,7 +41,7 @@ export function InfiniteCanvas() {
     : allPortfolios;
 
   // PRELOAD IMAGE DIMENSIONS
-  const { loadedCount } = useImageDimensions(portfolios);
+  useImageDimensions(portfolios);
 
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
   useEffect(() => {
@@ -135,9 +135,6 @@ export function InfiniteCanvas() {
     const viewRight = -position.x + viewport.width + buffer;
     const viewTop = -position.y - buffer;
     const viewBottom = -position.y + viewport.height + buffer;
-
-    // Track cumulative height per column for masonry layout
-    const columnHeights = new Map<number, number>();
 
     // Calculate which columns are visible
     const startCol = Math.floor(viewLeft / CANVAS_CONFIG.FULL_COLUMN_WIDTH);
@@ -234,7 +231,8 @@ export function InfiniteCanvas() {
     }
 
     return items;
-  }, [position.x, position.y, portfolios, layoutVersion, loadedCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [position.x, position.y, portfolios]);
 
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {

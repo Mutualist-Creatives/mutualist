@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Portfolio } from "@/data/types";
 import { preloadImageDimensions } from "@/lib/image-dimensions";
-import { CANVAS_CONFIG } from "@/lib/constants";
 
 export function useImageDimensions(portfolios: Portfolio[]) {
   const [loadedCount, setLoadedCount] = useState(0);

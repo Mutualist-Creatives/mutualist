@@ -43,10 +43,11 @@ export function DeleteButton({
 
       setOpen(false);
       router.refresh();
-    } catch (err: any) {
-      console.error("Delete error:", err);
+    } catch (err) {
+      const error = err as Error;
+      console.error("Delete error:", error);
       alert(
-        err.message ||
+        error.message ||
           "Network error. Please check if API server is running on port 3002."
       );
     } finally {

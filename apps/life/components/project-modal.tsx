@@ -39,19 +39,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     // Disable body scroll
     document.body.style.overflow = "hidden";
 
-    // ESC key handler
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        handleClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-
     return () => {
       // Re-enable body scroll on unmount
       document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -79,6 +69,22 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
       );
     }
   };
+
+  React.useEffect(() => {
+    // ESC key handler
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePrevImage = () => {
     if (isTransitioning || images.length <= 1) return;

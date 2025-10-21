@@ -6,7 +6,7 @@ import { PORTFOLIO_CATEGORIES } from "@/lib/categories";
 const fallbackCategories = [...PORTFOLIO_CATEGORIES];
 
 export function useCategories() {
-  const { data, error, isLoading, mutate, isValidating } = useSWR<string[]>(
+  const { data, error, mutate, isValidating } = useSWR<string[]>(
     "/api/portfolios/categories",
     portfolioApi.getCategories,
     {

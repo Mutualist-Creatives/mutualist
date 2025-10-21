@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
 import { auth } from "@/lib/auth";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,10 +24,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>
+        <Providers session={session}>
           {session ? (
             <SidebarProvider>
-              <AppSidebar user={session.user} />
+              <AppSidebar user={session.user || { name: "Admin", email: "" }} />
               <main className="flex-1 w-full">
                 <div className="border-b bg-background">
                   <div className="flex h-14 items-center px-4 lg:px-6">
@@ -41,7 +41,7 @@ export default async function RootLayout({
           ) : (
             children
           )}
-        </SessionProvider>
+        </Providers>
       </body>
     </html>
   );

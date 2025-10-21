@@ -50,11 +50,19 @@ async function bootstrap() {
 
 // Helper to get local IP address
 function getLocalIP(): string {
-  const { networkInterfaces } = require('os');
-  const nets = networkInterfaces();
+  // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
+  const os = require('os');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  const nets = os.networkInterfaces() as Record<
+    string,
+    Array<{ family: string; internal: boolean; address: string }>
+  >;
 
   for (const name of Object.keys(nets)) {
-    for (const net of nets[name]) {
+    const netArray = nets[name];
+    if (!netArray) continue;
+
+    for (const net of netArray) {
       // Skip internal (loopback) and non-IPv4 addresses
       if (net.family === 'IPv4' && !net.internal) {
         return net.address;
@@ -65,4 +73,4 @@ function getLocalIP(): string {
   return 'localhost';
 }
 
-bootstrap();
+void bootstrap();

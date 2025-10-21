@@ -35,7 +35,7 @@ export default async function EditPortfolioPage({
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Edit Portfolio</h2>
           <p className="text-muted-foreground">
-            Update portfolio information for "{portfolio.title}"
+            Update portfolio information for &quot;{portfolio.title}&quot;
           </p>
         </div>
       </div>

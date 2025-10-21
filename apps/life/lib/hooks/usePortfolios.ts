@@ -11,7 +11,7 @@ const fallbackData: Portfolio[] = portfolioItems.map((item) => ({
 }));
 
 export function usePortfolios() {
-  const { data, error, isLoading, mutate, isValidating } = useSWR<Portfolio[]>(
+  const { data, error, mutate, isValidating } = useSWR<Portfolio[]>(
     "/api/portfolios",
     portfolioApi.getAll,
     {

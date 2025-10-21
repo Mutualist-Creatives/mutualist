@@ -45,7 +45,12 @@ const menuItems = [
   },
 ];
 
-export function AppSidebar({ user }: { user: any }) {
+interface User {
+  name?: string | null;
+  email?: string | null;
+}
+
+export function AppSidebar({ user }: { user: User }) {
   const pathname = usePathname();
 
   return (

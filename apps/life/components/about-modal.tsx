@@ -39,17 +39,6 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        handleClose();
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isOpen]);
-
   const handleClose = () => {
     if (modalRef.current && backdropRef.current) {
       const timeline = gsap.timeline({
@@ -74,6 +63,18 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
       );
     }
   };
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -121,8 +122,8 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
             worth remembering. Life at Mutualist exists as a place to capture
             and celebrate those stories. a gallery where imagination meets
             craft, and where our pride as a creative collective finds its voice.
-            It's more than just visuals; it's the living heartbeat of our
-            creative journey.
+            It&apos;s more than just visuals; it&apos;s the living heartbeat of
+            our creative journey.
           </p>
 
           {/* GIFs - Smaller size to fit in one row */}

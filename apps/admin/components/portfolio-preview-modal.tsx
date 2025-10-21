@@ -43,6 +43,31 @@ export function PortfolioPreviewModal({
     (img) => img.trim() !== "" && isValidUrl(img)
   );
 
+  const handleClose = () => {
+    if (modalRef.current && backdropRef.current) {
+      const timeline = gsap.timeline({
+        onComplete: onClose,
+      });
+
+      timeline.to(modalRef.current, {
+        scale: 0.95,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.in",
+      });
+
+      timeline.to(
+        backdropRef.current,
+        {
+          opacity: 0,
+          duration: 0.2,
+          ease: "power2.in",
+        },
+        "<"
+      );
+    }
+  };
+
   React.useEffect(() => {
     // Animate modal on mount
     if (modalRef.current && backdropRef.current) {
@@ -75,32 +100,8 @@ export function PortfolioPreviewModal({
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleClose = () => {
-    if (modalRef.current && backdropRef.current) {
-      const timeline = gsap.timeline({
-        onComplete: onClose,
-      });
-
-      timeline.to(modalRef.current, {
-        scale: 0.95,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.in",
-      });
-
-      timeline.to(
-        backdropRef.current,
-        {
-          opacity: 0,
-          duration: 0.2,
-          ease: "power2.in",
-        },
-        "<"
-      );
-    }
-  };
 
   const handlePrevImage = () => {
     if (isTransitioning || validImages.length <= 1) return;

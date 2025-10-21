@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   images: {
     remotePatterns: [
       {
@@ -29,10 +30,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Skip static generation for error pages (React 19 compatibility)
-  generateBuildId: async () => {
-    return "build-" + Date.now();
-  },
+  output: "standalone",
 };
 
 export default nextConfig;

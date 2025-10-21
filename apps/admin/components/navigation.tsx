@@ -6,7 +6,11 @@ import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { LogOut, LayoutDashboard, Briefcase } from "lucide-react";
 
-export function Navigation({ user }: { user: any }) {
+interface User {
+  email?: string;
+}
+
+export function Navigation({ user }: { user: User }) {
   const pathname = usePathname();
 
   const navItems = [

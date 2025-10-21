@@ -16,7 +16,7 @@ export class UploadService {
       );
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+    this.supabase = createClient(supabaseUrl, supabaseKey) as SupabaseClient;
   }
 
   async uploadFile(file: Express.Multer.File, bucket: string) {
@@ -50,7 +50,8 @@ export class UploadService {
         bucket,
       };
     } catch (error) {
-      throw new BadRequestException(`Failed to upload file: ${error.message}`);
+      const err = error as Error;
+      throw new BadRequestException(`Failed to upload file: ${err.message}`);
     }
   }
 

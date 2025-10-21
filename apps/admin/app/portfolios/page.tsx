@@ -1,17 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { portfolioApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { DeleteButton } from "@/components/delete-button";
-import { Plus, Pencil, Briefcase } from "lucide-react";
+import { Plus } from "lucide-react";
 import { PortfolioSearch } from "@/components/portfolio-search";
 
 export default async function PortfoliosPage() {

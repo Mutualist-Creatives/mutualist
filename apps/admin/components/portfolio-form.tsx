@@ -9,13 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Save, X, AlertCircle, Eye, Plus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { PortfolioPreviewCard } from "@/components/portfolio-preview-card";
@@ -214,10 +207,11 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
 
       router.push("/portfolios");
       router.refresh();
-    } catch (err: any) {
-      console.error("Form submission error:", err);
+    } catch (err) {
+      const error = err as Error;
+      console.error("Form submission error:", error);
       const errorMessage =
-        err.message ||
+        error.message ||
         "Network error. Please check if API server is running on port 3002.";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -519,7 +513,7 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
           title={formData.title}
           createdBy={formData.createdBy}
           year={formData.year}
-          category={formData.category}
+          category={formData.categories.join(", ")}
           description={formData.description}
           images={previewImages}
           onClose={() => setShowPreviewModal(false)}

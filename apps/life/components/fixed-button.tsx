@@ -9,6 +9,7 @@ import {
   BUTTON_BG_COLOR,
 } from "@/lib/constants";
 import { PORTFOLIO_CATEGORIES } from "@/lib/categories";
+import { Portfolio } from "@/data/types";
 
 interface ButtonData {
   id: string;
@@ -25,7 +26,7 @@ interface FixedButtonProps {
   onRedactedToggle?: (isRedacted: boolean) => void;
   onCategoryChange?: (category: string | null) => void;
   selectedCategory?: string | null;
-  portfolios?: any[]; // For counting items per category
+  portfolios?: Portfolio[]; // For counting items per category
 }
 
 const defaultButtons: ButtonData[] = [
@@ -74,7 +75,7 @@ export function FixedButton({
   const categoriesRef = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Use fixed categories (always show all, even if empty)
-  const { isValidating } = useCategories();
+  useCategories();
   const categories = PORTFOLIO_CATEGORIES;
 
   useEffect(() => {
@@ -82,21 +83,6 @@ export function FixedButton({
       setShouldRenderMenu(true);
     }
   }, [isColorMenuOpen]);
-
-  useEffect(() => {
-    // ESC key handler for settings
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isSettingsOpen && !isAnimating) {
-        handleSettingsClick();
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [isSettingsOpen, isAnimating]);
 
   useEffect(() => {
     if (colorMenuRef.current) {
@@ -248,6 +234,22 @@ export function FixedButton({
       }
     }
   };
+
+  useEffect(() => {
+    // ESC key handler for settings
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isSettingsOpen && !isAnimating) {
+        handleSettingsClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSettingsOpen, isAnimating]);
 
   const renderButtonContent = (button: ButtonData) => {
     switch (button.type) {

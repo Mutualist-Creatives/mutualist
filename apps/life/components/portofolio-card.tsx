@@ -51,6 +51,7 @@ export const PortfolioCard = React.memo(function PortfolioCard({
       onClick={onClick}
       className="h-auto w-[240px] rounded-lg overflow-hidden bg-white cursor-pointer group relative"
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={item.images[0]}
         alt={item.title}

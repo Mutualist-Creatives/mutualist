@@ -44,7 +44,7 @@ export default async function Home() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           <p className="text-muted-foreground">
-            Welcome back! Here's your portfolio overview.
+            Welcome back! Here&apos;s your portfolio overview.
           </p>
         </div>
         <Link href="/portfolios/new">
@@ -161,9 +161,15 @@ export default async function Home() {
                       </CardTitle>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <Badge variant="secondary" className="text-xs">
-                        {portfolio.category}
-                      </Badge>
+                      {portfolio.categories.map((category) => (
+                        <Badge
+                          key={category}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {category}
+                        </Badge>
+                      ))}
                       <span className="text-xs text-muted-foreground">
                         {portfolio.year}
                       </span>
@@ -190,8 +196,8 @@ export default async function Home() {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => {
-              const count = portfolios.filter(
-                (p) => p.category === category
+              const count = portfolios.filter((p) =>
+                p.categories.includes(category)
               ).length;
               return (
                 <Badge key={category} variant="outline" className="text-sm">
