@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "npm rebuild lightningcss --platform=linux --arch=x64 || true",
+    "postinstall": "node -e \"try { require('lightningcss') } catch(e) { console.log('lightningcss check:', e.message) }\"",
     "dev": "next dev --turbopack",
     "build": "cross-env NODE_OPTIONS=\"--max-old-space-size=4096\" next build",
     "start": "next start",
@@ -25,6 +25,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
+    "lightningcss": "^1.28.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
