@@ -231,8 +231,7 @@ export function InfiniteCanvas() {
     }
 
     return items;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position.x, position.y, portfolios]);
+  }, [position.x, position.y, portfolios, layoutVersion]);
 
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {
