@@ -1,6 +1,11 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
+// Get admin credentials from environment variables
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@mutualist.co";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const ADMIN_NAME = process.env.ADMIN_NAME || "Admin";
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -13,16 +18,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        // TODO: Replace with actual API call
-        // For now, hardcoded admin user
+        // Verify against environment variables
         if (
-          credentials.email === "admin@mutualist.co" &&
-          credentials.password === "admin123"
+          credentials.email === ADMIN_EMAIL &&
+          credentials.password === ADMIN_PASSWORD
         ) {
           return {
             id: "1",
-            email: "admin@mutualist.co",
-            name: "Admin",
+            email: ADMIN_EMAIL,
+            name: ADMIN_NAME,
           };
         }
 
@@ -36,20 +40,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/");
-      const isOnLogin = nextUrl.pathname.startsWith("/login");
+      const isOnLogin = nextUrl.pathname === "/login";
+      const isOnAuth = nextUrl.pathname.startsWith("/api/auth");
 
-      if (isOnLogin) {
-        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
+      // Allow auth endpoints
+      if (isOnAuth) {
         return true;
       }
 
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false; // Redirect to login
+      // If on login page
+      if (isOnLogin) {
+        // Redirect to dashboard if already logged in
+        if (isLoggedIn) {
+          return Response.redirect(new URL("/", nextUrl));
+        }
+        // Allow access to login page
+        return true;
+      }
+
+      // For all other pages, require authentication
+      if (!isLoggedIn) {
+        return Response.redirect(new URL("/login", nextUrl));
       }
 
       return true;
     },
   },
+  trustHost: true, // Important for production deployment
 });

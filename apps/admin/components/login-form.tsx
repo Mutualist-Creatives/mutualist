@@ -92,10 +92,6 @@ export function LoginForm() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </Button>
-
-          <div className="text-sm text-gray-500 text-center mt-4">
-            Demo: admin@mutualist.co / admin123
-          </div>
         </form>
       </CardContent>
     </Card>
