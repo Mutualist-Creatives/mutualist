@@ -25,7 +25,6 @@ export function InfiniteCanvas() {
   );
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
-  const [layoutVersion, setLayoutVersion] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
@@ -231,7 +230,7 @@ export function InfiniteCanvas() {
     }
 
     return items;
-  }, [position.x, position.y, portfolios, layoutVersion]);
+  }, [position.x, position.y, portfolios]);
 
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {
@@ -335,12 +334,7 @@ export function InfiniteCanvas() {
               item={item.item}
               onClick={() => setSelectedProject(item.item)}
               onHeightChange={(height) => {
-                const prevHeight = imageHeightsRef.current.get(item.uniqueId);
                 imageHeightsRef.current.set(item.uniqueId, height);
-                // Force re-layout if height changed significantly
-                if (!prevHeight || Math.abs(prevHeight - height) > 10) {
-                  setLayoutVersion((v) => v + 1);
-                }
               }}
             />
           </div>

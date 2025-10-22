@@ -63,28 +63,34 @@ export class PortfolioService {
   async remove(id: string) {
     const portfolio = await this.findOne(id); // Check if exists
 
-    // Delete images from Supabase storage first
+    // Delete images from Supabase storage first (best effort)
     if (portfolio.images && portfolio.images.length > 0) {
       try {
         console.log(
           `Deleting ${portfolio.images.length} images for portfolio ${id}`,
         );
         await this.uploadService.deleteMultipleFiles(portfolio.images);
-        console.log('Images deleted successfully');
+        console.log('Images deletion attempted');
       } catch (error) {
-        console.error('Failed to delete images from storage:', error);
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error';
-        throw new Error(
-          `Failed to delete images from storage: ${errorMessage}`,
-        );
+        // Log error but don't fail the deletion
+        console.error('Failed to delete some images from storage:', error);
+        console.log('Continuing with portfolio deletion anyway');
       }
     }
 
-    // Delete portfolio from database
-    return this.prisma.portfolio.delete({
-      where: { id },
-    });
+    // Delete portfolio from database (this should always succeed)
+    try {
+      await this.prisma.portfolio.delete({
+        where: { id },
+      });
+      console.log(`Portfolio ${id} deleted successfully`);
+      return { success: true, message: 'Portfolio deleted successfully' };
+    } catch (error) {
+      console.error('Failed to delete portfolio from database:', error);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to delete portfolio: ${errorMessage}`);
+    }
   }
 
   async getCategories() {

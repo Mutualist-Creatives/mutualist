@@ -61,20 +61,21 @@ export class UploadService {
       // URL format: https://{project}.supabase.co/storage/v1/object/public/{bucket}/{path}
       const urlParts = fileUrl.split('/storage/v1/object/public/');
       if (urlParts.length !== 2) {
-        console.warn('Invalid Supabase URL format:', fileUrl);
-        throw new BadRequestException(
-          `Invalid Supabase URL format: ${fileUrl}`,
-        );
+        console.warn('Invalid Supabase URL format, skipping:', fileUrl);
+        // Don't throw error, just skip this file
+        return false;
       }
 
       const [bucket, ...pathParts] = urlParts[1].split('/');
       const filePath = pathParts.join('/');
 
       if (!bucket || !filePath) {
-        console.warn('Could not extract bucket or path from URL:', fileUrl);
-        throw new BadRequestException(
-          `Could not extract bucket or path from URL: ${fileUrl}`,
+        console.warn(
+          'Could not extract bucket or path from URL, skipping:',
+          fileUrl,
         );
+        // Don't throw error, just skip this file
+        return false;
       }
 
       console.log(`Deleting file from bucket: ${bucket}, path: ${filePath}`);
@@ -86,16 +87,18 @@ export class UploadService {
 
       if (error) {
         console.error('Supabase delete error:', error);
-        throw new BadRequestException(
-          `Failed to delete file from storage: ${error.message}`,
-        );
+        // Don't throw error, just log and continue
+        console.warn(`Failed to delete file ${filePath}, continuing anyway`);
+        return false;
       }
 
       console.log(`Successfully deleted file: ${filePath}`);
       return true;
     } catch (error) {
       console.error('Failed to delete file:', error);
-      throw error;
+      // Don't throw error, just log and continue
+      console.warn(`Error deleting file ${fileUrl}, continuing anyway`);
+      return false;
     }
   }
 
@@ -105,9 +108,21 @@ export class UploadService {
       return;
     }
 
-    console.log(`Deleting ${fileUrls.length} files from storage`);
-    const deletePromises = fileUrls.map((url) => this.deleteFile(url));
-    await Promise.all(deletePromises);
-    console.log('All files deleted successfully');
+    console.log(`Attempting to delete ${fileUrls.length} files from storage`);
+
+    // Delete files but don't fail if some deletions fail
+    const results = await Promise.allSettled(
+      fileUrls.map((url) => this.deleteFile(url)),
+    );
+
+    const successful = results.filter((r) => r.status === 'fulfilled').length;
+    const failed = results.filter((r) => r.status === 'rejected').length;
+
+    console.log(
+      `File deletion complete: ${successful} successful, ${failed} failed`,
+    );
+
+    // Don't throw error even if some deletions failed
+    // Portfolio deletion should continue
   }
 }
