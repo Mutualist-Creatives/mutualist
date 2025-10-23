@@ -12,10 +12,12 @@ interface ProjectModalProps {
 
 export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [nextImageIndex, setNextImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [imageWidth, setImageWidth] = useState<number>(700); // Placeholder width
   const images = project.images;
-  const imageRef = React.useRef<HTMLDivElement>(null);
+  const currentImageRef = React.useRef<HTMLDivElement>(null);
+  const nextImageRef = React.useRef<HTMLDivElement>(null);
   const modalRef = React.useRef<HTMLDivElement>(null);
   const backdropRef = React.useRef<HTMLDivElement>(null);
   const imageContainerRef = React.useRef<HTMLDivElement>(null);
@@ -90,44 +92,80 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     if (isTransitioning || images.length <= 1) return;
     setIsTransitioning(true);
 
-    if (imageRef.current) {
-      gsap.to(imageRef.current, {
-        opacity: 0,
-        duration: 0.3,
-        onComplete: () => {
-          setCurrentImageIndex((prev) =>
-            prev === 0 ? images.length - 1 : prev - 1
-          );
-          gsap.to(imageRef.current, {
-            opacity: 1,
-            duration: 0.3,
-            onComplete: () => setIsTransitioning(false),
-          });
-        },
-      });
-    }
+    const newIndex =
+      currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
+
+    // Preload next image first
+    setNextImageIndex(newIndex);
+
+    // Wait for image to load
+    setTimeout(() => {
+      if (currentImageRef.current && nextImageRef.current) {
+        // Show next image behind current
+        gsap.set(nextImageRef.current, { opacity: 1, zIndex: 1 });
+
+        // Fade out current image to reveal next
+        gsap.to(currentImageRef.current, {
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.inOut",
+          onComplete: () => {
+            // Wait for fade to complete, then swap
+            setTimeout(() => {
+              if (currentImageRef.current && nextImageRef.current) {
+                // Reset opacity instantly (no animation)
+                gsap.set(currentImageRef.current, { opacity: 1, zIndex: 2 });
+                gsap.set(nextImageRef.current, { opacity: 0, zIndex: 1 });
+
+                // Update state after visual reset
+                setCurrentImageIndex(newIndex);
+                setIsTransitioning(false);
+              }
+            }, 16); // One frame delay
+          },
+        });
+      }
+    }, 100);
   };
 
   const handleNextImage = () => {
     if (isTransitioning || images.length <= 1) return;
     setIsTransitioning(true);
 
-    if (imageRef.current) {
-      gsap.to(imageRef.current, {
-        opacity: 0,
-        duration: 0.3,
-        onComplete: () => {
-          setCurrentImageIndex((prev) =>
-            prev === images.length - 1 ? 0 : prev + 1
-          );
-          gsap.to(imageRef.current, {
-            opacity: 1,
-            duration: 0.3,
-            onComplete: () => setIsTransitioning(false),
-          });
-        },
-      });
-    }
+    const newIndex =
+      currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
+
+    // Preload next image first
+    setNextImageIndex(newIndex);
+
+    // Wait for image to load
+    setTimeout(() => {
+      if (currentImageRef.current && nextImageRef.current) {
+        // Show next image behind current
+        gsap.set(nextImageRef.current, { opacity: 1, zIndex: 1 });
+
+        // Fade out current image to reveal next
+        gsap.to(currentImageRef.current, {
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.inOut",
+          onComplete: () => {
+            // Wait for fade to complete, then swap
+            setTimeout(() => {
+              if (currentImageRef.current && nextImageRef.current) {
+                // Reset opacity instantly (no animation)
+                gsap.set(currentImageRef.current, { opacity: 1, zIndex: 2 });
+                gsap.set(nextImageRef.current, { opacity: 0, zIndex: 1 });
+
+                // Update state after visual reset
+                setCurrentImageIndex(newIndex);
+                setIsTransitioning(false);
+              }
+            }, 16); // One frame delay
+          },
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -150,18 +188,17 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           className="relative h-full overflow-hidden"
           style={{ width: `${imageWidth}px` }}
         >
-          <div ref={imageRef} className="relative w-full h-full">
+          {/* Current Image */}
+          <div ref={currentImageRef} className="absolute inset-0 z-[2]">
             <Image
               src={images[currentImageIndex]}
               alt={project.title}
               fill
-              className="object-cover"
+              className="object-cover bg-black"
               style={{ objectPosition: "center" }}
               sizes="(max-width: 1200px) 60vw, 50vw"
               quality={85}
               priority={currentImageIndex === 0}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
               onLoadingComplete={(img) => {
                 // Calculate actual width based on image aspect ratio
                 const modalHeight = modalRef.current?.clientHeight || 0;
@@ -189,9 +226,22 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             />
           </div>
 
+          {/* Next Image (for crossfade) */}
+          <div ref={nextImageRef} className="absolute inset-0 z-[1] opacity-0">
+            <Image
+              src={images[nextImageIndex]}
+              alt={project.title}
+              fill
+              className="object-cover bg-black"
+              style={{ objectPosition: "center" }}
+              sizes="(max-width: 1200px) 60vw, 50vw"
+              quality={85}
+            />
+          </div>
+
           {/* Carousel Arrows - Only show if multiple images */}
           {images.length > 1 && (
-            <div className="absolute bottom-12 left-12 flex gap-4">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-[10]">
               <button
                 onClick={handlePrevImage}
                 className="w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg hover:scale-110 cursor-pointer"

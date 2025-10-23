@@ -3,6 +3,7 @@
 import React, { useState, useRef, MouseEvent, useEffect, useMemo } from "react";
 import { gsap } from "gsap";
 import { PortfolioCard } from "@/components/portofolio-card";
+import { PortfolioCardSkeleton } from "@/components/portfolio-card-skeleton";
 import { FixedButton } from "@/components/fixed-button";
 import { Logo } from "@/components/logo";
 import { fixedButtonData } from "@/data/fixed-button-data";
@@ -32,7 +33,11 @@ export function InfiniteCanvas() {
   const imageHeightsRef = useRef<Map<string, number>>(new Map());
 
   // USE SWR HOOK FOR DATA FETCHING (Optimistic UI - instant display)
-  const { portfolios: allPortfolios, isValidating } = usePortfolios();
+  const {
+    portfolios: allPortfolios,
+    isLoading,
+    isValidating,
+  } = usePortfolios();
 
   // FILTER PORTFOLIOS BY CATEGORY (OR logic - show if ANY category matches)
   const portfolios = selectedCategory
@@ -313,34 +318,60 @@ export function InfiniteCanvas() {
           willChange: isDragging ? "transform" : "auto",
         }}
       >
-        {/* Render hanya item yang terlihat - Always render (optimistic UI) */}
-        {visibleItems.map((item) => (
-          <div
-            key={item.uniqueId}
-            ref={(el) => {
-              if (el) {
-                cardsRef.current.set(item.uniqueId, el);
-              } else {
-                cardsRef.current.delete(item.uniqueId);
-              }
-            }}
-            style={{
-              position: "absolute",
-              width: CANVAS_CONFIG.CARD_WIDTH,
-              height: "auto",
-              transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
-              willChange: "transform",
-            }}
-          >
-            <PortfolioCard
-              item={item.item}
-              onClick={() => setSelectedProject(item.item)}
-              onHeightChange={(height) => {
-                imageHeightsRef.current.set(item.uniqueId, height);
+        {/* Show skeleton loading state */}
+        {isLoading && portfolios.length === 0 ? (
+          <>
+            {Array.from({ length: 12 }).map((_, index) => {
+              const col = index % CANVAS_CONFIG.COLUMN_COUNT;
+              const row = Math.floor(index / CANVAS_CONFIG.COLUMN_COUNT);
+              const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
+              const y = row * (CANVAS_CONFIG.CARD_HEIGHT + CANVAS_CONFIG.GAP);
+
+              return (
+                <div
+                  key={`skeleton-${index}`}
+                  style={{
+                    position: "absolute",
+                    width: CANVAS_CONFIG.CARD_WIDTH,
+                    height: "auto",
+                    transform: `translate3d(${x}px, ${y}px, 0)`,
+                  }}
+                >
+                  <PortfolioCardSkeleton />
+                </div>
+              );
+            })}
+          </>
+        ) : (
+          /* Render hanya item yang terlihat - Always render (optimistic UI) */
+          visibleItems.map((item) => (
+            <div
+              key={item.uniqueId}
+              ref={(el) => {
+                if (el) {
+                  cardsRef.current.set(item.uniqueId, el);
+                } else {
+                  cardsRef.current.delete(item.uniqueId);
+                }
               }}
-            />
-          </div>
-        ))}
+              style={{
+                position: "absolute",
+                width: CANVAS_CONFIG.CARD_WIDTH,
+                height: "auto",
+                transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
+                willChange: "transform",
+              }}
+            >
+              <PortfolioCard
+                item={item.item}
+                onClick={() => setSelectedProject(item.item)}
+                onHeightChange={(height) => {
+                  imageHeightsRef.current.set(item.uniqueId, height);
+                }}
+              />
+            </div>
+          ))
+        )}
       </div>
 
       {/* Logo - Bottom Left */}
