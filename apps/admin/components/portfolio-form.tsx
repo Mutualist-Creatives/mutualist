@@ -95,10 +95,13 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
       return;
     }
 
-    // Validate file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024;
+    // Validate file size (max 5MB per image)
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      toast.error("File size must not exceed 5MB");
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast.error(
+        `File "${file.name}" is ${sizeMB}MB. Each image must not exceed 5MB.`
+      );
       return;
     }
 
@@ -113,7 +116,10 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
     newImages[index] = previewUrl;
     setImages(newImages);
 
-    toast.success(`File "${file.name}" selected. Will be uploaded on save.`);
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+    toast.success(
+      `File "${file.name}" (${sizeMB}MB) selected. Will be uploaded on save.`
+    );
   };
 
   const uploadFiles = async (): Promise<string[]> => {
@@ -368,8 +374,8 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Upload images or paste URLs. First image will be used as
-                  preview.
+                  Upload images (max 5MB each) or paste URLs. First image will
+                  be used as preview.
                 </p>
                 <div className="space-y-3">
                   {images.map((image, index) => (

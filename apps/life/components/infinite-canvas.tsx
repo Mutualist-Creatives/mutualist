@@ -300,7 +300,9 @@ export function InfiniteCanvas() {
       {/* Empty State - Only if truly no data */}
       {portfolios.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-gray-600 text-lg">No portfolios found</div>
+          <div className="text-gray-600 text-lg font-[family-name:var(--font-instrument-serif)]">
+            No portfolios found
+          </div>
         </div>
       )}
 

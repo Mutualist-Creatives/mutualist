@@ -1,23 +1,12 @@
 import useSWR from "swr";
 import { Portfolio } from "@/data/types";
 import { portfolioApi } from "@/lib/api";
-import { portfolioItems } from "@/data/portofolio-data";
-
-// Convert static data to Portfolio format for fallback
-const fallbackData: Portfolio[] = portfolioItems.map((item) => ({
-  ...item,
-  createdAt: item.createdAt || new Date().toISOString(),
-  updatedAt: item.updatedAt || new Date().toISOString(),
-}));
 
 export function usePortfolios() {
   const { data, error, mutate, isValidating } = useSWR<Portfolio[]>(
     "/api/portfolios",
     portfolioApi.getAll,
     {
-      // OPTIMISTIC UI: Show static data immediately on first load
-      fallbackData: fallbackData,
-
       // Revalidate immediately on mount to fetch fresh data
       revalidateOnMount: true,
 
@@ -39,24 +28,14 @@ export function usePortfolios() {
       // Error retry configuration
       errorRetryCount: 3,
       errorRetryInterval: 5000,
-
-      // On error, silently fallback to static data
-      onError: () => {
-        // Silently use fallback data
-      },
-
-      // Success callback
-      onSuccess: () => {
-        // Portfolios updated successfully
-      },
     }
   );
 
   return {
-    portfolios: data || fallbackData,
-    isLoading: false, // Never show loading state (optimistic UI)
+    portfolios: data || [],
+    isLoading: !data && !error,
     isError: error,
-    isValidating, // For showing subtle update indicator
-    mutate, // For manual revalidation
+    isValidating,
+    mutate,
   };
 }

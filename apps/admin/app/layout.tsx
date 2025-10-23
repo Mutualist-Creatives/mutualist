@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Instrument_Sans, Instrument_Serif } from "next/font/google";
 import { auth } from "@/lib/auth";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -8,6 +8,17 @@ import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
+  subsets: ["latin"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 export const metadata: Metadata = {
   title: "Mutualist Admin Dashboard",
@@ -23,7 +34,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body
+        className={`${inter.className} ${instrumentSans.variable} ${instrumentSerif.variable}`}
+      >
         <Providers session={session}>
           {session ? (
             <SidebarProvider>

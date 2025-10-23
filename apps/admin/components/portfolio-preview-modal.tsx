@@ -35,9 +35,11 @@ export function PortfolioPreviewModal({
 }: PortfolioPreviewModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [imageWidth, setImageWidth] = useState<number>(700);
   const imageRef = React.useRef<HTMLDivElement>(null);
   const modalRef = React.useRef<HTMLDivElement>(null);
   const backdropRef = React.useRef<HTMLDivElement>(null);
+  const imageContainerRef = React.useRef<HTMLDivElement>(null);
 
   const validImages = images.filter(
     (img) => img.trim() !== "" && isValidUrl(img)
@@ -150,16 +152,23 @@ export function PortfolioPreviewModal({
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default p-[72px]"
       onClick={handleClose}
     >
       <div
         ref={modalRef}
-        className="w-[90vw] h-[85vh] bg-white rounded-2xl overflow-hidden flex shadow-2xl"
+        className="w-auto h-full bg-white rounded-2xl overflow-hidden flex shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseMove={(e) => e.stopPropagation()}
+        onWheel={(e) => e.stopPropagation()}
       >
-        {/* Left Side - Image 60% */}
-        <div className="w-[60%] relative bg-neutral-100">
+        {/* Left Side - Image maintains aspect ratio */}
+        <div
+          ref={imageContainerRef}
+          className="relative h-full overflow-hidden"
+          style={{ width: `${imageWidth}px` }}
+        >
           <div ref={imageRef} className="relative w-full h-full">
             {validImages.length > 0 ? (
               <Image
@@ -167,10 +176,36 @@ export function PortfolioPreviewModal({
                 alt={title || "Preview"}
                 fill
                 className="object-cover"
-                sizes="60vw"
+                style={{ objectPosition: "center" }}
+                sizes="(max-width: 1200px) 60vw, 50vw"
+                quality={85}
+                priority={currentImageIndex === 0}
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                onLoadingComplete={(img) => {
+                  const modalHeight = modalRef.current?.clientHeight || 0;
+                  const aspectRatio = img.naturalWidth / img.naturalHeight;
+                  const calculatedWidth = modalHeight * aspectRatio;
+
+                  if (
+                    imageContainerRef.current &&
+                    calculatedWidth !== imageWidth
+                  ) {
+                    gsap.to(imageContainerRef.current, {
+                      width: calculatedWidth,
+                      duration: 0.5,
+                      ease: "power2.out",
+                      onUpdate: () => {
+                        const currentWidth =
+                          imageContainerRef.current?.offsetWidth || imageWidth;
+                        setImageWidth(currentWidth);
+                      },
+                    });
+                  }
+                }}
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className="w-full h-full flex items-center justify-center bg-neutral-100">
                 <span className="text-gray-400 text-lg">
                   No image available
                 </span>
@@ -227,9 +262,9 @@ export function PortfolioPreviewModal({
           )}
         </div>
 
-        {/* Right Side - Content 40% */}
+        {/* Right Side - Content fixed width */}
         <div
-          className="w-[40%] flex flex-col"
+          className="w-[528px] flex flex-col flex-shrink-0"
           style={{ backgroundColor: "#121212" }}
         >
           {/* Top Section */}
@@ -248,33 +283,33 @@ export function PortfolioPreviewModal({
             {/* Project Info */}
             <div className="space-y-6">
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">Title</p>
-                <h2 className="font-serif text-3xl text-white">
+                <p className="font-sans text-xs text-neutral-400 mb-1">Title</p>
+                <h2 className="font-serif text-2xl text-white">
                   {title || "Untitled"}
                 </h2>
               </div>
 
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">
+                <p className="font-sans text-xs text-neutral-400 mb-1">
                   Created by
                 </p>
-                <p className="font-serif text-xl text-white">
+                <p className="font-serif text-2xl text-white">
                   {createdBy || "Unknown"}
                 </p>
               </div>
 
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">Year</p>
-                <p className="font-serif text-xl text-white">
+                <p className="font-sans text-xs text-neutral-400 mb-1">Year</p>
+                <p className="font-serif text-2xl text-white">
                   {year || new Date().getFullYear()}
                 </p>
               </div>
 
               <div>
-                <p className="font-sans text-sm text-neutral-400 mb-1">
+                <p className="font-sans text-xs text-neutral-400 mb-1">
                   Category
                 </p>
-                <p className="font-serif text-xl text-white">
+                <p className="font-serif text-2xl text-white">
                   {category || "Uncategorized"}
                 </p>
               </div>
@@ -283,7 +318,7 @@ export function PortfolioPreviewModal({
 
           {/* Bottom Section - Description */}
           <div className="p-12">
-            <p className="font-serif text-lg text-white leading-relaxed">
+            <p className="font-serif text-2xl text-white leading-relaxed">
               {description || "No description provided."}
             </p>
           </div>
