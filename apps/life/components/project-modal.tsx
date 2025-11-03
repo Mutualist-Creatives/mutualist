@@ -15,12 +15,48 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [nextImageIndex, setNextImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [imageWidth, setImageWidth] = useState<number>(700); // Placeholder width
+  const [imageHeight, setImageHeight] = useState<number>(0); // Dynamic height for mobile
+  const [isMounted, setIsMounted] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const images = project.images;
   const currentImageRef = React.useRef<HTMLDivElement>(null);
   const nextImageRef = React.useRef<HTMLDivElement>(null);
   const modalRef = React.useRef<HTMLDivElement>(null);
   const backdropRef = React.useRef<HTMLDivElement>(null);
   const imageContainerRef = React.useRef<HTMLDivElement>(null);
+
+  // Handle client-side mounting and responsive detection
+  React.useEffect(() => {
+    setIsMounted(true);
+    setIsDesktop(window.innerWidth >= 768);
+
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Calculate image height on mount and when current image changes
+  React.useEffect(() => {
+    if (!isMounted || isDesktop) return;
+
+    // Load image to get dimensions
+    const img = new window.Image();
+    img.src = images[currentImageIndex];
+
+    img.onload = () => {
+      const containerWidth =
+        imageContainerRef.current?.clientWidth || window.innerWidth;
+      const aspectRatio = img.naturalWidth / img.naturalHeight;
+      const calculatedHeight = containerWidth / aspectRatio;
+      const maxHeight = window.innerHeight * 0.6; // 60vh
+
+      const finalHeight = Math.min(calculatedHeight, maxHeight);
+      setImageHeight(finalHeight);
+    };
+  }, [isMounted, isDesktop, currentImageIndex, images]);
 
   React.useEffect(() => {
     // Animate modal on mount
@@ -171,20 +207,29 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default p-4 md:p-12 lg:p-[72px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
       onClick={handleClose}
     >
       <div
         ref={modalRef}
-        className="w-full h-full md:w-auto md:h-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-2xl max-w-full"
+        className="w-full h-full bg-white overflow-hidden flex flex-col md:flex-row shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Image Section - Full width on mobile, dynamic width on desktop */}
+        {/* Image Section - Adaptive to image aspect ratio */}
         <div
           ref={imageContainerRef}
-          className="relative w-full md:w-auto h-[50vh] md:h-full overflow-hidden flex-shrink-0"
+          className="relative flex-shrink-0 overflow-hidden"
           style={{
-            width: window.innerWidth >= 768 ? `${imageWidth}px` : "100%",
+            width: isMounted && isDesktop ? `${imageWidth}px` : "100%",
+            height:
+              isMounted && isDesktop
+                ? "100%"
+                : imageHeight > 0
+                  ? `${imageHeight}px`
+                  : "auto",
+            minHeight:
+              isMounted && !isDesktop && imageHeight === 0 ? "40vh" : undefined,
+            maxHeight: isMounted && !isDesktop ? "60vh" : "100%",
           }}
           onMouseDown={(e) => e.stopPropagation()}
           onMouseMove={(e) => e.stopPropagation()}
@@ -193,7 +238,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           {/* Close Button - Mobile only (top right) */}
           <button
             onClick={handleClose}
-            className="md:hidden absolute top-4 right-4 w-8 h-8 flex items-center justify-center hover:opacity-50 transition-opacity z-[20] bg-black/50 rounded-full backdrop-blur-sm"
+            className="md:hidden absolute top-4 right-4 w-8 h-8 flex items-center justify-center hover:opacity-50 transition-opacity z-[20]"
           >
             <div className="relative w-6 h-6">
               <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
@@ -201,10 +246,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             </div>
           </button>
           {/* Current Image */}
-          <div
-            ref={currentImageRef}
-            className="absolute inset-0 z-[2] bg-black"
-          >
+          <div ref={currentImageRef} className="absolute inset-0 z-[2]">
             <Image
               src={images[currentImageIndex]}
               alt={project.title}
@@ -216,7 +258,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               priority={currentImageIndex === 0}
               onLoadingComplete={(img) => {
                 // Only calculate width on desktop
-                if (window.innerWidth >= 768) {
+                if (isMounted && isDesktop) {
                   const modalHeight = modalRef.current?.clientHeight || 0;
                   const aspectRatio = img.naturalWidth / img.naturalHeight;
                   const calculatedWidth = modalHeight * aspectRatio;
@@ -243,10 +285,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
 
           {/* Next Image (for crossfade) */}
-          <div
-            ref={nextImageRef}
-            className="absolute inset-0 z-[1] opacity-0 bg-black"
-          >
+          <div ref={nextImageRef} className="absolute inset-0 z-[1] opacity-0">
             <Image
               src={images[nextImageIndex]}
               alt={project.title}
@@ -375,7 +414,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
             {/* Bottom Section - Description */}
             <div className="p-6 md:p-8 lg:p-12 pt-0">
-              <p className="font-serif text-lg md:text-xl lg:text-2xl text-white leading-relaxed">
+              <p className="font-serif text-xl lg:text-2xl text-white leading-relaxed">
                 {project.description}
               </p>
             </div>
