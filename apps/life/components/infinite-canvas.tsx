@@ -422,13 +422,16 @@ export function InfiniteCanvas() {
                 Math.abs(col) % 2 === 1 ? config.STAGGER_OFFSET : 0;
               y = staggerOffset;
 
-              // Simple stacking for skeleton - scale heights proportionally
-              const baseHeights = { tall: 360, medium: 320, short: 280 };
-              const scale = config.CARD_WIDTH / 240; // Scale based on card width
+              // Simple stacking for skeleton - calculate heights based on aspect ratios
+              const aspectRatios = {
+                tall: 1.5, // 3:4.5
+                medium: 1.333, // 3:4
+                short: 1.167, // 3:3.5
+              };
               const heightMap = {
-                tall: baseHeights.tall * scale,
-                medium: baseHeights.medium * scale,
-                short: baseHeights.short * scale,
+                tall: config.CARD_WIDTH * aspectRatios.tall,
+                medium: config.CARD_WIDTH * aspectRatios.medium,
+                short: config.CARD_WIDTH * aspectRatios.short,
               };
 
               for (let i = 0; i < row; i++) {

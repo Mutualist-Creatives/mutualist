@@ -171,77 +171,96 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default p-[72px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default p-4 md:p-12 lg:p-[72px]"
       onClick={handleClose}
     >
       <div
         ref={modalRef}
-        className="w-auto h-full bg-white rounded-2xl overflow-hidden flex shadow-2xl"
+        className="w-full h-full md:w-auto md:h-full bg-white rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-2xl max-w-full"
         onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-        onMouseMove={(e) => e.stopPropagation()}
-        onWheel={(e) => e.stopPropagation()}
       >
-        {/* Left Side - Image maintains aspect ratio */}
+        {/* Image Section - Full width on mobile, dynamic width on desktop */}
         <div
           ref={imageContainerRef}
-          className="relative h-full overflow-hidden"
-          style={{ width: `${imageWidth}px` }}
+          className="relative w-full md:w-auto h-[50vh] md:h-full overflow-hidden flex-shrink-0"
+          style={{
+            width: window.innerWidth >= 768 ? `${imageWidth}px` : "100%",
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onMouseMove={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
         >
+          {/* Close Button - Mobile only (top right) */}
+          <button
+            onClick={handleClose}
+            className="md:hidden absolute top-4 right-4 w-8 h-8 flex items-center justify-center hover:opacity-50 transition-opacity z-[20] bg-black/50 rounded-full backdrop-blur-sm"
+          >
+            <div className="relative w-6 h-6">
+              <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
+              <div className="absolute w-6 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
+            </div>
+          </button>
           {/* Current Image */}
-          <div ref={currentImageRef} className="absolute inset-0 z-[2]">
+          <div
+            ref={currentImageRef}
+            className="absolute inset-0 z-[2] bg-black"
+          >
             <Image
               src={images[currentImageIndex]}
               alt={project.title}
               fill
-              className="object-cover bg-black"
+              className="object-contain"
               style={{ objectPosition: "center" }}
-              sizes="(max-width: 1200px) 60vw, 50vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
               quality={85}
               priority={currentImageIndex === 0}
               onLoadingComplete={(img) => {
-                // Calculate actual width based on image aspect ratio
-                const modalHeight = modalRef.current?.clientHeight || 0;
-                const aspectRatio = img.naturalWidth / img.naturalHeight;
-                const calculatedWidth = modalHeight * aspectRatio;
+                // Only calculate width on desktop
+                if (window.innerWidth >= 768) {
+                  const modalHeight = modalRef.current?.clientHeight || 0;
+                  const aspectRatio = img.naturalWidth / img.naturalHeight;
+                  const calculatedWidth = modalHeight * aspectRatio;
 
-                // Animate width change smoothly
-                if (
-                  imageContainerRef.current &&
-                  calculatedWidth !== imageWidth
-                ) {
-                  gsap.to(imageContainerRef.current, {
-                    width: calculatedWidth,
-                    duration: 0.5,
-                    ease: "power2.out",
-                    onUpdate: () => {
-                      // Update state for consistency
-                      const currentWidth =
-                        imageContainerRef.current?.offsetWidth || imageWidth;
-                      setImageWidth(currentWidth);
-                    },
-                  });
+                  // Animate width change smoothly
+                  if (
+                    imageContainerRef.current &&
+                    calculatedWidth !== imageWidth
+                  ) {
+                    gsap.to(imageContainerRef.current, {
+                      width: calculatedWidth,
+                      duration: 0.5,
+                      ease: "power2.out",
+                      onUpdate: () => {
+                        const currentWidth =
+                          imageContainerRef.current?.offsetWidth || imageWidth;
+                        setImageWidth(currentWidth);
+                      },
+                    });
+                  }
                 }
               }}
             />
           </div>
 
           {/* Next Image (for crossfade) */}
-          <div ref={nextImageRef} className="absolute inset-0 z-[1] opacity-0">
+          <div
+            ref={nextImageRef}
+            className="absolute inset-0 z-[1] opacity-0 bg-black"
+          >
             <Image
               src={images[nextImageIndex]}
               alt={project.title}
               fill
-              className="object-cover bg-black"
+              className="object-contain"
               style={{ objectPosition: "center" }}
-              sizes="(max-width: 1200px) 60vw, 50vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
               quality={85}
             />
           </div>
 
           {/* Carousel Arrows - Only show if multiple images */}
           {images.length > 1 && (
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-[10]">
+            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-[10]">
               <button
                 onClick={handlePrevImage}
                 className="w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg hover:scale-110 cursor-pointer"
@@ -288,63 +307,78 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           )}
         </div>
 
-        {/* Right Side - Content fixed width */}
+        {/* Content Section - Full width on mobile, fixed width on desktop */}
         <div
-          className="w-[528px] flex flex-col flex-shrink-0"
+          className="w-full md:w-[400px] lg:w-[528px] flex flex-col flex-shrink-0 flex-1 md:h-full overflow-hidden"
           style={{ backgroundColor: "#121212" }}
         >
-          {/* Top Section */}
-          <div className="p-12 flex-1 relative">
-            {/* Close Button */}
-            <button
-              onClick={handleClose}
-              className="absolute top-12 right-12 w-8 h-8 flex items-center justify-center hover:opacity-50 transition-opacity"
-            >
-              <div className="relative w-6 h-6">
-                <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
-                <div className="absolute w-6 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
-              </div>
-            </button>
+          {/* Content Wrapper - Scrollable */}
+          <div
+            className="flex-1 overflow-y-auto overflow-x-hidden"
+            style={{
+              scrollbarWidth: "thin",
+              scrollbarColor: "#4B5563 transparent",
+            }}
+          >
+            {/* Top Section */}
+            <div className="p-6 md:p-8 lg:p-12 relative">
+              {/* Close Button - Desktop only (top right) */}
+              <button
+                onClick={handleClose}
+                className="hidden md:flex absolute top-6 right-6 md:top-8 md:right-8 lg:top-12 lg:right-12 w-8 h-8 items-center justify-center hover:opacity-50 transition-opacity z-10"
+              >
+                <div className="relative w-6 h-6">
+                  <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
+                  <div className="absolute w-6 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
+                </div>
+              </button>
 
-            {/* Project Info */}
-            <div className="space-y-6">
-              <div>
-                <p className="font-sans text-xs text-neutral-400 mb-1">Title</p>
-                <h2 className="font-serif text-2xl text-white">
-                  {project.title}
-                </h2>
-              </div>
+              {/* Project Info */}
+              <div className="space-y-4 md:space-y-6">
+                <div>
+                  <p className="font-sans text-xs text-neutral-400 mb-1">
+                    Title
+                  </p>
+                  <h2 className="font-serif text-xl md:text-2xl text-white">
+                    {project.title}
+                  </h2>
+                </div>
 
-              <div>
-                <p className="font-sans text-xs text-neutral-400 mb-1">
-                  Created by
-                </p>
-                <p className="font-serif text-2xl text-white">
-                  {project.createdBy}
-                </p>
-              </div>
+                <div>
+                  <p className="font-sans text-xs text-neutral-400 mb-1">
+                    Created by
+                  </p>
+                  <p className="font-serif text-xl md:text-2xl text-white">
+                    {project.createdBy}
+                  </p>
+                </div>
 
-              <div>
-                <p className="font-sans text-xs text-neutral-400 mb-1">Year</p>
-                <p className="font-serif text-2xl text-white">{project.year}</p>
-              </div>
+                <div>
+                  <p className="font-sans text-xs text-neutral-400 mb-1">
+                    Year
+                  </p>
+                  <p className="font-serif text-xl md:text-2xl text-white">
+                    {project.year}
+                  </p>
+                </div>
 
-              <div>
-                <p className="font-sans text-xs text-neutral-400 mb-1">
-                  {project.categories.length > 1 ? "Categories" : "Category"}
-                </p>
-                <p className="font-serif text-2xl text-white">
-                  {project.categories.join(", ")}
-                </p>
+                <div>
+                  <p className="font-sans text-xs text-neutral-400 mb-1">
+                    {project.categories.length > 1 ? "Categories" : "Category"}
+                  </p>
+                  <p className="font-serif text-xl md:text-2xl text-white">
+                    {project.categories.join(", ")}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Bottom Section - Description */}
-          <div className="p-12">
-            <p className="font-serif text-2xl text-white leading-relaxed">
-              {project.description}
-            </p>
+            {/* Bottom Section - Description */}
+            <div className="p-6 md:p-8 lg:p-12 pt-0">
+              <p className="font-serif text-lg md:text-xl lg:text-2xl text-white leading-relaxed">
+                {project.description}
+              </p>
+            </div>
           </div>
         </div>
       </div>

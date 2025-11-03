@@ -5,20 +5,19 @@ interface PortfolioCardSkeletonProps {
   width?: number;
 }
 
-// Aspect ratios based on 240px width (base)
-const BASE_HEIGHT_VARIANTS = {
-  tall: 360, // 3:4.5 (extra tall portrait)
-  medium: 320, // 3:4 (standard portrait)
-  short: 280, // 3:3.5 (shorter portrait)
+// Aspect ratios - maintaining 3:4 base ratio with variations
+const ASPECT_RATIOS = {
+  tall: 1.5, // 3:4.5 (extra tall portrait)
+  medium: 1.333, // 3:4 (standard portrait)
+  short: 1.167, // 3:3.5 (shorter portrait)
 };
 
 export function PortfolioCardSkeleton({
   variant = "medium",
   width = 240,
 }: PortfolioCardSkeletonProps) {
-  // Scale height proportionally based on width
-  const scale = width / 240;
-  const height = BASE_HEIGHT_VARIANTS[variant] * scale;
+  // Calculate height based on width and aspect ratio
+  const height = width * ASPECT_RATIOS[variant];
 
   return (
     <Skeleton
