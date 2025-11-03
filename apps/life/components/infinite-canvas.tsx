@@ -71,13 +71,16 @@ export function InfiniteCanvas() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // EFEK UNTUK MENENGAHKAN SAAT AWAL
+  // EFEK UNTUK POSITIONING AWAL
   useEffect(() => {
-    // Kita tengahkan di posisi (0,0) dari dunia virtual kita
+    // Center horizontally, start from top with padding
     const initialX =
       window.innerWidth / 2 -
       (config.COLUMN_COUNT * config.FULL_COLUMN_WIDTH) / 2;
-    const initialY = window.innerHeight / 2 - config.CARD_HEIGHT / 2;
+
+    // Start from top with comfortable padding (100px from top)
+    const initialY = 100;
+
     setPosition({ x: initialX, y: initialY });
 
     // Add wheel event listener with passive: false to allow preventDefault
@@ -426,8 +429,14 @@ export function InfiniteCanvas() {
               "short",
             ];
 
-            // Generate skeletons for visible rows
-            for (let row = Math.max(0, startRow); row <= endRow; row++) {
+            // Generate skeletons for visible rows (allow negative for buffer, but start from 0 minimum)
+            // Add extra buffer rows above and below
+            const bufferRows = 3;
+            for (
+              let row = Math.max(0, startRow - bufferRows);
+              row <= endRow + bufferRows;
+              row++
+            ) {
               for (let col = 0; col < config.COLUMN_COUNT; col++) {
                 const index = row * config.COLUMN_COUNT + col;
                 const variant = variants[index % 3];
