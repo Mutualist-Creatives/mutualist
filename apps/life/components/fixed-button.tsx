@@ -145,19 +145,30 @@ export function FixedButton({
       if (settingsButtonRef.current) {
         const timeline = gsap.timeline();
 
+        const isMobile = window.innerWidth < 768;
+
         // Hitung tinggi dari button ke top viewport
         const buttonRect = settingsButtonRef.current.getBoundingClientRect();
         const distanceToTop = buttonRect.top;
-        const targetHeight = distanceToTop + 48 - 24; // 48 = button height, 24 = padding top
+        const buttonHeight = 48;
+
+        // Mobile: padding 24px (1.5rem)
+        // Desktop: padding 16px (1rem) - sama dengan bottom padding dari safe-area-inset
+        const paddingTop = isMobile ? 24 : 30;
+        const targetHeight = distanceToTop + buttonHeight - paddingTop;
 
         // Step 1: Morph ke kiri (memanjang horizontal lebih panjang)
+        const targetWidth = isMobile
+          ? Math.min(window.innerWidth - 32, 400)
+          : 528;
+
         timeline.to(settingsButtonRef.current, {
-          width: 528,
+          width: targetWidth,
           duration: 0.8,
           ease: "power2.out",
         });
 
-        // Step 2: Morph ke atas (memanjang vertikal sampai top viewport)
+        // Step 2: Morph ke atas (memanjang vertikal)
         timeline.to(settingsButtonRef.current, {
           height: targetHeight,
           duration: 0.8,
@@ -280,7 +291,12 @@ export function FixedButton({
   };
 
   return (
-    <div className="fixed bottom-6 right-6 flex flex-col gap-3">
+    <div
+      className="fixed right-4 md:right-6 flex flex-col gap-2 md:gap-3"
+      style={{
+        bottom: "max(1rem, env(safe-area-inset-bottom))",
+      }}
+    >
       {buttons.map((button, index) => (
         <div
           key={button.id}
@@ -342,7 +358,7 @@ export function FixedButton({
           {button.type === "hamburger" && isSettingsOpen && (
             <div
               ref={settingsPanelRef}
-              className="absolute inset-0 p-12 pointer-events-auto cursor-default"
+              className="absolute inset-0 p-6 md:p-12 pointer-events-auto cursor-default"
               onMouseDown={(e) => e.stopPropagation()}
               onMouseMove={(e) => e.stopPropagation()}
             >
@@ -350,7 +366,7 @@ export function FixedButton({
               <button
                 ref={xIconRef}
                 onClick={handleSettingsClick}
-                className="absolute top-12 left-12 w-8 h-8 flex items-center justify-center opacity-0 hover:opacity-50 transition-opacity cursor-pointer"
+                className="absolute top-6 left-6 md:top-12 md:left-12 w-8 h-8 flex items-center justify-center opacity-0 hover:opacity-50 transition-opacity cursor-pointer"
               >
                 <div className="relative w-7 h-7">
                   <div className="absolute w-7 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
@@ -359,7 +375,7 @@ export function FixedButton({
               </button>
 
               {/* Top right links */}
-              <div className="absolute top-12 right-12 flex flex-col items-end text-xs gap-6 font-sans text-sm hover:text-white">
+              <div className="absolute top-6 right-6 md:top-12 md:right-12 flex flex-col items-end gap-4 md:gap-6 font-sans text-xs md:text-sm hover:text-white">
                 <a
                   ref={(el) => {
                     linksRef.current[0] = el;
@@ -399,7 +415,7 @@ export function FixedButton({
               </div>
 
               {/* Bottom right categories */}
-              <div className="absolute bottom-22 right-12 flex flex-col items-end gap-9">
+              <div className="absolute bottom-16 right-6 md:bottom-22 md:right-12 flex flex-col items-end gap-6 md:gap-9">
                 {/* Update Indicator */}
                 {/* {isValidating && (
                   <div className="flex items-center gap-2 mb-2 opacity-70">
@@ -484,8 +500,10 @@ export function FixedButton({
                         )}
                       </span>
                       <span
-                        className={`font-serif text-2xl leading-none transition-all duration-300 ${
-                          isDisabled ? "" : "group-hover:text-3xl"
+                        className={`font-serif text-xl md:text-2xl leading-none transition-all duration-300 ${
+                          isDisabled
+                            ? ""
+                            : "group-hover:text-2xl md:group-hover:text-3xl"
                         }`}
                         style={{
                           color: isSelected

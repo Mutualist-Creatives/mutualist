@@ -492,7 +492,7 @@ export function InfiniteCanvas() {
       </div>
 
       {/* Logo - Bottom Left */}
-      <Logo />
+      <Logo isHidden={isSettingsOpen} />
 
       {/* Fixed Buttons - Bottom Right */}
       <div ref={settingsAreaRef}>

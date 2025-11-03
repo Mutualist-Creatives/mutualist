@@ -18,6 +18,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [imageHeight, setImageHeight] = useState<number>(0); // Dynamic height for mobile
   const [isMounted, setIsMounted] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false); // Track if current image is portrait
   const images = project.images;
   const currentImageRef = React.useRef<HTMLDivElement>(null);
   const nextImageRef = React.useRef<HTMLDivElement>(null);
@@ -38,25 +39,76 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Calculate image height on mount and when current image changes
+  // Calculate image dimensions on mount and when current image changes
   React.useEffect(() => {
-    if (!isMounted || isDesktop) return;
+    if (!isMounted) return;
 
     // Load image to get dimensions
     const img = new window.Image();
     img.src = images[currentImageIndex];
 
     img.onload = () => {
-      const containerWidth =
-        imageContainerRef.current?.clientWidth || window.innerWidth;
-      const aspectRatio = img.naturalWidth / img.naturalHeight;
-      const calculatedHeight = containerWidth / aspectRatio;
-      const maxHeight = window.innerHeight * 0.6; // 60vh
+      // Determine if image is portrait or landscape
+      const imageIsPortrait = img.naturalHeight > img.naturalWidth;
+      setIsPortrait(imageIsPortrait);
 
-      const finalHeight = Math.min(calculatedHeight, maxHeight);
-      setImageHeight(finalHeight);
+      if (isDesktop) {
+        // Desktop: calculate width based on modal height
+        // Wait a bit for modal to render
+        setTimeout(() => {
+          const modalHeight = modalRef.current?.clientHeight || 0;
+          if (modalHeight > 0 && imageContainerRef.current) {
+            const aspectRatio = img.naturalWidth / img.naturalHeight;
+            const calculatedWidth = modalHeight * aspectRatio;
+
+            // Animate width change smoothly
+            if (calculatedWidth !== imageWidth) {
+              gsap.to(imageContainerRef.current, {
+                width: calculatedWidth,
+                duration: 0.5,
+                ease: "power2.out",
+                onUpdate: () => {
+                  const currentWidth =
+                    imageContainerRef.current?.offsetWidth || imageWidth;
+                  setImageWidth(currentWidth);
+                },
+              });
+            }
+          }
+        }, 100);
+      } else {
+        // Mobile: calculate height based on screen width
+        const containerWidth =
+          imageContainerRef.current?.clientWidth || window.innerWidth;
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        const calculatedHeight = containerWidth / aspectRatio;
+        const maxHeight = window.innerHeight * 0.6; // 60vh
+
+        const finalHeight = Math.min(calculatedHeight, maxHeight);
+
+        // Animate height change smoothly
+        if (imageContainerRef.current && finalHeight !== imageHeight) {
+          gsap.to(imageContainerRef.current, {
+            height: finalHeight,
+            duration: 0.5,
+            ease: "power2.out",
+            onUpdate: () => {
+              const currentHeight =
+                imageContainerRef.current?.offsetHeight || imageHeight;
+              setImageHeight(currentHeight);
+            },
+          });
+        }
+      }
     };
-  }, [isMounted, isDesktop, currentImageIndex, images]);
+  }, [
+    isMounted,
+    isDesktop,
+    currentImageIndex,
+    images,
+    imageWidth,
+    imageHeight,
+  ]);
 
   React.useEffect(() => {
     // Animate modal on mount
@@ -207,12 +259,13 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default p-0 md:p-8"
       onClick={handleClose}
     >
       <div
         ref={modalRef}
-        className="w-full h-full bg-white overflow-hidden flex flex-col md:flex-row shadow-2xl"
+        className="w-full h-full md:max-w-[90vw] md:max-h-[90vh] md:rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-2xl"
+        style={{ backgroundColor: "#121212" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Image Section - Adaptive to image aspect ratio */}
@@ -230,6 +283,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             minHeight:
               isMounted && !isDesktop && imageHeight === 0 ? "40vh" : undefined,
             maxHeight: isMounted && !isDesktop ? "60vh" : "100%",
+            backgroundColor: "#121212",
           }}
           onMouseDown={(e) => e.stopPropagation()}
           onMouseMove={(e) => e.stopPropagation()}
@@ -251,35 +305,13 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               src={images[currentImageIndex]}
               alt={project.title}
               fill
-              className="object-contain"
+              className={isPortrait ? "object-cover" : "object-contain"}
               style={{ objectPosition: "center" }}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
               quality={85}
               priority={currentImageIndex === 0}
-              onLoadingComplete={(img) => {
-                // Only calculate width on desktop
-                if (isMounted && isDesktop) {
-                  const modalHeight = modalRef.current?.clientHeight || 0;
-                  const aspectRatio = img.naturalWidth / img.naturalHeight;
-                  const calculatedWidth = modalHeight * aspectRatio;
-
-                  // Animate width change smoothly
-                  if (
-                    imageContainerRef.current &&
-                    calculatedWidth !== imageWidth
-                  ) {
-                    gsap.to(imageContainerRef.current, {
-                      width: calculatedWidth,
-                      duration: 0.5,
-                      ease: "power2.out",
-                      onUpdate: () => {
-                        const currentWidth =
-                          imageContainerRef.current?.offsetWidth || imageWidth;
-                        setImageWidth(currentWidth);
-                      },
-                    });
-                  }
-                }
+              onLoadingComplete={() => {
+                // Dimensions are calculated in useEffect
               }}
             />
           </div>
@@ -290,7 +322,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               src={images[nextImageIndex]}
               alt={project.title}
               fill
-              className="object-contain"
+              className={isPortrait ? "object-cover" : "object-contain"}
               style={{ objectPosition: "center" }}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
               quality={85}
