@@ -6,6 +6,7 @@ interface PortfolioCardProps {
   style?: React.CSSProperties;
   onClick?: () => void;
   onHeightChange?: (height: number) => void;
+  width?: number;
 }
 
 // Memoized to prevent unnecessary re-renders
@@ -14,6 +15,7 @@ export const PortfolioCard = React.memo(function PortfolioCard({
   style,
   onClick,
   onHeightChange,
+  width = 240,
 }: PortfolioCardProps) {
   const cardRef = React.useRef<HTMLDivElement>(null);
 
@@ -40,16 +42,19 @@ export const PortfolioCard = React.memo(function PortfolioCard({
 
   if (!item) {
     return (
-      <div style={style} className="h-auto w-[240px] rounded-lg bg-gray-300" />
+      <div
+        style={{ ...style, width: `${width}px` }}
+        className="h-auto rounded-lg bg-gray-300"
+      />
     );
   }
 
   return (
     <div
       ref={cardRef}
-      style={style}
+      style={{ ...style, width: `${width}px` }}
       onClick={onClick}
-      className="h-auto w-[240px] rounded-lg overflow-hidden bg-white cursor-pointer group relative"
+      className="h-auto rounded-lg overflow-hidden bg-white cursor-pointer group relative"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

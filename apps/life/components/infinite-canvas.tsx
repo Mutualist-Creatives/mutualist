@@ -12,7 +12,7 @@ import { Portfolio } from "@/data/types";
 import { usePortfolios } from "@/lib/hooks/usePortfolios";
 import { useImageDimensions } from "@/lib/hooks/useImageDimensions";
 import { getImageHeight } from "@/lib/image-dimensions";
-import { CANVAS_CONFIG, DEFAULT_BG_COLOR } from "@/lib/constants";
+import { DEFAULT_BG_COLOR, getResponsiveCanvasConfig } from "@/lib/constants";
 
 export function InfiniteCanvas() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -26,11 +26,25 @@ export function InfiniteCanvas() {
   );
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(1024); // Default to desktop
+  const [isMounted, setIsMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const settingsAreaRef = useRef<HTMLDivElement>(null);
   const rafIdRef = useRef<number | null>(null);
   const cardsRef = useRef<Map<string, HTMLDivElement>>(new Map());
   const imageHeightsRef = useRef<Map<string, number>>(new Map());
+
+  // Get responsive config based on window width
+  const config = useMemo(
+    () => getResponsiveCanvasConfig(windowWidth),
+    [windowWidth]
+  );
+
+  // Set mounted and initial window width on client
+  useEffect(() => {
+    setIsMounted(true);
+    setWindowWidth(window.innerWidth);
+  }, []);
 
   // USE SWR HOOK FOR DATA FETCHING (Optimistic UI - instant display)
   const {
@@ -47,13 +61,23 @@ export function InfiniteCanvas() {
   // PRELOAD IMAGE DIMENSIONS
   useImageDimensions(portfolios);
 
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // EFEK UNTUK MENENGAHKAN SAAT AWAL
   useEffect(() => {
     // Kita tengahkan di posisi (0,0) dari dunia virtual kita
     const initialX =
       window.innerWidth / 2 -
-      (CANVAS_CONFIG.COLUMN_COUNT * CANVAS_CONFIG.FULL_COLUMN_WIDTH) / 2;
-    const initialY = window.innerHeight / 2 - CANVAS_CONFIG.CARD_HEIGHT / 2;
+      (config.COLUMN_COUNT * config.FULL_COLUMN_WIDTH) / 2;
+    const initialY = window.innerHeight / 2 - config.CARD_HEIGHT / 2;
     setPosition({ x: initialX, y: initialY });
 
     // Add wheel event listener with passive: false to allow preventDefault
@@ -89,6 +113,7 @@ export function InfiniteCanvas() {
         container.removeEventListener("wheel", nativeWheelHandler);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ANIMATE CARDS WHEN API DATA IS READY
@@ -132,7 +157,7 @@ export function InfiniteCanvas() {
     if (!containerRef.current || portfolios.length === 0) return items;
 
     const viewport = containerRef.current.getBoundingClientRect();
-    const buffer = CANVAS_CONFIG.VIEWPORT_BUFFER;
+    const buffer = config.VIEWPORT_BUFFER;
 
     // Viewport boundaries
     const viewLeft = -position.x - buffer;
@@ -141,14 +166,13 @@ export function InfiniteCanvas() {
     const viewBottom = -position.y + viewport.height + buffer;
 
     // Calculate which columns are visible
-    const startCol = Math.floor(viewLeft / CANVAS_CONFIG.FULL_COLUMN_WIDTH);
-    const endCol = Math.ceil(viewRight / CANVAS_CONFIG.FULL_COLUMN_WIDTH);
+    const startCol = Math.floor(viewLeft / config.FULL_COLUMN_WIDTH);
+    const endCol = Math.ceil(viewRight / config.FULL_COLUMN_WIDTH);
 
     // For each column, stack items vertically based on actual heights
     for (let col = startCol; col < endCol; col++) {
       // Apply stagger offset for odd columns
-      const staggerOffset =
-        Math.abs(col) % 2 === 1 ? CANVAS_CONFIG.STAGGER_OFFSET : 0;
+      const staggerOffset = Math.abs(col) % 2 === 1 ? config.STAGGER_OFFSET : 0;
 
       // --- RENDER DOWNWARDS (positive direction) ---
       let currentY = staggerOffset;
@@ -157,7 +181,7 @@ export function InfiniteCanvas() {
       // Keep adding items downward until we're past the bottom of viewport
       while (currentY < viewBottom + buffer) {
         const itemIndex = Math.abs(
-          itemIndexInColumn * CANVAS_CONFIG.COLUMN_COUNT + col
+          itemIndexInColumn * config.COLUMN_COUNT + col
         );
         const baseItem = portfolios[itemIndex % portfolios.length];
         const uniqueId = `${baseItem.id}-${col}-${itemIndexInColumn}`;
@@ -165,14 +189,14 @@ export function InfiniteCanvas() {
         // Get height: 1) rendered, 2) preloaded, 3) estimated
         const renderedHeight = imageHeightsRef.current.get(uniqueId);
         const preloadedHeight = baseItem.images[0]
-          ? getImageHeight(baseItem.images[0], CANVAS_CONFIG.CARD_WIDTH)
+          ? getImageHeight(baseItem.images[0], config.CARD_WIDTH)
           : null;
         const cardHeight =
-          renderedHeight || preloadedHeight || CANVAS_CONFIG.CARD_HEIGHT;
+          renderedHeight || preloadedHeight || config.CARD_HEIGHT;
 
         // Only add if this item intersects with viewport
         if (currentY + cardHeight >= viewTop - buffer) {
-          const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
+          const x = col * config.FULL_COLUMN_WIDTH;
 
           items.push({
             item: baseItem,
@@ -183,7 +207,7 @@ export function InfiniteCanvas() {
         }
 
         // Move to next position in column
-        currentY += cardHeight + CANVAS_CONFIG.GAP;
+        currentY += cardHeight + config.GAP;
         itemIndexInColumn++;
 
         // Safety break to prevent infinite loop
@@ -191,13 +215,13 @@ export function InfiniteCanvas() {
       }
 
       // --- RENDER UPWARDS (negative direction) ---
-      currentY = staggerOffset - CANVAS_CONFIG.GAP;
+      currentY = staggerOffset - config.GAP;
       itemIndexInColumn = -1;
 
       // Keep adding items upward until we're past the top of viewport
       while (currentY > viewTop - buffer) {
         const itemIndex = Math.abs(
-          itemIndexInColumn * CANVAS_CONFIG.COLUMN_COUNT + col
+          itemIndexInColumn * config.COLUMN_COUNT + col
         );
         const baseItem = portfolios[itemIndex % portfolios.length];
         const uniqueId = `${baseItem.id}-${col}-${itemIndexInColumn}`;
@@ -205,17 +229,17 @@ export function InfiniteCanvas() {
         // Get height: 1) rendered, 2) preloaded, 3) estimated
         const renderedHeight = imageHeightsRef.current.get(uniqueId);
         const preloadedHeight = baseItem.images[0]
-          ? getImageHeight(baseItem.images[0], CANVAS_CONFIG.CARD_WIDTH)
+          ? getImageHeight(baseItem.images[0], config.CARD_WIDTH)
           : null;
         const cardHeight =
-          renderedHeight || preloadedHeight || CANVAS_CONFIG.CARD_HEIGHT;
+          renderedHeight || preloadedHeight || config.CARD_HEIGHT;
 
         // Position card above current Y
         const cardY = currentY - cardHeight;
 
         // Only add if this item intersects with viewport
         if (cardY <= viewBottom + buffer) {
-          const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
+          const x = col * config.FULL_COLUMN_WIDTH;
 
           items.push({
             item: baseItem,
@@ -226,7 +250,7 @@ export function InfiniteCanvas() {
         }
 
         // Move to next position upward
-        currentY = cardY - CANVAS_CONFIG.GAP;
+        currentY = cardY - config.GAP;
         itemIndexInColumn--;
 
         // Safety break to prevent infinite loop
@@ -235,7 +259,7 @@ export function InfiniteCanvas() {
     }
 
     return items;
-  }, [position.x, position.y, portfolios]);
+  }, [position.x, position.y, portfolios, config]);
 
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {
@@ -256,6 +280,7 @@ export function InfiniteCanvas() {
     setIsDragging(true);
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
   };
+
   const handleMouseUp = () => {
     setIsDragging(false);
     // Cancel any pending RAF
@@ -277,6 +302,58 @@ export function InfiniteCanvas() {
     });
   };
 
+  // Touch event handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+
+    // Check if touch is inside settings area
+    if (isSettingsOpen && settingsAreaRef.current) {
+      const rect = settingsAreaRef.current.getBoundingClientRect();
+      const touch = e.touches[0];
+      const isInsideSettings =
+        touch.clientX >= rect.left &&
+        touch.clientX <= rect.right &&
+        touch.clientY >= rect.top &&
+        touch.clientY <= rect.bottom;
+
+      if (isInsideSettings) return;
+    }
+
+    const touch = e.touches[0];
+    setIsDragging(true);
+    setDragStart({
+      x: touch.clientX - position.x,
+      y: touch.clientY - position.y,
+    });
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || e.touches.length !== 1) return;
+
+    // Prevent default to avoid scrolling
+    e.preventDefault();
+
+    // Throttle with requestAnimationFrame
+    if (rafIdRef.current !== null) return;
+
+    const touch = e.touches[0];
+    rafIdRef.current = requestAnimationFrame(() => {
+      setPosition({
+        x: touch.clientX - dragStart.x,
+        y: touch.clientY - dragStart.y,
+      });
+      rafIdRef.current = null;
+    });
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+  };
+
   return (
     <div
       ref={containerRef}
@@ -286,11 +363,16 @@ export function InfiniteCanvas() {
       style={{
         backgroundColor: bgColor,
         contain: "layout style paint",
+        touchAction: "none", // Prevent default touch behaviors
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       {/* Subtle Update Indicator - Only show when revalidating in background */}
       {/* {isValidating && (
@@ -318,13 +400,13 @@ export function InfiniteCanvas() {
           willChange: isDragging ? "transform" : "auto",
         }}
       >
-        {/* Show skeleton loading state */}
-        {isLoading && portfolios.length === 0 ? (
+        {/* Show skeleton loading state - only after client mount to avoid hydration mismatch */}
+        {isMounted && isLoading && portfolios.length === 0 ? (
           <>
             {Array.from({ length: 12 }).map((_, index) => {
-              const col = index % CANVAS_CONFIG.COLUMN_COUNT;
-              const row = Math.floor(index / CANVAS_CONFIG.COLUMN_COUNT);
-              const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
+              const col = index % config.COLUMN_COUNT;
+              const row = Math.floor(index / config.COLUMN_COUNT);
+              const x = col * config.FULL_COLUMN_WIDTH;
 
               // Random variant for each skeleton (deterministic based on index)
               const variants: Array<"tall" | "medium" | "short"> = [
@@ -337,15 +419,22 @@ export function InfiniteCanvas() {
               // Calculate Y position based on accumulated heights
               let y = 0;
               const staggerOffset =
-                Math.abs(col) % 2 === 1 ? CANVAS_CONFIG.STAGGER_OFFSET : 0;
+                Math.abs(col) % 2 === 1 ? config.STAGGER_OFFSET : 0;
               y = staggerOffset;
 
-              // Simple stacking for skeleton
-              const heightMap = { tall: 360, medium: 320, short: 280 };
+              // Simple stacking for skeleton - scale heights proportionally
+              const baseHeights = { tall: 360, medium: 320, short: 280 };
+              const scale = config.CARD_WIDTH / 240; // Scale based on card width
+              const heightMap = {
+                tall: baseHeights.tall * scale,
+                medium: baseHeights.medium * scale,
+                short: baseHeights.short * scale,
+              };
+
               for (let i = 0; i < row; i++) {
                 const prevVariant =
-                  variants[(i * CANVAS_CONFIG.COLUMN_COUNT + col) % 3];
-                y += heightMap[prevVariant] + CANVAS_CONFIG.GAP;
+                  variants[(i * config.COLUMN_COUNT + col) % 3];
+                y += heightMap[prevVariant] + config.GAP;
               }
 
               return (
@@ -353,12 +442,15 @@ export function InfiniteCanvas() {
                   key={`skeleton-${index}`}
                   style={{
                     position: "absolute",
-                    width: CANVAS_CONFIG.CARD_WIDTH,
+                    width: config.CARD_WIDTH,
                     height: "auto",
                     transform: `translate3d(${x}px, ${y}px, 0)`,
                   }}
                 >
-                  <PortfolioCardSkeleton variant={variant} />
+                  <PortfolioCardSkeleton
+                    variant={variant}
+                    width={config.CARD_WIDTH}
+                  />
                 </div>
               );
             })}
@@ -377,7 +469,7 @@ export function InfiniteCanvas() {
               }}
               style={{
                 position: "absolute",
-                width: CANVAS_CONFIG.CARD_WIDTH,
+                width: config.CARD_WIDTH,
                 height: "auto",
                 transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
                 willChange: "transform",
@@ -389,6 +481,7 @@ export function InfiniteCanvas() {
                 onHeightChange={(height) => {
                   imageHeightsRef.current.set(item.uniqueId, height);
                 }}
+                width={config.CARD_WIDTH}
               />
             </div>
           ))

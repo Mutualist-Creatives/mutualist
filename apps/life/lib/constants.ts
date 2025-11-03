@@ -1,4 +1,10 @@
-// Canvas Grid Configuration
+// Responsive breakpoints
+export const BREAKPOINTS = {
+  MOBILE: 768,
+  TABLET: 1024,
+} as const;
+
+// Canvas Grid Configuration (Desktop)
 export const CANVAS_CONFIG = {
   // Grid layout
   COLUMN_COUNT: 7,
@@ -18,6 +24,45 @@ export const CANVAS_CONFIG = {
     return this.CARD_HEIGHT + this.GAP;
   },
 } as const;
+
+// Responsive Canvas Config
+export const getResponsiveCanvasConfig = (width: number) => {
+  if (width < BREAKPOINTS.MOBILE) {
+    // Mobile
+    return {
+      COLUMN_COUNT: 7,
+      CARD_WIDTH: 140,
+      CARD_HEIGHT: 187, // 3:4 ratio
+      GAP: 32,
+      STAGGER_OFFSET: 64,
+      VIEWPORT_BUFFER: 150,
+      get FULL_COLUMN_WIDTH() {
+        return this.CARD_WIDTH + this.GAP;
+      },
+      get FULL_CARD_HEIGHT() {
+        return this.CARD_HEIGHT + this.GAP;
+      },
+    };
+  } else if (width < BREAKPOINTS.TABLET) {
+    // Tablet
+    return {
+      COLUMN_COUNT: 7,
+      CARD_WIDTH: 180,
+      CARD_HEIGHT: 240, // 3:4 ratio
+      GAP: 40,
+      STAGGER_OFFSET: 80,
+      VIEWPORT_BUFFER: 175,
+      get FULL_COLUMN_WIDTH() {
+        return this.CARD_WIDTH + this.GAP;
+      },
+      get FULL_CARD_HEIGHT() {
+        return this.CARD_HEIGHT + this.GAP;
+      },
+    };
+  }
+  // Desktop
+  return CANVAS_CONFIG;
+};
 
 // Color Options
 export const COLOR_OPTIONS = [
