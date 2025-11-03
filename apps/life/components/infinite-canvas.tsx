@@ -302,8 +302,8 @@ export function InfiniteCanvas() {
         </div>
       )} */}
 
-      {/* Empty State - Only if truly no data */}
-      {portfolios.length === 0 && (
+      {/* Empty State - Only if truly no data and not loading */}
+      {portfolios.length === 0 && !isLoading && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-gray-600 text-lg font-[family-name:var(--font-instrument-serif)]">
             No portfolios found
@@ -325,7 +325,28 @@ export function InfiniteCanvas() {
               const col = index % CANVAS_CONFIG.COLUMN_COUNT;
               const row = Math.floor(index / CANVAS_CONFIG.COLUMN_COUNT);
               const x = col * CANVAS_CONFIG.FULL_COLUMN_WIDTH;
-              const y = row * (CANVAS_CONFIG.CARD_HEIGHT + CANVAS_CONFIG.GAP);
+
+              // Random variant for each skeleton (deterministic based on index)
+              const variants: Array<"tall" | "medium" | "short"> = [
+                "tall",
+                "medium",
+                "short",
+              ];
+              const variant = variants[index % 3];
+
+              // Calculate Y position based on accumulated heights
+              let y = 0;
+              const staggerOffset =
+                Math.abs(col) % 2 === 1 ? CANVAS_CONFIG.STAGGER_OFFSET : 0;
+              y = staggerOffset;
+
+              // Simple stacking for skeleton
+              const heightMap = { tall: 360, medium: 320, short: 280 };
+              for (let i = 0; i < row; i++) {
+                const prevVariant =
+                  variants[(i * CANVAS_CONFIG.COLUMN_COUNT + col) % 3];
+                y += heightMap[prevVariant] + CANVAS_CONFIG.GAP;
+              }
 
               return (
                 <div
@@ -337,7 +358,7 @@ export function InfiniteCanvas() {
                     transform: `translate3d(${x}px, ${y}px, 0)`,
                   }}
                 >
-                  <PortfolioCardSkeleton />
+                  <PortfolioCardSkeleton variant={variant} />
                 </div>
               );
             })}

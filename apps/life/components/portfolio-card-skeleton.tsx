@@ -1,9 +1,25 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function PortfolioCardSkeleton() {
+interface PortfolioCardSkeletonProps {
+  variant?: "tall" | "medium" | "short";
+}
+
+// Aspect ratios based on 240px width
+const HEIGHT_VARIANTS = {
+  tall: 360, // 3:4.5 (extra tall portrait)
+  medium: 320, // 3:4 (standard portrait)
+  short: 280, // 3:3.5 (shorter portrait)
+};
+
+export function PortfolioCardSkeleton({
+  variant = "medium",
+}: PortfolioCardSkeletonProps) {
+  const height = HEIGHT_VARIANTS[variant];
+
   return (
-    <div className="h-auto w-[240px] rounded-lg overflow-hidden bg-white">
-      <Skeleton className="w-full h-[320px]" />
-    </div>
+    <Skeleton
+      className="w-[240px] rounded-lg"
+      style={{ height: `${height}px` }}
+    />
   );
 }
