@@ -400,66 +400,81 @@ export function InfiniteCanvas() {
           willChange: isDragging ? "transform" : "auto",
         }}
       >
-        {/* Show skeleton loading state - only after client mount to avoid hydration mismatch */}
-        {isMounted && isLoading && portfolios.length === 0 ? (
-          <>
-            {Array.from({ length: 12 }).map((_, index) => {
-              const col = index % config.COLUMN_COUNT;
-              const row = Math.floor(index / config.COLUMN_COUNT);
-              const x = col * config.FULL_COLUMN_WIDTH;
+        {/* Render skeleton grid for visible area when loading */}
+        {isMounted &&
+          portfolios.length === 0 &&
+          (() => {
+            // Generate skeleton items for visible viewport
+            const skeletonItems = [];
+            const viewportTop = -position.y - 500;
+            const viewportBottom =
+              -position.y + (window?.innerHeight || 800) + 500;
 
-              // Random variant for each skeleton (deterministic based on index)
-              const variants: Array<"tall" | "medium" | "short"> = [
-                "tall",
-                "medium",
-                "short",
-              ];
-              const variant = variants[index % 3];
+            // Calculate which rows are visible
+            const startRow = Math.floor(viewportTop / 500); // Approximate row height
+            const endRow = Math.ceil(viewportBottom / 500);
 
-              // Calculate Y position based on accumulated heights
-              let y = 0;
-              const staggerOffset =
-                Math.abs(col) % 2 === 1 ? config.STAGGER_OFFSET : 0;
-              y = staggerOffset;
+            // Aspect ratios for skeleton variants
+            const aspectRatios = {
+              tall: 1.5,
+              medium: 1.333,
+              short: 1.167,
+            };
+            const variants: Array<"tall" | "medium" | "short"> = [
+              "tall",
+              "medium",
+              "short",
+            ];
 
-              // Simple stacking for skeleton - calculate heights based on aspect ratios
-              const aspectRatios = {
-                tall: 1.5, // 3:4.5
-                medium: 1.333, // 3:4
-                short: 1.167, // 3:3.5
-              };
-              const heightMap = {
-                tall: config.CARD_WIDTH * aspectRatios.tall,
-                medium: config.CARD_WIDTH * aspectRatios.medium,
-                short: config.CARD_WIDTH * aspectRatios.short,
-              };
+            // Generate skeletons for visible rows
+            for (let row = Math.max(0, startRow); row <= endRow; row++) {
+              for (let col = 0; col < config.COLUMN_COUNT; col++) {
+                const index = row * config.COLUMN_COUNT + col;
+                const variant = variants[index % 3];
+                const x = col * config.FULL_COLUMN_WIDTH;
 
-              for (let i = 0; i < row; i++) {
-                const prevVariant =
-                  variants[(i * config.COLUMN_COUNT + col) % 3];
-                y += heightMap[prevVariant] + config.GAP;
+                // Calculate Y position
+                const staggerOffset =
+                  Math.abs(col) % 2 === 1 ? config.STAGGER_OFFSET : 0;
+                let y = staggerOffset;
+
+                // Calculate accumulated height
+                const heightMap = {
+                  tall: config.CARD_WIDTH * aspectRatios.tall,
+                  medium: config.CARD_WIDTH * aspectRatios.medium,
+                  short: config.CARD_WIDTH * aspectRatios.short,
+                };
+
+                for (let i = 0; i < row; i++) {
+                  const prevVariant =
+                    variants[(i * config.COLUMN_COUNT + col) % 3];
+                  y += heightMap[prevVariant] + config.GAP;
+                }
+
+                skeletonItems.push(
+                  <div
+                    key={`skeleton-${index}`}
+                    style={{
+                      position: "absolute",
+                      width: config.CARD_WIDTH,
+                      height: "auto",
+                      transform: `translate3d(${x}px, ${y}px, 0)`,
+                    }}
+                  >
+                    <PortfolioCardSkeleton
+                      variant={variant}
+                      width={config.CARD_WIDTH}
+                    />
+                  </div>
+                );
               }
+            }
 
-              return (
-                <div
-                  key={`skeleton-${index}`}
-                  style={{
-                    position: "absolute",
-                    width: config.CARD_WIDTH,
-                    height: "auto",
-                    transform: `translate3d(${x}px, ${y}px, 0)`,
-                  }}
-                >
-                  <PortfolioCardSkeleton
-                    variant={variant}
-                    width={config.CARD_WIDTH}
-                  />
-                </div>
-              );
-            })}
-          </>
-        ) : (
-          /* Render hanya item yang terlihat - Always render (optimistic UI) */
+            return skeletonItems;
+          })()}
+
+        {/* Render real cards with fade-in animation */}
+        {portfolios.length > 0 &&
           visibleItems.map((item) => (
             <div
               key={item.uniqueId}
@@ -476,6 +491,7 @@ export function InfiniteCanvas() {
                 height: "auto",
                 transform: `translate3d(${item.x}px, ${item.y}px, 0)`,
                 willChange: "transform",
+                animation: "fadeIn 0.5s ease-out",
               }}
             >
               <PortfolioCard
@@ -487,8 +503,7 @@ export function InfiniteCanvas() {
                 width={config.CARD_WIDTH}
               />
             </div>
-          ))
-        )}
+          ))}
       </div>
 
       {/* Logo - Bottom Left */}

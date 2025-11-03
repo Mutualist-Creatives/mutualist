@@ -42,3 +42,12 @@ body {
   padding-left: 24px;
   padding-right: 24px;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
