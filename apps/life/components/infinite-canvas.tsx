@@ -75,7 +75,7 @@ export function InfiniteCanvas() {
   useEffect(() => {
     // Center horizontally, start from top with padding
     const initialX =
-      window.innerWidth / 2 -
+      window.innerWidth / 4 -
       (config.COLUMN_COUNT * config.FULL_COLUMN_WIDTH) / 2;
 
     // Start from top with comfortable padding

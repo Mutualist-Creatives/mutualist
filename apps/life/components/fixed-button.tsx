@@ -88,11 +88,13 @@ export function FixedButton({
     if (colorMenuRef.current) {
       const colorButtons =
         colorMenuRef.current.querySelectorAll(".color-option");
+      const isMobile = window.innerWidth < 768;
 
       if (isColorMenuOpen) {
         gsap.to(colorButtons, {
           opacity: 1,
-          x: 0,
+          x: isMobile ? 0 : 0,
+          y: isMobile ? 0 : 0,
           duration: 0.3,
           stagger: 0.05,
           ease: "back.out(1.7)",
@@ -100,7 +102,8 @@ export function FixedButton({
       } else if (shouldRenderMenu) {
         gsap.to(colorButtons, {
           opacity: 0,
-          x: 30,
+          x: isMobile ? 0 : 30,
+          y: isMobile ? -30 : 0,
           duration: 0.2,
           stagger: {
             each: 0.03,
@@ -147,15 +150,23 @@ export function FixedButton({
 
         const isMobile = window.innerWidth < 768;
 
-        // Hitung tinggi dari button ke top viewport
+        // Hitung tinggi target
         const buttonRect = settingsButtonRef.current.getBoundingClientRect();
-        const distanceToTop = buttonRect.top;
         const buttonHeight = 48;
 
-        // Mobile: padding 24px (1.5rem)
-        // Desktop: padding 16px (1rem) - sama dengan bottom padding dari safe-area-inset
-        const paddingTop = isMobile ? 24 : 30;
-        const targetHeight = distanceToTop + buttonHeight - paddingTop;
+        let targetHeight;
+        if (isMobile) {
+          // Mobile: morph ke bawah sampai bottom viewport dengan padding
+          const distanceToBottom =
+            window.innerHeight - buttonRect.bottom + buttonHeight;
+          const paddingBottom = 16;
+          targetHeight = distanceToBottom - paddingBottom;
+        } else {
+          // Desktop: morph ke atas sampai top viewport dengan padding
+          const distanceToTop = buttonRect.top;
+          const paddingTop = 16;
+          targetHeight = distanceToTop + buttonHeight - paddingTop;
+        }
 
         // Step 1: Morph ke kiri (memanjang horizontal lebih panjang)
         const targetWidth = isMobile
@@ -213,12 +224,13 @@ export function FixedButton({
       setIsAnimating(true);
       if (onSettingsOpenChange) onSettingsOpenChange(false);
 
-      // Fade in other buttons
+      // Fade in other buttons with delay
       const otherButtons = otherButtonsRef.current.filter(Boolean);
       gsap.to(otherButtons, {
         opacity: 1,
         duration: 0.3,
-        ease: "power2.in",
+        delay: 0.8, // Delay after settings panel starts closing
+        ease: "power2.out",
       });
 
       if (settingsButtonRef.current) {
@@ -291,7 +303,7 @@ export function FixedButton({
   };
 
   return (
-    <div className="fixed right-4 md:right-6 bottom-32 md:bottom-6 flex flex-col gap-2 md:gap-3">
+    <div className="fixed right-4 md:right-6 top-4 md:top-auto md:bottom-6 flex flex-row md:flex-col gap-2 md:gap-3">
       {buttons.map((button, index) => (
         <div
           key={button.id}
@@ -305,7 +317,7 @@ export function FixedButton({
           {button.type === "color" && shouldRenderMenu && (
             <div
               ref={colorMenuRef}
-              className="absolute bottom-0 right-16 flex flex-row-reverse gap-3"
+              className="absolute top-16 right-0 md:top-auto md:bottom-0 md:right-16 flex flex-col md:flex-row-reverse gap-3"
             >
               {COLOR_OPTIONS.filter((color) => color !== currentBgColor).map(
                 (color) => (

@@ -364,7 +364,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             </div>
 
             {/* Bottom Section - Description */}
-            <div className="p-6 md:p-8 lg:p-12 pt-0">
+            <div className="p-6 pb-12 md:p-8 md:pb-0 lg:p-12 pt-0">
               <p className="font-serif text-xl lg:text-2xl text-white leading-relaxed">
                 {project.description}
               </p>

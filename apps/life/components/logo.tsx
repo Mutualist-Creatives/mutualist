@@ -15,10 +15,10 @@ export function Logo({ isHidden = false }: LogoProps) {
     <>
       <button
         onClick={() => setIsModalOpen(true)}
-        className={`fixed left-4 md:left-6 bottom-32 md:bottom-6 z-50 hover:scale-110 transition-all duration-300 cursor-pointer ${
+        className={`fixed left-4 md:left-6 top-4 md:top-auto md:bottom-6 z-50 hover:scale-110 cursor-pointer transition-all duration-300 ${
           isHidden
-            ? "opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto"
-            : "opacity-100"
+            ? "opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto delay-0"
+            : "opacity-100 delay-[1200ms]"
         }`}
         aria-label="About Mutualist"
       >
