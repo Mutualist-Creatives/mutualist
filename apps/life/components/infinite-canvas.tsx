@@ -59,7 +59,15 @@ export function InfiniteCanvas() {
     : allPortfolios;
 
   // PRELOAD IMAGE DIMENSIONS
-  useImageDimensions(portfolios);
+  const { loadedCount } = useImageDimensions(portfolios);
+
+  // Track when dimensions are loaded to trigger layout recalculation
+  const [dimensionsVersion, setDimensionsVersion] = useState(0);
+  useEffect(() => {
+    if (loadedCount > 0) {
+      setDimensionsVersion((n) => n + 1);
+    }
+  }, [loadedCount]);
 
   // Handle window resize
   useEffect(() => {
@@ -264,7 +272,7 @@ export function InfiniteCanvas() {
     }
 
     return items;
-  }, [position.x, position.y, portfolios, config]);
+  }, [position.x, position.y, portfolios, config, dimensionsVersion]);
 
   // --- FUNGSI-FUNGSI UNTUK GESER (PANNING) ---
   const handleMouseDown = (e: MouseEvent) => {
