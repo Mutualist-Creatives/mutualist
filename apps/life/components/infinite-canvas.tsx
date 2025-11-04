@@ -78,8 +78,10 @@ export function InfiniteCanvas() {
       window.innerWidth / 2 -
       (config.COLUMN_COUNT * config.FULL_COLUMN_WIDTH) / 2;
 
-    // Start from top with comfortable padding (100px from top)
-    const initialY = 100;
+    // Start from top with comfortable padding
+    // Mobile needs more padding for status bar/notch
+    const isMobile = window.innerWidth < 768;
+    const initialY = isMobile ? 0 : 100;
 
     setPosition({ x: initialX, y: initialY });
 
@@ -367,6 +369,8 @@ export function InfiniteCanvas() {
         backgroundColor: bgColor,
         contain: "layout style paint",
         touchAction: "none", // Prevent default touch behaviors
+        paddingTop: "env(safe-area-inset-top)",
+        paddingBottom: "env(safe-area-inset-bottom)",
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}

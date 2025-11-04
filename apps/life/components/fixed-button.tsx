@@ -291,12 +291,7 @@ export function FixedButton({
   };
 
   return (
-    <div
-      className="fixed right-4 md:right-6 flex flex-col gap-2 md:gap-3"
-      style={{
-        bottom: "max(1rem, env(safe-area-inset-bottom))",
-      }}
-    >
+    <div className="fixed right-4 md:right-6 bottom-32 md:bottom-6 flex flex-col gap-2 md:gap-3">
       {buttons.map((button, index) => (
         <div
           key={button.id}
