@@ -15,6 +15,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [nextImageIndex, setNextImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [imageAspectRatio, setImageAspectRatio] = useState(1);
+  const [isLandscape, setIsLandscape] = useState(
+    typeof window !== "undefined" && window.innerWidth > window.innerHeight
+  );
   const images = project.images;
   const currentImageRef = React.useRef<HTMLDivElement>(null);
   const nextImageRef = React.useRef<HTMLDivElement>(null);
@@ -31,6 +34,16 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
       setImageAspectRatio(ratio);
     };
   }, [currentImageIndex, images]);
+
+  // Detect orientation changes
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   React.useEffect(() => {
     // Animate modal on mount
@@ -181,12 +194,18 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default p-0 md:p-8"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm cursor-default ${
+        isLandscape && window.innerWidth >= 768 ? "p-8" : "p-0"
+      }`}
       onClick={handleClose}
     >
       <div
         ref={modalRef}
-        className="w-full h-full md:max-w-[90vw] md:max-h-[90vh] md:rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-2xl"
+        className={`w-full xl:w-[80vw] h-full overflow-hidden flex shadow-2xl ${
+          isLandscape && window.innerWidth >= 768
+            ? "max-w-[90vw] max-h-[90vh] rounded-2xl flex-row"
+            : "flex-col"
+        }`}
         style={{ backgroundColor: "#121212" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -195,25 +214,30 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           ref={imageContainerRef}
           className="relative flex-shrink-0 overflow-hidden bg-[#121212]"
           style={{
-            // Mobile: full width, height based on aspect ratio (max 60vh)
-            // Desktop: height = 90vh, width based on aspect ratio (max 60vw)
+            // Landscape mode: height = 90vh, width based on aspect ratio (max 60vw)
+            // Tablet portrait (>= 562px): full width, height with max limit (70vh)
+            // Mobile (< 562px): full width, height based on aspect ratio (max 60vh)
             width:
-              window.innerWidth >= 768
+              isLandscape && window.innerWidth >= 768
                 ? `min(calc(90vh * ${imageAspectRatio}), 60vw)`
                 : "100vw",
             height:
-              window.innerWidth >= 768
+              isLandscape && window.innerWidth >= 768
                 ? "calc(90vh)"
-                : `min(calc(100vw / ${imageAspectRatio}), 60vh)`,
+                : window.innerWidth >= 562
+                  ? `min(calc(100vw / ${imageAspectRatio}), 70vh)`
+                  : `min(calc(100vw / ${imageAspectRatio}), 60vh)`,
           }}
           onMouseDown={(e) => e.stopPropagation()}
           onMouseMove={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
         >
-          {/* Close Button - Mobile only (top right) */}
+          {/* Close Button - Portrait mode only (top right) */}
           <button
             onClick={handleClose}
-            className="md:hidden absolute top-4 right-4 w-8 h-8 flex items-center justify-center hover:opacity-50 transition-opacity z-[20]"
+            className={`${
+              isLandscape && window.innerWidth >= 768 ? "hidden" : "flex"
+            } absolute top-4 right-4 w-8 h-8 items-center justify-center hover:opacity-50 transition-opacity z-[20]`}
           >
             <div className="relative w-6 h-6">
               <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
@@ -250,7 +274,13 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
           {/* Carousel Arrows - Only show if multiple images */}
           {images.length > 1 && (
-            <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-[10]">
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 flex gap-1.5 z-[10] ${
+                isLandscape && window.innerWidth >= 768
+                  ? "bottom-6"
+                  : "bottom-4"
+              }`}
+            >
               <button
                 onClick={handlePrevImage}
                 className="w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg hover:scale-110 cursor-pointer"
@@ -297,10 +327,14 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           )}
         </div>
 
-        {/* Content Section - Full width on mobile, fixed width on desktop */}
+        {/* Content Section - Full width on portrait, fixed width on landscape */}
         <div
-          className="w-full md:w-[400px] lg:w-[528px] flex flex-col flex-shrink-0 flex-1 md:h-full overflow-hidden"
-          style={{ backgroundColor: "#121212" }}
+          className="flex flex-col flex-shrink-0 flex-1 overflow-hidden"
+          style={{
+            backgroundColor: "#121212",
+            width: isLandscape && window.innerWidth >= 768 ? "528px" : "100%",
+            height: isLandscape && window.innerWidth >= 768 ? "100%" : "auto",
+          }}
         >
           {/* Content Wrapper - Scrollable */}
           <div
@@ -311,11 +345,27 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             }}
           >
             {/* Top Section */}
-            <div className="p-6 md:p-8 lg:p-12 relative">
-              {/* Close Button - Desktop only (top right) */}
+            <div
+              className="relative"
+              style={{
+                padding:
+                  isLandscape && window.innerWidth >= 768
+                    ? "3rem"
+                    : window.innerWidth >= 768
+                      ? "2rem"
+                      : "1.5rem",
+              }}
+            >
+              {/* Close Button - Landscape mode only (top right) */}
               <button
                 onClick={handleClose}
-                className="hidden md:flex absolute top-6 right-6 md:top-8 md:right-8 lg:top-12 lg:right-12 w-8 h-8 items-center justify-center hover:opacity-50 transition-opacity z-10"
+                className={`${
+                  isLandscape && window.innerWidth >= 768 ? "flex" : "hidden"
+                } absolute w-8 h-8 items-center justify-center hover:opacity-50 transition-opacity z-10`}
+                style={{
+                  top: "3rem",
+                  right: "3rem",
+                }}
               >
                 <div className="relative w-6 h-6">
                   <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
@@ -324,12 +374,27 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
               </button>
 
               {/* Project Info */}
-              <div className="space-y-4 md:space-y-6">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap:
+                    isLandscape && window.innerWidth >= 768 ? "1.5rem" : "1rem",
+                }}
+              >
                 <div>
                   <p className="font-sans text-xs text-neutral-400 mb-1">
                     Title
                   </p>
-                  <h2 className="font-serif text-xl md:text-2xl text-white">
+                  <h2
+                    className="font-serif text-white"
+                    style={{
+                      fontSize:
+                        isLandscape && window.innerWidth >= 768
+                          ? "1.5rem"
+                          : "1.25rem",
+                    }}
+                  >
                     {project.title}
                   </h2>
                 </div>
@@ -338,7 +403,15 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                   <p className="font-sans text-xs text-neutral-400 mb-1">
                     Created by
                   </p>
-                  <p className="font-serif text-xl md:text-2xl text-white">
+                  <p
+                    className="font-serif text-white"
+                    style={{
+                      fontSize:
+                        isLandscape && window.innerWidth >= 768
+                          ? "1.5rem"
+                          : "1.25rem",
+                    }}
+                  >
                     {project.createdBy}
                   </p>
                 </div>
@@ -347,7 +420,15 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                   <p className="font-sans text-xs text-neutral-400 mb-1">
                     Year
                   </p>
-                  <p className="font-serif text-xl md:text-2xl text-white">
+                  <p
+                    className="font-serif text-white"
+                    style={{
+                      fontSize:
+                        isLandscape && window.innerWidth >= 768
+                          ? "1.5rem"
+                          : "1.25rem",
+                    }}
+                  >
                     {project.year}
                   </p>
                 </div>
@@ -356,7 +437,15 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                   <p className="font-sans text-xs text-neutral-400 mb-1">
                     {project.categories.length > 1 ? "Categories" : "Category"}
                   </p>
-                  <p className="font-serif text-xl md:text-2xl text-white">
+                  <p
+                    className="font-serif text-white"
+                    style={{
+                      fontSize:
+                        isLandscape && window.innerWidth >= 768
+                          ? "1.5rem"
+                          : "1.25rem",
+                    }}
+                  >
                     {project.categories.join(", ")}
                   </p>
                 </div>
@@ -364,8 +453,25 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             </div>
 
             {/* Bottom Section - Description */}
-            <div className="p-6 pb-12 md:p-8 md:pb-0 lg:p-12 pt-0">
-              <p className="font-serif text-xl lg:text-2xl text-white leading-relaxed">
+            <div
+              style={{
+                padding:
+                  isLandscape && window.innerWidth >= 768
+                    ? "0 3rem 3rem 3rem"
+                    : window.innerWidth >= 768
+                      ? "0 2rem 2rem 2rem"
+                      : "0 1.5rem 5rem 1.5rem",
+              }}
+            >
+              <p
+                className="font-serif text-white leading-relaxed"
+                style={{
+                  fontSize:
+                    isLandscape && window.innerWidth >= 768
+                      ? "1.5rem"
+                      : "1.25rem",
+                }}
+              >
                 {project.description}
               </p>
             </div>
