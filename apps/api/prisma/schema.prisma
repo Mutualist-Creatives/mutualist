@@ -22,6 +22,21 @@ model Portfolio {
   @@map("portfolios")
 }
 
+model PortfolioMutu {
+  id        String   @id @default(cuid())
+  title     String
+  subtitle  String
+  year      String
+  industry  String
+  services  Json // Array of objects with boolean fields
+  teams     Json // Array of objects with role and name
+  images    String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("portfolios_mutu")
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique

@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { PortfoliosMutuModule } from './portfolios-mutu/portfolios-mutu.module';
 import { UploadModule } from './upload/upload.module';
 
 @Module({
@@ -13,6 +14,7 @@ import { UploadModule } from './upload/upload.module';
     }),
     PrismaModule,
     PortfolioModule,
+    PortfoliosMutuModule,
     UploadModule,
   ],
   controllers: [AppController],

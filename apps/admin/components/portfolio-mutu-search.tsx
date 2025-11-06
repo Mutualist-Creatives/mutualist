@@ -158,7 +158,7 @@ export function PortfolioMutuSearch({
                   <div className="flex flex-wrap gap-1">
                     {portfolio.services[0] &&
                       Object.entries(portfolio.services[0])
-                        .filter(([_, value]) => value)
+                        .filter(([, value]) => value)
                         .map(([key]) => (
                           <Badge
                             key={key}

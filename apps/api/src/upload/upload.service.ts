@@ -19,13 +19,16 @@ export class UploadService {
     this.supabase = createClient(supabaseUrl, supabaseKey) as SupabaseClient;
   }
 
-  async uploadFile(file: Express.Multer.File, bucket: string) {
+  async uploadFile(file: Express.Multer.File, bucket: string, folder?: string) {
     try {
       // Generate unique filename
       const timestamp = Date.now();
       const randomString = Math.random().toString(36).substring(2, 8);
       const fileExt = file.originalname.split('.').pop();
-      const fileName = `${timestamp}-${randomString}.${fileExt}`;
+      const baseFileName = `${timestamp}-${randomString}.${fileExt}`;
+
+      // Add folder prefix if provided
+      const fileName = folder ? `${folder}/${baseFileName}` : baseFileName;
 
       // Upload to Supabase Storage
       const { data, error } = await this.supabase.storage

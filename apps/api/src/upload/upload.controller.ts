@@ -18,13 +18,18 @@ export class UploadController {
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body('bucket') bucket?: string,
+    @Body('folder') folder?: string,
   ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
 
     const bucketName = bucket || 'portfolio-images';
-    const result = await this.uploadService.uploadFile(file, bucketName);
+    const result = await this.uploadService.uploadFile(
+      file,
+      bucketName,
+      folder,
+    );
 
     return result;
   }
