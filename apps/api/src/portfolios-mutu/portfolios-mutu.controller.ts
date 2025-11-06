@@ -28,6 +28,11 @@ export class PortfoliosMutuController {
     return this.portfoliosMutuService.findAll();
   }
 
+  @Get('slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.portfoliosMutuService.findBySlug(slug);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.portfoliosMutuService.findOne(id);

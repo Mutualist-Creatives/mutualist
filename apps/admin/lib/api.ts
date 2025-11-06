@@ -85,6 +85,7 @@ export interface PortfolioMutu {
   id: string;
   title: string;
   subtitle: string;
+  slug: string;
   year: string;
   industry: string;
   services: Array<{
@@ -105,6 +106,7 @@ export interface PortfolioMutu {
 export interface CreatePortfolioMutuDto {
   title: string;
   subtitle: string;
+  slug: string;
   year: string;
   industry: string;
   services: Array<{
@@ -123,6 +125,7 @@ export interface CreatePortfolioMutuDto {
 export interface UpdatePortfolioMutuDto {
   title?: string;
   subtitle?: string;
+  slug?: string;
   year?: string;
   industry?: string;
   services?: Array<{
@@ -152,6 +155,14 @@ export const portfolioMutuApi = {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch portfolio mutu");
+    return res.json();
+  },
+
+  async getBySlug(slug: string): Promise<PortfolioMutu> {
+    const res = await fetch(`${API_URL}/portfolios-mutu/slug/${slug}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Failed to fetch portfolio mutu by slug");
     return res.json();
   },
 

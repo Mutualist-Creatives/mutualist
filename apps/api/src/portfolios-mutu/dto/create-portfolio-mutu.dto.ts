@@ -17,6 +17,10 @@ export class CreatePortfolioMutuDto {
 
   @IsString()
   @IsNotEmpty()
+  slug: string;
+
+  @IsString()
+  @IsNotEmpty()
   year: string;
 
   @IsString()

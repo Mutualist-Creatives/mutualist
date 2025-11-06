@@ -26,6 +26,7 @@ model PortfolioMutu {
   id        String   @id @default(cuid())
   title     String
   subtitle  String
+  slug      String   @unique
   year      String
   industry  String
   services  Json // Array of objects with boolean fields

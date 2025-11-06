@@ -35,6 +35,18 @@ export class PortfoliosMutuService {
     return portfolio;
   }
 
+  async findBySlug(slug: string) {
+    const portfolio = await this.prisma.portfolioMutu.findUnique({
+      where: { slug },
+    });
+
+    if (!portfolio) {
+      throw new NotFoundException(`Portfolio Mutu with slug ${slug} not found`);
+    }
+
+    return portfolio;
+  }
+
   async update(id: string, updatePortfolioMutuDto: UpdatePortfolioMutuDto) {
     const existingPortfolio = await this.findOne(id);
 

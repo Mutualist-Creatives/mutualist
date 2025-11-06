@@ -30,6 +30,7 @@ export function PortfolioFormMutu({ portfolio }: PortfolioFormMutuProps) {
   const [formData, setFormData] = useState({
     title: portfolio?.title || "",
     subtitle: portfolio?.subtitle || "",
+    slug: portfolio?.slug || "",
     year: portfolio?.year || new Date().getFullYear().toString(),
     industry: portfolio?.industry || "",
   });
@@ -300,6 +301,25 @@ export function PortfolioFormMutu({ portfolio }: PortfolioFormMutuProps) {
               }
               placeholder="Enter portfolio subtitle"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="slug">
+              Slug <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              id="slug"
+              required
+              value={formData.slug}
+              onChange={(e) =>
+                setFormData({ ...formData, slug: e.target.value })
+              }
+              placeholder="e.g., my-awesome-project"
+              className="font-mono"
+            />
+            <p className="text-xs text-muted-foreground">
+              URL-friendly identifier (lowercase, hyphens only)
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
