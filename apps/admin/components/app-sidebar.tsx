@@ -43,6 +43,11 @@ const menuItems = [
     icon: Briefcase,
     href: "/portfolios",
   },
+  {
+    title: "Portfolios Mutu",
+    icon: Briefcase,
+    href: "/portfolios-mutu",
+  },
 ];
 
 interface User {

@@ -80,3 +80,108 @@ export const portfolioApi = {
     if (!res.ok) throw new Error("Failed to delete portfolio");
   },
 };
+
+export interface PortfolioMutu {
+  id: string;
+  title: string;
+  subtitle: string;
+  year: string;
+  industry: string;
+  services: Array<{
+    advertisement?: boolean;
+    branding?: boolean;
+    "character design"?: boolean;
+    "social media"?: boolean;
+  }>;
+  teams: Array<{
+    role: string;
+    name: string;
+  }>;
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePortfolioMutuDto {
+  title: string;
+  subtitle: string;
+  year: string;
+  industry: string;
+  services: Array<{
+    advertisement?: boolean;
+    branding?: boolean;
+    "character design"?: boolean;
+    "social media"?: boolean;
+  }>;
+  teams: Array<{
+    role: string;
+    name: string;
+  }>;
+  images: string[];
+}
+
+export interface UpdatePortfolioMutuDto {
+  title?: string;
+  subtitle?: string;
+  year?: string;
+  industry?: string;
+  services?: Array<{
+    advertisement?: boolean;
+    branding?: boolean;
+    "character design"?: boolean;
+    "social media"?: boolean;
+  }>;
+  teams?: Array<{
+    role: string;
+    name: string;
+  }>;
+  images?: string[];
+}
+
+export const portfolioMutuApi = {
+  async getAll(): Promise<PortfolioMutu[]> {
+    const res = await fetch(`${API_URL}/portfolios-mutu`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Failed to fetch portfolios mutu");
+    return res.json();
+  },
+
+  async getById(id: string): Promise<PortfolioMutu> {
+    const res = await fetch(`${API_URL}/portfolios-mutu/${id}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Failed to fetch portfolio mutu");
+    return res.json();
+  },
+
+  async create(data: CreatePortfolioMutuDto): Promise<PortfolioMutu> {
+    const res = await fetch(`${API_URL}/portfolios-mutu`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to create portfolio mutu");
+    return res.json();
+  },
+
+  async update(
+    id: string,
+    data: UpdatePortfolioMutuDto
+  ): Promise<PortfolioMutu> {
+    const res = await fetch(`${API_URL}/portfolios-mutu/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("Failed to update portfolio mutu");
+    return res.json();
+  },
+
+  async delete(id: string): Promise<void> {
+    const res = await fetch(`${API_URL}/portfolios-mutu/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete portfolio mutu");
+  },
+};

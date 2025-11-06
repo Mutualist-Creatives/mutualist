@@ -136,6 +136,7 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("bucket", "portfolio-images");
+        formData.append("folder", "life"); // Upload to /life folder
 
         const res = await fetch(`${apiUrl}/upload`, {
           method: "POST",
