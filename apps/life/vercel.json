@@ -1,6 +1,5 @@
 {
-  "buildCommand": "cd ../.. && turbo run build --filter=life",
-  "installCommand": "cd ../.. && bun install",
-  "framework": "nextjs",
-  "outputDirectory": ".next"
+  "installCommand": "bun install",
+  "buildCommand": "bun run build",
+  "framework": "nextjs"
 }
