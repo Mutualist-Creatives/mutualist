@@ -164,7 +164,7 @@ export function FixedButton({
         } else {
           // Desktop: morph ke atas sampai top viewport dengan padding
           const distanceToTop = buttonRect.top;
-          const paddingTop = 16;
+          const paddingTop = 24;
           targetHeight = distanceToTop + buttonHeight - paddingTop;
         }
 
@@ -354,7 +354,7 @@ export function FixedButton({
             }
             className={`w-12 h-12 rounded-xl shadow-lg hover:shadow-xl transition-shadow origin-bottom-right ${
               button.type === "hamburger" && isSettingsOpen
-                ? "items-start justify-start pointer-events-none"
+                ? "flex items-start justify-start pointer-events-none"
                 : "flex items-center justify-center"
             }`}
             style={{ backgroundColor: BUTTON_BG_COLOR }}

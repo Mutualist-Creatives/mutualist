@@ -463,6 +463,9 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                       : "0 1.5rem 5rem 1.5rem",
               }}
             >
+              <p className="font-sans text-xs text-neutral-400 mb-1">
+                Description
+              </p>
               <p
                 className="font-serif text-white leading-relaxed"
                 style={{
