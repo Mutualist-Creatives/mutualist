@@ -33,7 +33,7 @@ async function bootstrap() {
   );
 
   // --- Start Application ---
-  const port = process.env.PORT || 3002;
+  const port = process.env.PORT || 8080;
   // Listen on '0.0.0.0' to accept connections on all network interfaces
   const host = process.env.HOST || '0.0.0.0';
 
