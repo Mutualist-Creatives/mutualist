@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -25,6 +26,7 @@ const navItems = [
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+  const pathname = usePathname();
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleSubMenu = (name: string) =>
@@ -35,7 +37,7 @@ export default function Header() {
       <header className="fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300">
         <div className="mx-auto max-w-screen-2xl w-full flex items-center justify-between px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 py-4 md:py-5 lg:py-6 2xl:py-8">
           {/* Left: Logo */}
-          <div className="flex-shrink-0 relative z-50">
+          <div className="shrink-0 relative z-50">
             <Link href="/">
               <Image
                 src="/assets/identity/header_logo.svg"
@@ -50,40 +52,49 @@ export default function Header() {
 
           {/* Center: Navigation (Desktop) */}
           <nav className="hidden md:flex items-center gap-6 md:gap-8 lg:gap-12 xl:gap-20 2xl:gap-28 transition-all duration-300">
-            {navItems.map((item) => (
-              <div key={item.name} className="relative group">
-                <Link
-                  href={item.href}
-                  className="text-sm md:text-sm lg:text-base xl:text-lg 2xl:text-xl font-medium text-green-mutu hover:opacity-80 transition-opacity capitalize flex items-center gap-1"
-                >
-                  {item.name}
-                  {item.subItems && (
-                    <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 mt-0.5" />
-                  )}
-                </Link>
+            {navItems.map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.href);
 
-                {/* Dropdown */}
-                {item.subItems && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                    <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[200px] flex flex-col overflow-hidden">
-                      {item.subItems.map((subItem) => (
-                        <Link
-                          key={subItem.name}
-                          href={subItem.href}
-                          className="px-6 py-3 text-sm lg:text-base xl:text-lg 2xl:text-xl text-black-mutu hover:bg-cream-mutu hover:text-green-mutu transition-colors whitespace-nowrap text-left"
-                        >
-                          {subItem.name}
-                        </Link>
-                      ))}
+              return (
+                <div key={item.name} className="relative group">
+                  <Link
+                    href={item.href}
+                    className={`text-sm md:text-sm lg:text-base xl:text-lg 2xl:text-xl text-green-mutu hover:opacity-80 transition-opacity capitalize flex items-center gap-1 ${
+                      isActive ? "font-bold" : "font-medium"
+                    }`}
+                  >
+                    {item.name}
+                    {item.subItems && (
+                      <ChevronDown className="w-3 h-3 lg:w-4 lg:h-4 mt-0.5" />
+                    )}
+                  </Link>
+
+                  {/* Dropdown */}
+                  {item.subItems && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                      <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2 min-w-[200px] flex flex-col overflow-hidden">
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.name}
+                            href={subItem.href}
+                            className="px-6 py-3 text-sm lg:text-base xl:text-lg 2xl:text-xl text-black-mutu hover:bg-cream-mutu hover:text-green-mutu transition-colors whitespace-nowrap text-left"
+                          >
+                            {subItem.name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           {/* Right: CTA Button & Hamburger */}
-          <div className="flex-shrink-0 flex items-center gap-3 md:gap-4 relative z-50">
+          <div className="shrink-0 flex items-center gap-3 md:gap-4 relative z-50">
             <Link
               href="/consult"
               className="text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl inline-block px-4 py-2 md:px-5 md:py-2.5 lg:px-8 lg:py-3 2xl:px-10 2xl:py-4 rounded-full bg-green-mutu text-yellow-mutu font-bold hover:bg-purple-mutu transition-all duration-300 whitespace-nowrap"

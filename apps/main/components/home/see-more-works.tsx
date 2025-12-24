@@ -55,17 +55,63 @@ export default function SeeMoreWorks({ works = [] }: { works: Work[] }) {
                     )}
                   </div>
 
-                  <div className="flex justify-between items-center">
-                    <div className="flex flex-col">
-                      <h3 className="text-sm md:text-lg font-bold text-purple-mutu uppercase line-clamp-1">
+                  <div className="flex flex-col gap-1 md:flex-row md:justify-between md:items-end mt-3">
+                    <div className="flex flex-col w-full md:w-auto overflow-hidden">
+                      <h3 className="text-sm md:text-lg font-bold text-purple-mutu uppercase line-clamp-1 mb-1">
                         {work.title}
                       </h3>
-                      <span className="text-xs md:text-lg font-medium text-purple-mutu">
+
+                      {/* Desktop: Year + Industry */}
+                      <div className="hidden md:block text-lg font-bold text-purple-mutu">
                         {work.year}{" "}
                         <span className="italic font-normal">
                           {work.industry}
                         </span>
-                      </span>
+                      </div>
+
+                      {/* Mobile: ABCS + Industry */}
+                      <div className="flex md:hidden items-center gap-3">
+                        {/* Tags (ABCS) */}
+                        <div className="flex gap-1">
+                          {["A", "B", "C", "S"].map((label) => {
+                            const isActive = work.serviceIcons?.includes(label);
+                            return (
+                              <div
+                                key={label}
+                                className={`w-6 h-6 rounded-md font-extrabold text-[10px] flex items-center justify-center border-2 border-purple-mutu transition-colors ${
+                                  isActive
+                                    ? "bg-purple-mutu text-cream-mutu"
+                                    : "bg-transparent text-purple-mutu"
+                                }`}
+                              >
+                                {label}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <span className="text-xs italic font-normal text-purple-mutu line-clamp-1 flex-1">
+                          {work.industry}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Desktop: Tags (ABCS) - Right Side */}
+                    <div className="hidden md:flex gap-2 shrink-0">
+                      {["A", "B", "C", "S"].map((label) => {
+                        const isActive = work.serviceIcons?.includes(label);
+                        return (
+                          <div
+                            key={label}
+                            className={`w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center border-2 border-purple-mutu transition-colors ${
+                              isActive
+                                ? "bg-purple-mutu text-cream-mutu"
+                                : "bg-transparent text-purple-mutu"
+                            }`}
+                          >
+                            {label}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </motion.div>
