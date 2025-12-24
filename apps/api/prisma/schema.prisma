@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+model LifePortfolio {
+  id          String   @id @default(cuid())
+  title       String
+  createdBy   String
+  year        String
+  categories  String[] // Multiple categories (array)
+  description String   @db.Text
+  images      String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("life_portfolios")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model MainPortfolio {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  industry     String
+  year         String
+  serviceIcons String[]
+  serviceNames String
+  teams        Json // Array of { role: string, names: string[] }
+  content      Json // Array of { type: string, images: string[] }
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("main_portfolios")
+}
+
+model Blog {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  category  String
+  date      String // Using string as per client data example "August 4, 2025"
+  image     String? // Optional
+  rotation  Float    @default(0)
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blogs")
+}

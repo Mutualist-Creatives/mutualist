@@ -1,0 +1,285 @@
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\blogs\[slug]\page.tsx
+  16:7   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\blogs\[slug]\page.tsx:16:7
+  14 |     const blog = await blogsApi.getBySlug(slug);
+  15 |     return (
+> 16 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |         <div className="flex items-center justify-between">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |           <h2 className="text-3xl font-bold tracking-tight">Edit Blog Post</h2>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 19 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 20 |         <BlogForm blog={blog} />
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |       </div>
+     | ^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  22 |     );
+  23 |   } catch {
+  24 |     notFound();  react-hooks/error-boundaries
+  17:9   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\blogs\[slug]\page.tsx:17:9
+  15 |     return (
+  16 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+> 17 |         <div className="flex items-center justify-between">
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |           <h2 className="text-3xl font-bold tracking-tight">Edit Blog Post</h2>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 19 |         </div>
+     | ^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  20 |         <BlogForm blog={blog} />
+  21 |       </div>
+  22 |     );                                                                                                                                                                                                                                                                               react-hooks/error-boundaries
+  18:11  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\blogs\[slug]\page.tsx:18:11
+  16 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+  17 |         <div className="flex items-center justify-between">
+> 18 |           <h2 className="text-3xl font-bold tracking-tight">Edit Blog Post</h2>
+     |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  19 |         </div>
+  20 |         <BlogForm blog={blog} />
+  21 |       </div>                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/error-boundaries
+  20:9   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\blogs\[slug]\page.tsx:20:9
+  18 |           <h2 className="text-3xl font-bold tracking-tight">Edit Blog Post</h2>
+  19 |         </div>
+> 20 |         <BlogForm blog={blog} />
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  21 |       </div>
+  22 |     );
+  23 |   } catch {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/error-boundaries
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\main-portfolios\[slug]\page.tsx
+  17:7   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\main-portfolios\[slug]\page.tsx:17:7
+  15 |     const work = await worksApi.getBySlug(slug);
+  16 |     return (
+> 17 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |         <div className="flex items-center justify-between">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 19 |           <h2 className="text-3xl font-bold tracking-tight">
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         </Card>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |       </div>
+     | ^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  29 |     );
+  30 |   } catch {
+  31 |     notFound();                                                              react-hooks/error-boundaries
+  18:9   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\main-portfolios\[slug]\page.tsx:18:9
+  16 |     return (
+  17 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+> 18 |         <div className="flex items-center justify-between">
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 19 |           <h2 className="text-3xl font-bold tracking-tight">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 20 |             Edit Main Portfolio
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |           </h2>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |         </div>
+     | ^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  23 |         <Card>
+  24 |           <CardContent className="pt-6">
+  25 |             <ClientPortfolioForm work={work} />  react-hooks/error-boundaries
+  19:11  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\main-portfolios\[slug]\page.tsx:19:11
+  17 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+  18 |         <div className="flex items-center justify-between">
+> 19 |           <h2 className="text-3xl font-bold tracking-tight">
+     |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 20 |             Edit Main Portfolio
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |           </h2>
+     | ^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  22 |         </div>
+  23 |         <Card>
+  24 |           <CardContent className="pt-6">                                                                                                                                                                                                                                               react-hooks/error-boundaries
+  23:9   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\main-portfolios\[slug]\page.tsx:23:9
+  21 |           </h2>
+  22 |         </div>
+> 23 |         <Card>
+     |         ^^^^^^
+> 24 |           <CardContent className="pt-6">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |             <ClientPortfolioForm work={work} />
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |           </CardContent>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         </Card>
+     | ^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  28 |       </div>
+  29 |     );
+  30 |   } catch {                                                                                                                                                                                                                                                           react-hooks/error-boundaries
+  24:11  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\main-portfolios\[slug]\page.tsx:24:11
+  22 |         </div>
+  23 |         <Card>
+> 24 |           <CardContent className="pt-6">
+     |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |             <ClientPortfolioForm work={work} />
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |           </CardContent>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  27 |         </Card>
+  28 |       </div>
+  29 |     );                                                                                                                                                                                                                                                                                                                                                          react-hooks/error-boundaries
+  25:13  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\main-portfolios\[slug]\page.tsx:25:13
+  23 |         <Card>
+  24 |           <CardContent className="pt-6">
+> 25 |             <ClientPortfolioForm work={work} />
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  26 |           </CardContent>
+  27 |         </Card>
+  28 |       </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/error-boundaries
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\profile\[id]\page.tsx
+  26:7   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\profile\[id]\page.tsx:26:7
+  24 |
+  25 |     return (
+> 26 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         <div className="flex items-center justify-between">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |           <h2 className="text-3xl font-bold tracking-tight">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             {user.id === session.user.id
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |               ? "My Profile"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |               : `Profile: ${user.name}`}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |           </h2>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         <ProfileForm user={user} />
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |       </div>
+     | ^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  36 |     );
+  37 |   } catch (error) {
+  38 |     return <div>Failed to load profile. {String(error)}</div>;  react-hooks/error-boundaries
+  27:9   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\profile\[id]\page.tsx:27:9
+  25 |     return (
+  26 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+> 27 |         <div className="flex items-center justify-between">
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |           <h2 className="text-3xl font-bold tracking-tight">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             {user.id === session.user.id
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |               ? "My Profile"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |               : `Profile: ${user.name}`}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |           </h2>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |         </div>
+     | ^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  34 |         <ProfileForm user={user} />
+  35 |       </div>
+  36 |     );                                                                                                                                                                                                                                                                                                    react-hooks/error-boundaries
+  28:11  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\profile\[id]\page.tsx:28:11
+  26 |       <div className="flex-1 space-y-6 p-6 lg:p-8">
+  27 |         <div className="flex items-center justify-between">
+> 28 |           <h2 className="text-3xl font-bold tracking-tight">
+     |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             {user.id === session.user.id
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |               ? "My Profile"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |               : `Profile: ${user.name}`}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |           </h2>
+     | ^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  33 |         </div>
+  34 |         <ProfileForm user={user} />
+  35 |       </div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/error-boundaries
+  34:9   error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\profile\[id]\page.tsx:34:9
+  32 |           </h2>
+  33 |         </div>
+> 34 |         <ProfileForm user={user} />
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  35 |       </div>
+  36 |     );
+  37 |   } catch (error) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/error-boundaries
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\app\users\page.tsx
+  4:10  warning  'Pencil' is defined but never used     @typescript-eslint/no-unused-vars
+  4:18  warning  'Trash2' is defined but never used     @typescript-eslint/no-unused-vars
+  4:26  warning  'RefreshCw' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\components\client-portfolio-form.tsx
+  27:3   warning  'Loader2' is defined but never used           @typescript-eslint/no-unused-vars
+  52:16  warning  'setWork' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\components\ui\sidebar.tsx
+  611:26  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+E:\Freelance\Mutualist\Codes\mutualist\apps\admin\components\ui\sidebar.tsx:611:26
+  609 |   // Random width between 50 to 90%.
+  610 |   const width = React.useMemo(() => {
+> 611 |     return `${Math.floor(Math.random() * 40) + 50}%`
+      |                          ^^^^^^^^^^^^^ Cannot call impure function
+  612 |   }, [])
+  613 |
+  614 |   return (  react-hooks/purity
+
+✖ 20 problems (15 errors, 5 warnings)
+
