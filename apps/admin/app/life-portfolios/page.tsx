@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PortfolioSearch } from "@/components/portfolio-search";
 
+export const dynamic = "force-dynamic";
+
 export default async function PortfoliosPage() {
   let portfolios: import("@/lib/api").Portfolio[] = [];
   try {

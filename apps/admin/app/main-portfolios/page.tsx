@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ClientPortfolioSearch } from "@/components/client-portfolio-search";
 
+export const dynamic = "force-dynamic";
+
 export default async function ClientPortfoliosPage() {
   let works: import("@/lib/api").Work[] = [];
   try {
