@@ -11,11 +11,12 @@ export default function CTASection() {
             alt="ABCS"
             width={350}
             height={350}
-            className="w-[150px] md:w-[200px] lg:w-[250px] xl:w-[650px] 2xl:w-[650px] h-auto object-contain"
+            className="w-[300px] md:w-[550px] lg:w-[600px] xl:w-[750px] 2xl:w-[750px] h-auto object-contain"
           />
         </div>
-        <h2 className="text-2xl md:text-3xl lg:text-3xl xl:text-5xl 2xl:text-5xl font-bold text-purple-mutu mb-10 max-w-xl leading-tight">
-          Ready to Make Something Great?
+        <h2 className="text-xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-4xl font-bold text-purple-mutu mb-4 md:mb-10 leading-tight">
+          Ready to Make <br />
+          Something Great?
         </h2>
         <Link
           href="/consult"

@@ -1,35 +1,67 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
 
-// Using placeholder images for the gallery
+// Combine the images from Gallery with the layout properties from Featured Portfolio
 const items = [
   {
-    image: "/assets/home/folder/advertising/1.png",
-    transform: "rotate(2deg) translate(-240px)",
+    image: "",
+    color: "bg-purple-mutu",
+    rotate: 2,
+    x: -240,
   },
   {
-    image: "/assets/home/folder/branding/1.png",
-    transform: "rotate(1deg) translate(-120px)",
+    image: "",
+    color: "bg-green-mutu",
+    rotate: 1,
+    x: -120,
   },
   {
-    image: "/assets/home/folder/character/1.png",
-    transform: "rotate(-1deg)",
+    image: "",
+    color: "bg-yellow-mutu",
+    rotate: -1,
+    x: 0,
   },
   {
-    image: "/assets/home/folder/social media/1.png",
-    transform: "rotate(-2deg) translate(120px)",
+    image: "",
+    color: "bg-black-mutu",
+    rotate: -2,
+    x: 120,
   },
   {
-    image: "/assets/home/folder/advertising/2.png",
-    transform: "rotate(1deg) translate(240px)",
+    image: "",
+    color: "bg-purple-mutu",
+    rotate: 1,
+    x: 240,
   },
 ];
 
 export default function GallerySection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [scaleFactor, setScaleFactor] = useState(1);
+  const [isSmall, setIsSmall] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setScaleFactor(0.35); // Mobile: Very dense
+        setIsSmall(true);
+      } else if (width < 1024) {
+        setScaleFactor(0.65); // Tablet: Moderate density
+        setIsSmall(true);
+      } else {
+        setScaleFactor(1); // Desktop: Full spread
+        setIsSmall(false);
+      }
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -76,14 +108,23 @@ export default function GallerySection() {
     }
   };
 
+  const getResponsiveTransform = (item: (typeof items)[0]) => {
+    return item.x === 0
+      ? `rotate(${item.rotate}deg)`
+      : `rotate(${item.rotate}deg) translate(${item.x * scaleFactor}px)`;
+  };
+
   const pushSiblings = (hoveredIdx: number) => {
+    const pushOffset = isSmall ? 120 : 260;
+
     items.forEach((item, i) => {
       gsap.killTweensOf(`.gallery-card-${i}`);
 
-      const baseTransform = item.transform || "none";
+      const baseTransform = getResponsiveTransform(item);
 
       if (i === hoveredIdx) {
         const noRotation = getNoRotationTransform(baseTransform);
+        // Set z-index immediately to avoid glitch
         gsap.set(`.gallery-card-${i}`, { zIndex: 50 });
         gsap.to(`.gallery-card-${i}`, {
           transform: noRotation,
@@ -93,12 +134,13 @@ export default function GallerySection() {
           overwrite: "auto",
         });
       } else {
-        const offsetX = i < hoveredIdx ? -260 : 260;
+        const offsetX = i < hoveredIdx ? -pushOffset : pushOffset;
         const pushedTransform = getPushedTransform(baseTransform, offsetX);
 
         const distance = Math.abs(hoveredIdx - i);
         const delay = distance * 0.05;
 
+        // Lower z-index for siblings
         gsap.set(`.gallery-card-${i}`, { zIndex: 10 });
         gsap.to(`.gallery-card-${i}`, {
           transform: pushedTransform,
@@ -115,7 +157,7 @@ export default function GallerySection() {
   const resetSiblings = () => {
     items.forEach((item, i) => {
       gsap.killTweensOf(`.gallery-card-${i}`);
-      const baseTransform = item.transform || "none";
+      const baseTransform = getResponsiveTransform(item);
       gsap.to(`.gallery-card-${i}`, {
         transform: baseTransform,
         zIndex: 10,
@@ -128,46 +170,49 @@ export default function GallerySection() {
   };
 
   return (
-    <section className="w-full py-20 bg-cream-mutu flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Title */}
-      {/* Title */}
-      <div className="w-full max-w-6xl px-6 md:px-14 mb-12 z-20 relative">
-        <h2 className="text-4xl md:text-6xl font-bold text-purple-mutu text-left">
-          Gallery
-        </h2>
-      </div>
+    <section className="w-full py-20 bg-cream-mutu relative overflow-hidden">
+      <div className="max-w-screen-2xl mx-auto w-full px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 flex flex-col items-center justify-center relative">
+        {/* Title */}
+        <div className="w-full z-20 relative">
+          <h2 className="text-3xl md:text-5xl font-bold text-purple-mutu text-left">
+            Gallery
+          </h2>
+        </div>
 
-      {/* Gallery Cards */}
-      <div
-        ref={containerRef}
-        className="relative w-full max-w-6xl h-[400px] flex items-center justify-center z-10"
-      >
-        {items.map((item, index) => (
-          <div
-            key={index}
-            className={`
-              gallery-card gallery-card-${index}
-              absolute w-96 h-64 rounded-xl shadow-lg cursor-pointer
-              bg-white overflow-hidden
-              flex items-center justify-center
-            `}
-            style={{ transform: item.transform }}
-            onMouseEnter={() => pushSiblings(index)}
-            onMouseLeave={resetSiblings}
-          >
-            <Image
-              src={item.image}
-              alt={`Gallery Image ${index + 1}`}
-              width={384}
-              height={256}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
+        {/* Gallery Cards */}
+        <div
+          ref={containerRef}
+          className="relative w-full max-w-6xl h-[180px] md:h-[280px] lg:h-[350px] flex items-center justify-center z-10"
+        >
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className={`
+                gallery-card gallery-card-${index}
+                absolute w-40 h-28 md:w-60 md:h-40 lg:w-80 lg:h-56 xl:w-96 xl:h-64 rounded-xl shadow-lg cursor-pointer
+                ${item.color} overflow-hidden
+                flex items-center justify-center
+              `}
+              style={{ transform: getResponsiveTransform(item) }}
+              onMouseEnter={() => pushSiblings(index)}
+              onMouseLeave={resetSiblings}
+            >
+              {item.image && (
+                <Image
+                  src={item.image}
+                  alt={`Gallery Image ${index + 1}`}
+                  width={384}
+                  height={256}
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Mascot */}
-      <div className="absolute bottom-[-10%] right-[5%] w-[200px] md:w-[275px] z-30 pointer-events-none">
+      <div className="absolute bottom-[-10%] right-[5%] w-[150px] md:w-[200px] lg:w-[2t0px] z-30 pointer-events-none">
         <Image
           src="/assets/about/gallery/gallery_mascot.png"
           alt="Gallery Mascot"

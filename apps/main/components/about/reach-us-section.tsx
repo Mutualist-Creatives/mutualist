@@ -3,17 +3,17 @@ import Image from "next/image";
 export default function ReachUsSection() {
   return (
     <section className="relative w-full bg-purple-mutu pt-20 pb-0 md:pt-32 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 md:px-14 relative z-20 pb-20 md:pb-32">
-        <div className="flex flex-col md:flex-row items-start justify-between gap-12 md:gap-20">
+      <div className="max-w-screen-2xl mx-auto px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 relative z-20 pb-20 md:pb-32">
+        <div className="grid grid-cols-2 md:grid-cols-3 items-start gap-4 md:gap-20">
           {/* Left Side: Title */}
-          <div className="w-full md:w-1/3">
-            <h2 className="text-5xl md:text-7xl font-bold text-yellow-mutu">
+          <div className="col-span-1">
+            <h2 className="text-3xl md:text-5xl xl:text-6xl font-bold text-yellow-mutu">
               Reach Us
             </h2>
           </div>
 
           {/* Right Side: Contact Info */}
-          <div className="w-full md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="col-span-1 md:col-span-2 min-w-0 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm lg:text-base break-words">
             {/* Column 1 */}
             <div className="space-y-10">
               {/* Office */}
@@ -21,7 +21,7 @@ export default function ReachUsSection() {
                 <h3 className="text-xl font-bold text-yellow-mutu mb-2">
                   Office
                 </h3>
-                <p className="text-white text-base leading-relaxed">
+                <p className="text-white leading-relaxed">
                   Victoria River Park
                   <br />
                   Blok A10 No 20 BSD City,
@@ -40,13 +40,13 @@ export default function ReachUsSection() {
                 <div className="flex flex-col gap-1">
                   <a
                     href="mailto:andre@mutualist.co"
-                    className="text-white hover:opacity-80 transition-opacity"
+                    className="text-white hover:opacity-80 transition-opacity break-all"
                   >
                     andre@mutualist.co
                   </a>
                   <a
                     href="mailto:mutualistlab@gmail.com"
-                    className="text-white hover:opacity-80 transition-opacity"
+                    className="text-white hover:opacity-80 transition-opacity break-all"
                   >
                     mutualistlab@gmail.com
                   </a>
@@ -106,7 +106,7 @@ export default function ReachUsSection() {
                 <h3 className="text-xl font-bold text-yellow-mutu mb-2">
                   Join Us
                 </h3>
-                <div className="text-white text-base leading-relaxed space-y-4">
+                <div className="text-white leading-relaxed space-y-4">
                   <p>Interested to join as a fellow Mutual?</p>
                   <p>
                     Send your CV and Portfolio to{" "}
@@ -129,7 +129,7 @@ export default function ReachUsSection() {
       </div>
 
       {/* Mascot */}
-      <div className="absolute bottom-[-10%] left-[20%] w-[300px] md:w-[350px] z-10 pointer-events-none">
+      <div className="absolute bottom-[-5%] left-[10%] md:bottom-[-10%] md:left-[20%] w-[200px] md:w-[300px] lg:w-[350px] z-10 pointer-events-none">
         <Image
           src="/assets/about/reach_us/reach_us_mascot.png"
           alt="Reach Us Mascot"
