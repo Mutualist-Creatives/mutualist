@@ -240,6 +240,27 @@ export default function FallingShapes() {
     // @ts-expect-error - legacy event
     mouse.element.removeEventListener("DOMMouseScroll", mouse.mousewheel);
 
+    // Fix: Make touch events passive to allow scrolling
+    // @ts-expect-error - access internal listener
+    mouse.element.removeEventListener("touchmove", mouse.mousemove);
+    // @ts-expect-error - access internal listener
+    mouse.element.removeEventListener("touchstart", mouse.mousedown);
+    // @ts-expect-error - access internal listener
+    mouse.element.removeEventListener("touchend", mouse.mouseup);
+
+    // @ts-expect-error - access internal listener
+    mouse.element.addEventListener("touchmove", mouse.mousemove, {
+      passive: true,
+    });
+    // @ts-expect-error - access internal listener
+    mouse.element.addEventListener("touchstart", mouse.mousedown, {
+      passive: true,
+    });
+    // @ts-expect-error - access internal listener
+    mouse.element.addEventListener("touchend", mouse.mouseup, {
+      passive: true,
+    });
+
     const mouseConstraint = MouseConstraint.create(engine, {
       mouse: mouse,
       constraint: {
@@ -255,25 +276,38 @@ export default function FallingShapes() {
     render.mouse = mouse;
 
     // --- Interaction Logic ---
+    let startPoint = { x: 0, y: 0 };
+    let selectedBody: Matter.Body | null = null;
 
     // Handle Click/Press
     Events.on(mouseConstraint, "mousedown", (event) => {
       const body = event.source.body;
       if (body && body.plugin && body.plugin.route) {
+        selectedBody = body;
+        startPoint = { ...event.mouse.position };
         // Visual Feedback
         body.render.opacity = 0.7;
-
-        // Navigation (Small delay to show effect)
-        setTimeout(() => {
-          router.push(body.plugin.route);
-        }, 150);
       }
     });
 
     Events.on(mouseConstraint, "mouseup", (event) => {
-      const body = event.source.body;
-      if (body && body.plugin && body.plugin.route) {
-        body.render.opacity = 1;
+      if (selectedBody && selectedBody.plugin && selectedBody.plugin.route) {
+        const endPoint = event.mouse.position;
+        const distance = Math.sqrt(
+          Math.pow(endPoint.x - startPoint.x, 2) +
+            Math.pow(endPoint.y - startPoint.y, 2)
+        );
+
+        // Reset opacity
+        selectedBody.render.opacity = 1;
+
+        // Navigate only if movement is small (it's a click, not a drag)
+        // Increased threshold to 30px for better touch tolerance
+        if (distance < 30) {
+          router.push(selectedBody.plugin.route);
+        }
+
+        selectedBody = null;
       }
     });
 

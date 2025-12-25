@@ -8,14 +8,14 @@ interface WorkContentProps {
 
 export default function WorkContent({ work }: WorkContentProps) {
   return (
-    <div className="w-full md:w-2/3 bg-white pt-20 md:pt-32 pb-20 px-6 md:pr-14 md:pl-0 flex flex-col gap-8">
+    <div className="w-full md:w-2/3 bg-white pt-10 md:pt-32 pb-20 px-0 flex flex-col gap-3 md:gap-4">
       {work.content.map((block, index) => {
         switch (block.type) {
           case "full-width":
             return (
               <div
                 key={index}
-                className="w-full rounded-2xl overflow-hidden bg-zinc-200"
+                className="w-full rounded-lg md:rounded-2xl overflow-hidden bg-zinc-200"
               >
                 <div className="relative w-full aspect-video">
                   {block.images[0] ? (
@@ -35,12 +35,12 @@ export default function WorkContent({ work }: WorkContentProps) {
             return (
               <div
                 key={index}
-                className="w-full grid grid-cols-1 md:grid-cols-2 gap-8"
+                className="w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4"
               >
                 {block.images.map((img, i) => (
                   <div
                     key={i}
-                    className="w-full rounded-2xl overflow-hidden bg-zinc-200"
+                    className="w-full rounded-lg md:rounded-2xl overflow-hidden bg-zinc-200"
                   >
                     <div className="relative w-full aspect-square">
                       {img ? (
@@ -57,12 +57,12 @@ export default function WorkContent({ work }: WorkContentProps) {
             return (
               <div
                 key={index}
-                className="w-full grid grid-cols-1 md:grid-cols-3 gap-8"
+                className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4"
               >
                 {block.images.map((img, i) => (
                   <div
                     key={i}
-                    className="w-full rounded-2xl overflow-hidden bg-zinc-200"
+                    className="w-full rounded-lg md:rounded-2xl overflow-hidden bg-zinc-200"
                   >
                     <div className="relative w-full aspect-square">
                       {img ? (

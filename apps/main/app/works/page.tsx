@@ -62,30 +62,41 @@ export default function WorksPage() {
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-1 md:flex-row md:justify-between md:items-end">
-                    <div className="flex flex-col w-full md:w-auto overflow-hidden">
-                      <h3 className="text-xs lg:text-lg font-bold text-purple-mutu uppercase line-clamp-1 mb-1">
+                  <div className="flex flex-col gap-1 md:flex-row md:justify-between md:items-end mt-2 md:mt-3">
+                    <div className="flex flex-col w-full md:flex-1 min-w-0 md:mr-4">
+                      {/* Mobile: Title + Year */}
+                      <div className="flex md:hidden items-center gap-1.5 mb-1">
+                        <h3 className="text-xs font-bold text-purple-mutu uppercase truncate">
+                          {work.title}
+                        </h3>
+                        <span className="text-xs font-bold text-purple-mutu shrink-0">
+                          {work.year}
+                        </span>
+                      </div>
+
+                      {/* Desktop: Title */}
+                      <h3 className="hidden md:block md:text-xl lg:text-2xl font-bold text-purple-mutu uppercase line-clamp-1 mb-1">
                         {work.title}
                       </h3>
 
                       {/* Desktop: Year + Industry */}
-                      <div className="hidden md:block text-xs lg:text-lg font-bold text-purple-mutu">
+                      <div className="hidden md:block md:text-base lg:text-lg font-bold text-purple-mutu">
                         {work.year}{" "}
-                        <span className="italic font-normal">
+                        <span className="italic font-normal hidden lg:inline-block lg:text-base ml-1">
                           {work.industry}
                         </span>
                       </div>
 
                       {/* Mobile: ABCS + Industry */}
-                      <div className="flex md:hidden items-center gap-3">
+                      <div className="flex md:hidden items-center gap-2">
                         {/* Tags (ABCS) */}
-                        <div className="flex gap-1">
+                        <div className="flex gap-0.5">
                           {["A", "B", "C", "S"].map((label) => {
                             const isActive = work.serviceIcons?.includes(label);
                             return (
                               <div
                                 key={label}
-                                className={`w-6 h-6 rounded-md font-extrabold text-[10px] flex items-center justify-center border-2 border-purple-mutu transition-colors ${
+                                className={`w-5 h-5 rounded hover:scale-110 font-extrabold text-[10px] flex items-center justify-center border-2 border-purple-mutu transition-all ${
                                   isActive
                                     ? "bg-purple-mutu text-cream-mutu"
                                     : "bg-transparent text-purple-mutu"
@@ -96,20 +107,20 @@ export default function WorksPage() {
                             );
                           })}
                         </div>
-                        <span className="text-xs italic font-normal text-purple-mutu line-clamp-1 flex-1">
+                        <span className="text-[10px] italic font-normal text-purple-mutu line-clamp-1 flex-1">
                           {work.industry}
                         </span>
                       </div>
                     </div>
 
                     {/* Desktop: Tags (ABCS) - Right Side */}
-                    <div className="hidden md:flex gap-2 shrink-0">
+                    <div className="hidden md:flex md:gap-1.5 lg:gap-2 shrink-0">
                       {["A", "B", "C", "S"].map((label) => {
                         const isActive = work.serviceIcons?.includes(label);
                         return (
                           <div
                             key={label}
-                            className={`w-8 h-8 rounded-lg font-extrabold text-sm flex items-center justify-center border-2 border-purple-mutu transition-colors ${
+                            className={`md:w-6 md:h-6 lg:w-8 lg:h-8 rounded-lg font-extrabold md:text-[10px] lg:text-sm flex items-center justify-center border-2 border-purple-mutu transition-colors ${
                               isActive
                                 ? "bg-purple-mutu text-cream-mutu"
                                 : "bg-transparent text-purple-mutu"
