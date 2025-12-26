@@ -8,7 +8,7 @@ interface WorkContentProps {
 
 export default function WorkContent({ work }: WorkContentProps) {
   return (
-    <div className="w-full md:w-2/3 bg-white pt-10 md:pt-32 pb-20 px-0 flex flex-col gap-3 md:gap-4">
+    <div className="w-full md:w-3/5 lg:w-2/3 bg-white pt-4 md:pt-32 pb-20 px-0 flex flex-col gap-2 md:gap-3 lg:gap-4 items-end ml-auto">
       {work.content.map((block, index) => {
         switch (block.type) {
           case "full-width":
@@ -35,7 +35,7 @@ export default function WorkContent({ work }: WorkContentProps) {
             return (
               <div
                 key={index}
-                className="w-full grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4"
+                className="w-full grid grid-cols-2 md:grid-cols-2 gap-2 md:gap-3 lg:gap-4"
               >
                 {block.images.map((img, i) => (
                   <div
@@ -57,7 +57,7 @@ export default function WorkContent({ work }: WorkContentProps) {
             return (
               <div
                 key={index}
-                className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4"
+                className="w-full grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-3 lg:gap-4"
               >
                 {block.images.map((img, i) => (
                   <div

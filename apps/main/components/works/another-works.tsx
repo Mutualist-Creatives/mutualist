@@ -49,14 +49,14 @@ export default function AnotherWorks() {
   }, [emblaApi]);
 
   return (
-    <section className="w-full py-20 bg-purple-mutu relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 md:px-14 relative">
+    <section className="w-full py-10md:py-20 bg-purple-mutu relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-12 md:px-14 relative">
         {/* Carousel Wrapper */}
         <div className="relative flex items-center justify-center min-h-[400px]">
           {/* Prev Button */}
           <button
             onClick={scrollPrev}
-            className="absolute left-[-20px] md:left-[-40px] top-[42.5%] -translate-y-1/2 z-20 text-white hover:opacity-70 transition-opacity"
+            className="absolute left-[-36px] md:left-[-40px] top-[42.5%] -translate-y-1/2 z-20 text-white hover:opacity-70 transition-opacity"
           >
             <svg
               width="40"
@@ -78,7 +78,7 @@ export default function AnotherWorks() {
               {anotherWorks.map((work, i) => (
                 <div
                   key={i}
-                  className="flex-[0_0_100%] md:flex-[0_0_33.33%] min-w-0 pl-6"
+                  className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] min-w-0 pl-6"
                 >
                   <Link
                     href={`/works/${work.slug}`}
@@ -88,10 +88,10 @@ export default function AnotherWorks() {
                     <div className="w-full aspect-[4/3] bg-zinc-300 rounded-lg overflow-hidden relative transition-transform duration-500 group-hover:scale-[1.02]" />
 
                     <div className="mt-4 flex flex-col gap-1">
-                      <h3 className="text-lg font-bold text-white uppercase">
+                      <h3 className="text-lg md:text-xl font-bold text-white uppercase">
                         {work.title}
                       </h3>
-                      <span className="text-base font-medium text-white">
+                      <span className="text-base md:text-lg font-medium text-white">
                         {work.year}
                       </span>
                     </div>
@@ -104,7 +104,7 @@ export default function AnotherWorks() {
           {/* Next Button */}
           <button
             onClick={scrollNext}
-            className="absolute right-[-20px] md:right-[-40px] top-[42.5%] -translate-y-1/2 z-20 text-white hover:opacity-70 transition-opacity"
+            className="absolute right-[-36px] md:right-[-40px] top-[42.5%] -translate-y-1/2 z-20 text-white hover:opacity-70 transition-opacity"
           >
             <svg
               width="40"
