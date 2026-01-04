@@ -4,36 +4,13 @@ import React, { useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import Link from "next/link";
 
-// Dummy data for the carousel
-const anotherWorks = [
-  {
-    title: "GAPURA ANGKASA",
-    year: "2023",
-    slug: "gapura-angkasa",
-  },
-  {
-    title: "ALBATROSS BSD",
-    year: "2025",
-    slug: "albatross-bsd",
-  },
-  {
-    title: "KHAYA LUXURY VILLAS",
-    year: "2025",
-    slug: "khaya-luxury-villas",
-  },
-  {
-    title: "WILLDER",
-    year: "2025",
-    slug: "willder",
-  },
-  {
-    title: "AYTHAYA RESERVE",
-    year: "2025",
-    slug: "aythaya-reserve",
-  },
-];
+import { Work } from "../../services/api";
 
-export default function AnotherWorks() {
+interface AnotherWorksProps {
+  works: Work[];
+}
+
+export default function AnotherWorks({ works }: AnotherWorksProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
     align: "start",
@@ -48,8 +25,10 @@ export default function AnotherWorks() {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
+  if (!works || works.length === 0) return null;
+
   return (
-    <section className="w-full py-10md:py-20 bg-purple-mutu relative overflow-hidden">
+    <section className="w-full py-20 bg-purple-mutu relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-12 md:px-14 relative">
         {/* Carousel Wrapper */}
         <div className="relative flex items-center justify-center min-h-[400px]">
@@ -75,29 +54,44 @@ export default function AnotherWorks() {
           {/* Embla Viewport */}
           <div className="overflow-hidden w-full" ref={emblaRef}>
             <div className="flex -ml-6">
-              {anotherWorks.map((work, i) => (
-                <div
-                  key={i}
-                  className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] min-w-0 pl-6"
-                >
-                  <Link
-                    href={`/works/${work.slug}`}
-                    className="block w-full group cursor-pointer"
+              {works.map((work, i) => {
+                const firstImage = work.content?.find(
+                  (c) => c.images && c.images.length > 0
+                )?.images[0];
+                return (
+                  <div
+                    key={i}
+                    className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.33%] min-w-0 pl-6"
                   >
-                    {/* Placeholder Image */}
-                    <div className="w-full aspect-[4/3] bg-zinc-300 rounded-lg overflow-hidden relative transition-transform duration-500 group-hover:scale-[1.02]" />
+                    <Link
+                      href={`/works/${work.slug}`}
+                      className="block w-full group cursor-pointer"
+                    >
+                      {/* Image */}
+                      <div className="w-full aspect-[4/3] bg-zinc-300 rounded-lg overflow-hidden relative transition-transform duration-500 group-hover:scale-[1.02]">
+                        {firstImage ? (
+                          <img
+                            src={firstImage}
+                            alt={work.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-zinc-300" />
+                        )}
+                      </div>
 
-                    <div className="mt-4 flex flex-col gap-1">
-                      <h3 className="text-lg md:text-xl font-bold text-white uppercase">
-                        {work.title}
-                      </h3>
-                      <span className="text-base md:text-lg font-medium text-white">
-                        {work.year}
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+                      <div className="mt-4 flex flex-col gap-1">
+                        <h3 className="text-lg md:text-xl font-bold text-white uppercase">
+                          {work.title}
+                        </h3>
+                        <span className="text-base md:text-lg font-medium text-white">
+                          {work.year}
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

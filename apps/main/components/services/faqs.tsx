@@ -96,37 +96,37 @@ export function FAQs({ category }: FAQsProps) {
   };
 
   return (
-    <section className="w-full bg-white py-20 px-6 md:px-14">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+    <section className="w-full bg-white py-10 md:py-20 px-6 md:px-14">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-20">
         {/* Left Column: FAQs */}
-        <div className="lg:col-span-7">
-          <h2 className="text-5xl md:text-7xl font-medium text-purple-mutu mb-12 font-sans">
+        <div className="md:col-span-7 lg:col-span-7">
+          <h2 className="text-3xl md:text-4xl lg:text-7xl font-medium text-purple-mutu mb-8 md:mb-12 font-sans">
             FAQs
           </h2>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 md:gap-6">
             {questions.map((item, index) => (
-              <div key={index} className="pb-6 mb-2">
+              <div key={index} className="pb-4 md:pb-6 mb-2">
                 <button
                   onClick={() => toggleAccordion(index)}
                   className="w-full flex items-start gap-4 text-left group cursor-pointer"
                 >
                   <div
                     className={clsx(
-                      "flex-shrink-0 w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-colors duration-300 mt-1",
+                      "flex-shrink-0 w-6 h-6 md:w-8 md:h-8 rounded-lg border-2 flex items-center justify-center transition-colors duration-300 mt-1",
                       openIndex === index
                         ? "border-purple-mutu bg-purple-mutu text-white"
                         : "border-purple-mutu text-purple-mutu group-hover:bg-purple-mutu group-hover:text-white"
                     )}
                   >
                     {openIndex === index ? (
-                      <Minus size={16} />
+                      <Minus size={14} className="md:w-4 md:h-4" />
                     ) : (
-                      <Plus size={16} />
+                      <Plus size={14} className="md:w-4 md:h-4" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-base md:text-lg font-bold text-black-mutu py-1">
+                    <h3 className="text-sm md:text-base lg:text-lg font-bold text-black-mutu py-1">
                       {item.question}
                     </h3>
                     <div
@@ -137,7 +137,7 @@ export function FAQs({ category }: FAQsProps) {
                           : "max-h-0 opacity-0"
                       )}
                     >
-                      <p className="text-black-mutu leading-relaxed font-normal text-sm text-opacity-80">
+                      <p className="text-black-mutu leading-relaxed font-normal text-xs md:text-xs lg:text-sm text-opacity-80">
                         {item.answer}
                       </p>
                     </div>
@@ -149,10 +149,10 @@ export function FAQs({ category }: FAQsProps) {
         </div>
 
         {/* Right Column: Mutu Said Card */}
-        <div className="lg:col-span-4 lg:col-start-9">
-          <div className="bg-cream-mutu rounded-2xl p-8 flex flex-col items-center text-center shadow-sm">
+        <div className="md:col-span-5 lg:col-span-4 lg:col-start-9 mt-8 md:mt-0">
+          <div className="bg-cream-mutu rounded-2xl p-6 md:p-6 lg:p-8 flex flex-col items-center text-center shadow-sm h-full md:h-auto sticky md:top-24">
             {/* Mascot */}
-            <div className="relative w-40 h-40 mb-6">
+            <div className="relative w-28 h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 mb-4 md:mb-6">
               <Image
                 src="/assets/services/faqs/faqs_mascot.png"
                 alt="Mutu Mascot"
@@ -162,12 +162,12 @@ export function FAQs({ category }: FAQsProps) {
             </div>
 
             {/* Title */}
-            <h3 className="text-2xl font-bold text-green-mutu mb-4 font-sans">
+            <h3 className="text-xl md:text-xl lg:text-2xl font-bold text-green-mutu mb-2 md:mb-4 font-sans">
               Mutu Said,
             </h3>
 
             {/* Quote */}
-            <p className="text-black-mutu font-medium text-base leading-relaxed">
+            <p className="text-black-mutu font-medium text-sm md:text-sm lg:text-base leading-relaxed">
               Good ads don&apos;t shout. They strike with purpose. We craft
               bold, thoughtful visuals that speak clearly and powerfully, so you
               don&apos;t have to explain twice.

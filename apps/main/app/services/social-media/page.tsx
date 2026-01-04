@@ -11,7 +11,7 @@ export default function SocialMediaPage() {
     <main className="min-h-screen bg-white">
       <ServiceHero
         title="Social Media"
-        subtitle="Connecting you with your audience through impactful content."
+        subtitle="Not Just Likes. Build Real Engagement That Matters and Lasts."
         imageSrc="/assets/services/s.png"
       />
       <WhatComesWithMagic category="social-media" />

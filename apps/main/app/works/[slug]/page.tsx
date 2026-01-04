@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { fetchWorkBySlug } from "../../../services/api";
+import { fetchWorkBySlug, fetchWorks } from "../../../services/api";
 import WorkSidebar from "../../../components/works/work-sidebar";
 import WorkContent from "../../../components/works/work-content";
 import AnotherWorks from "../../../components/works/another-works";
@@ -11,10 +11,14 @@ interface PageProps {
 export default async function WorkDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const work = await fetchWorkBySlug(slug);
+  const allWorks = await fetchWorks();
 
   if (!work) {
     notFound();
   }
+
+  // Filter out the current work
+  const otherWorks = allWorks.filter((w: { slug: string }) => w.slug !== slug);
 
   return (
     <main className="min-h-screen w-full bg-white font-sans">
@@ -24,7 +28,7 @@ export default async function WorkDetailPage({ params }: PageProps) {
           <WorkContent work={work} />
         </div>
       </div>
-      <AnotherWorks />
+      <AnotherWorks works={otherWorks} />
     </main>
   );
 }

@@ -93,19 +93,19 @@ export function HowWeBringYourStoryToLife() {
     >
       <div className="flex flex-col items-center max-w-7xl mx-auto">
         {/* Title */}
-        <h2 className="text-3xl md:text-5xl font-medium text-purple-mutu mb-20 text-center font-sans">
+        <h2 className="text-xl md:text-3xl lg:text-5xl font-medium text-purple-mutu mb-12 md:mb-20 text-center font-sans">
           How We Bring Your Story to Life
         </h2>
 
         {/* Steps Container */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-3 lg:gap-10 w-full">
           {steps.map((step) => (
             <div
               key={step.id}
               className="flex flex-col items-center text-center"
             >
               {/* Image (Ball) */}
-              <div className="roll-in-ball relative w-40 h-40 mb-8 rounded-full bg-white flex items-center justify-center p-4 z-10">
+              <div className="roll-in-ball relative w-40 h-40 md:w-20 md:h-20 lg:w-30 lg:h-30 mb-8 md:mb-4 lg:mb-8 rounded-full bg-white flex items-center justify-center p-4 z-10">
                 <div className="relative w-full h-full">
                   <Image
                     src={step.image}
@@ -117,7 +117,7 @@ export function HowWeBringYourStoryToLife() {
               </div>
 
               {/* Description */}
-              <p className="pop-in-text text-lg font-medium text-[#8B1D4F] max-w-[200px] leading-tight">
+              <p className="pop-in-text text-lg md:text-[10px] lg:text-lg font-medium text-[#8B1D4F] max-w-[200px] md:max-w-[110px] lg:max-w-[200px] leading-tight">
                 {step.description}
               </p>
             </div>

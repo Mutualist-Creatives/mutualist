@@ -11,7 +11,7 @@ export default function CharacterDesignPage() {
     <main className="min-h-screen bg-white">
       <ServiceHero
         title="Character Design"
-        subtitle="Bringing stories to life with memorable characters."
+        subtitle="Designing Faces That Tell Stories."
         imageSrc="/assets/services/c.png"
       />
       <WhatComesWithMagic category="character-design" />

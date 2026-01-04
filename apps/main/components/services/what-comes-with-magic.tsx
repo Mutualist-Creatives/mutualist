@@ -127,48 +127,66 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
       });
 
       // Animation: Spread out
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top center",
-          end: "center center",
-          scrub: 1,
-        },
+      // Responsive animation logic
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 1024px)", () => {
+        // Desktop
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top center",
+            end: "center center",
+            scrub: 1,
+          },
+        });
+        tl.to(cards[0], { x: -350, rotation: -5, duration: 1 }, 0)
+          .to(cards[1], { x: 0, rotation: 0, y: -20, duration: 1 }, 0)
+          .to(cards[2], { x: 350, rotation: 5, duration: 1 }, 0);
       });
 
-      // Card 1: Left, rotate -5deg
-      tl.to(
-        cards[0],
-        {
-          x: -350,
-          rotation: -5,
-          duration: 1,
-        },
-        0
-      );
+      mm.add("(min-width: 768px) and (max-width: 1023px)", () => {
+        // Tablet (reduced spread)
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top center",
+            end: "center center",
+            scrub: 1,
+          },
+        });
+        tl.to(cards[0], { x: -220, rotation: -5, duration: 1 }, 0)
+          .to(cards[1], { x: 0, rotation: 0, y: -20, duration: 1 }, 0)
+          .to(cards[2], { x: 220, rotation: 5, duration: 1 }, 0);
+      });
 
-      // Card 2: Center, no rotation (or slight adjustment)
-      tl.to(
-        cards[1],
-        {
-          x: 0,
-          rotation: 0,
-          y: -20, // Slight visual pop
-          duration: 1,
-        },
-        0
-      );
+      mm.add("(max-width: 767px)", () => {
+        // Mobile: Bouncy Cartoon Pop-in
+        gsap.set(cards, { clearProps: "all" });
 
-      // Card 3: Right, rotate 5deg
-      tl.to(
-        cards[2],
-        {
-          x: 350,
-          rotation: 5,
-          duration: 1,
-        },
-        0
-      );
+        gsap.fromTo(
+          cards,
+          {
+            y: 100,
+            opacity: 0,
+            scale: 0.8,
+            rotation: -5,
+          },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            rotation: 0,
+            duration: 1.2,
+            stagger: 0.2,
+            ease: "elastic.out(1, 0.6)",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 75%",
+            },
+          }
+        );
+      });
     },
     { scope: sectionRef }
   );
@@ -180,7 +198,7 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
     >
       <div className="flex flex-col items-center">
         {/* Section Title */}
-        <h2 className="text-3xl md:text-5xl font-medium text-yellow-mutu mb-20 text-center font-sans">
+        <h2 className="text-xl md:text-3xl lg:text-5xl font-medium text-yellow-mutu mb-12 md:mb-20 text-center font-sans">
           What Comes with the Magic?
         </h2>
 
@@ -188,16 +206,16 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
         {/* Initially stacked relative, so we use a container with height */}
         <div
           ref={cardsRef}
-          className="relative w-full max-w-6xl h-[500px] flex justify-center items-center"
+          className="relative w-full max-w-6xl h-auto md:h-[300px] lg:h-[500px] flex flex-col md:flex-row justify-center items-center -space-y-6 md:space-y-0 gap-0"
         >
           {cards.map((card, index) => (
             <div
               key={card.id}
-              className="absolute top-0 w-[300px] md:w-[350px] bg-white rounded-2xl p-6 shadow-xl flex flex-col items-center text-center h-auto min-h-[450px]"
+              className="relative md:absolute top-0 w-full md:w-[210px] lg:w-[350px] bg-white rounded-2xl p-6 md:p-4 lg:p-6 shadow-xl flex flex-col items-center text-center h-auto md:h-full"
               style={{ zIndex: cards.length - index }}
             >
               {/* Image */}
-              <div className="w-full h-48 relative mb-6">
+              <div className="w-full h-48 md:h-28 lg:h-48 relative mb-6 md:mb-4 lg:mb-6">
                 <Image
                   src={card.image}
                   alt={card.title}
@@ -207,12 +225,12 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
               </div>
 
               {/* Title */}
-              <h3 className="w-[70%] text-xl font-medium text-[#8B1D4F] mb-4 leading-tight">
+              <h3 className="w-[70%] text-xl md:text-base lg:text-xl font-medium text-[#8B1D4F] mb-4 md:mb-2 lg:mb-4 leading-tight">
                 {card.title}
               </h3>
 
               {/* Description */}
-              <p className="w-full text-sm font-medium text-black-mutu leading-relaxed">
+              <p className="w-full text-sm md:text-[10px] lg:text-sm font-medium text-black-mutu leading-relaxed">
                 {card.description}
               </p>
             </div>

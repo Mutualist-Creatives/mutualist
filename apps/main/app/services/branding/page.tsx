@@ -11,7 +11,7 @@ export default function BrandingPage() {
     <main className="min-h-screen bg-white">
       <ServiceHero
         title="Branding"
-        subtitle="Crafting unique identities that resonate with your audience."
+        subtitle="From Vision to Recognition, make identities that builds attention and trust."
         imageSrc="/assets/services/b.png"
       />
       <WhatComesWithMagic category="branding" />
