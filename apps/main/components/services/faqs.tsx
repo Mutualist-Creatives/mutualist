@@ -137,7 +137,7 @@ export function FAQs({ category }: FAQsProps) {
                           : "max-h-0 opacity-0"
                       )}
                     >
-                      <p className="text-black-mutu leading-relaxed font-normal text-xs md:text-xs lg:text-sm text-opacity-80">
+                      <p className="text-black-mutu leading-relaxed font-normal text-sm md:text-sm lg:text-base text-opacity-80">
                         {item.answer}
                       </p>
                     </div>

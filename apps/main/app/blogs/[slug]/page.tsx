@@ -13,6 +13,7 @@ import {
   Facebook,
   Globe,
 } from "lucide-react";
+import CTASection from "@/components/home/cta-section";
 
 interface BlogsDetailPageProps {
   params: Promise<{
@@ -49,102 +50,124 @@ export default function BlogsDetailPage({ params }: BlogsDetailPageProps) {
   }
 
   return (
-    <main className="min-h-screen w-full bg-white pt-32 pb-20 px-6 md:px-14 font-sans">
-      {/* Header Section */}
-      <div className="flex flex-col items-center text-center mb-12 max-w-4xl mx-auto">
-        <h1 className="text-3xl md:text-5xl font-bold text-purple-mutu mb-4 leading-tight">
-          {blog.title}
-        </h1>
-        <p className="text-lg font-medium text-black-mutu">
-          {blog.category} | {blog.date}
-        </p>
-      </div>
+    <main className="min-h-screen w-full bg-white font-sans">
+      <div className="pt-32 pb-20 px-6 md:px-14">
+        {/* Header Section */}
+        <div className="flex flex-col items-center text-center mb-12 max-w-4xl mx-auto">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-purple-mutu mb-4 leading-tight">
+            {blog.title}
+          </h1>
+          <p className="text-lg font-medium text-black-mutu">
+            {blog.category} | {blog.date}
+          </p>
+        </div>
 
-      {/* Main Image */}
-      <div className="w-full max-w-6xl mx-auto aspect-[16/6] bg-zinc-300 rounded-xl mb-16 relative overflow-hidden">
-        {blog.image ? (
-          <Image
-            src={blog.image}
-            alt={blog.title}
-            fill
-            className="object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-500">
-            No Image
-          </div>
-        )}
-      </div>
+        {/* Main Image */}
+        <div className="w-full max-w-6xl mx-auto aspect-16/8 md:aspect-16/7 bg-zinc-300 rounded-xl mb-4 md:mb-16 relative overflow-hidden">
+          {blog.image ? (
+            <Image
+              src={blog.image}
+              alt={blog.title}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-500">
+              No Image
+            </div>
+          )}
+        </div>
 
-      {/* Content Layout */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
-        {/* Sidebar (Left) */}
-        <aside className="lg:col-span-3">
-          <div className="sticky top-32 flex flex-col gap-10">
-            {/* Share Section */}
-            <div>
-              <h3 className="text-xl font-bold text-purple-mutu mb-4">
-                Feeling Insightful?
-              </h3>
-              <p className="text-sm text-black-mutu mb-4">Share this Blog:</p>
-              <div className="grid grid-cols-3 gap-3 w-fit">
-                <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                  <MessageCircle size={20} />
-                </button>
-                <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                  <Instagram size={20} />
-                </button>
-                <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                  <Twitter size={20} />
-                </button>
-                <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                  <Globe size={20} /> {/* Reddit replacement */}
-                </button>
-                <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                  <Linkedin size={20} />
-                </button>
-                <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                  <Facebook size={20} />
-                </button>
+        {/* Mobile: Browse Other Blogs Link */}
+        <div className="flex justify-end md:hidden w-full max-w-6xl mx-auto mb-8">
+          <Link href="/blogs" className="text-xs font-medium text-purple-mutu">
+            Browse Other Blogs
+          </Link>
+        </div>
+
+        {/* Content Layout */}
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+          {/* Main Content (Right) - DOM Order 1st (Mobile Top) */}
+          <article className="md:col-span-9">
+            <div
+              className="prose prose-sm md:prose-sm lg:prose-lg max-w-none prose-headings:font-bold prose-p:text-black-mutu prose-p:leading-relaxed prose-p:text-xs md:prose-p:text-sm lg:prose-p:text-lg prose-h2:text-lg md:prose-h2:text-xl lg:prose-h2:text-2xl prose-h2:font-bold prose-h2:text-green-mutu prose-h2:mb-4 prose-h3:text-base md:prose-h3:text-lg lg:prose-h3:text-xl prose-h3:font-bold prose-h3:text-black-mutu prose-h3:mb-3 prose-p:mb-6"
+              dangerouslySetInnerHTML={{ __html: blog.content }}
+            />
+          </article>
+
+          {/* Sidebar (Left) - DOM Order 2nd (Mobile Bottom) */}
+          <aside className="md:col-span-3 md:order-first">
+            <div className="sticky top-32 flex flex-col gap-10">
+              {/* Contact Us (Mobile Only - Coded) */}
+              <div className="block md:hidden mb-2">
+                <Link href="/contact" className="block w-fit">
+                  <h3 className="text-3xl font-bold text-purple-mutu mb-6">
+                    Contact Us
+                  </h3>
+                </Link>
+                <div className="flex flex-col gap-1 text-base font-normal text-black-mutu">
+                  <p>
+                    Ready to take your brand to the next level? Our team is
+                    excited to discuss your needs. We&apos;re here to help.
+                  </p>
+                </div>
+              </div>
+
+              {/* Share Section */}
+              <div>
+                <h3 className="text-xl font-bold text-purple-mutu mb-4">
+                  Feeling Insightful?
+                </h3>
+                <p className="text-sm text-black-mutu mb-4">Share this Blog:</p>
+                <div className="flex flex-row justify-between w-full md:grid md:grid-cols-3 md:w-fit md:gap-3">
+                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                    <MessageCircle size={20} />
+                  </button>
+                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                    <Instagram size={20} />
+                  </button>
+                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                    <Twitter size={20} />
+                  </button>
+                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                    <Globe size={20} /> {/* Reddit replacement */}
+                  </button>
+                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                    <Linkedin size={20} />
+                  </button>
+                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                    <Facebook size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Browse Other Blogs */}
+              <div className="hidden md:block">
+                <h3 className="text-xl font-bold text-purple-mutu mb-4">
+                  Browse Other Blogs
+                </h3>
+                <div className="flex flex-col gap-4">
+                  {otherBlogs
+                    .filter((b) => b.slug !== slug)
+                    .slice(0, 3)
+                    .map((otherBlog) => (
+                      <Link
+                        key={otherBlog.slug}
+                        href={`/blogs/${otherBlog.slug}`}
+                        className="group"
+                      >
+                        <p className="text-sm font-medium text-black-mutu group-hover:text-green-mutu transition-colors">
+                          {otherBlog.title}
+                        </p>
+                      </Link>
+                    ))}
+                </div>
               </div>
             </div>
-
-            {/* Browse Other Blogs */}
-            <div>
-              <h3 className="text-xl font-bold text-purple-mutu mb-4">
-                Browse Other Blogs
-              </h3>
-              <div className="flex flex-col gap-4">
-                {otherBlogs
-                  .filter((b) => b.slug !== slug)
-                  .slice(0, 3)
-                  .map((otherBlog) => (
-                    <Link
-                      key={otherBlog.slug}
-                      href={`/blogs/${otherBlog.slug}`}
-                      className="group"
-                    >
-                      <p className="text-sm font-medium text-black-mutu group-hover:text-green-mutu transition-colors">
-                        {otherBlog.title}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {otherBlog.category}
-                      </p>
-                    </Link>
-                  ))}
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Content (Right) */}
-        <article className="lg:col-span-9">
-          <div
-            className="prose prose-lg max-w-none prose-headings:font-bold prose-p:text-black-mutu prose-p:leading-relaxed whitespace-pre-wrap"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
-          />
-        </article>
+          </aside>
+        </div>
       </div>
+      <CTASection />
     </main>
   );
 }

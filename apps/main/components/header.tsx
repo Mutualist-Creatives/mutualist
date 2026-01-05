@@ -97,7 +97,7 @@ export default function Header() {
           <div className="shrink-0 flex items-center gap-3 md:gap-4 relative z-50">
             <Link
               href="/consult"
-              className="text-xs md:text-sm lg:text-base xl:text-lg 2xl:text-xl inline-block px-4 py-2 md:px-5 md:py-2.5 lg:px-8 lg:py-3 2xl:px-10 2xl:py-4 rounded-full bg-green-mutu text-yellow-mutu font-bold hover:bg-purple-mutu transition-all duration-300 whitespace-nowrap"
+              className="text-[10px] md:text-sm lg:text-base xl:text-lg 2xl:text-xl inline-block px-3 py-1.5 md:px-5 md:py-2.5 lg:px-8 lg:py-3 2xl:px-10 2xl:py-4 rounded-full bg-green-mutu text-yellow-mutu font-bold hover:bg-purple-mutu transition-all duration-300 whitespace-nowrap"
             >
               Consult Now
             </Link>
@@ -132,7 +132,7 @@ export default function Header() {
                   <Link
                     href={item.href}
                     onClick={() => !item.subItems && setIsOpen(false)}
-                    className="text-2xl font-medium text-green-mutu"
+                    className="text-lg font-medium text-green-mutu"
                   >
                     {item.name}
                   </Link>
@@ -162,7 +162,7 @@ export default function Header() {
                         key={subItem.name}
                         href={subItem.href}
                         onClick={() => setIsOpen(false)}
-                        className="text-lg text-black-mutu"
+                        className="text-sm text-black-mutu"
                       >
                         {subItem.name}
                       </Link>

@@ -8,11 +8,18 @@ import Image from "next/image";
 
 export default function WorksPage() {
   const [works, setWorks] = useState<Work[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadWorks() {
-      const data = await fetchWorks();
-      setWorks(data);
+      try {
+        const data = await fetchWorks();
+        setWorks(data);
+      } catch (error) {
+        console.error("Failed to load works", error);
+      } finally {
+        setLoading(false);
+      }
     }
     loadWorks();
   }, []);
@@ -24,12 +31,24 @@ export default function WorksPage() {
         </h1>
       </div> */}
 
-      {works.length === 0 ? (
-        <div className="w-full py-20 flex flex-col items-center justify-center text-center">
-          <p className="text-xl md:text-2xl text-purple-mutu/60 font-medium">
+      {loading ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex flex-col gap-4 animate-pulse">
+              <div className="w-full aspect-4/3 bg-gray-200 rounded-lg"></div>
+              <div className="flex flex-col gap-2">
+                <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : works.length === 0 ? (
+        <div className="w-full py-20 flex flex-col items-center justify-center text-center px-4">
+          <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
             No works found at the moment.
           </p>
-          <p className="mt-2 text-purple-mutu/40">
+          <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40">
             Please check back later or refresh the page.
           </p>
         </div>

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   /* Mutualist Color Palette */
@@ -37,4 +38,23 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Blog Typography Overrides */
+.prose h2 {
+  color: var(--green-mutu);
+  font-size: 1.5rem; /* 2xl */
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.prose h3 {
+  color: var(--black-mutu);
+  font-size: 1.25rem; /* xl */
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.prose p {
+  margin-bottom: 1.5rem;
 }

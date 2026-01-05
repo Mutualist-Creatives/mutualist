@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -24,16 +24,19 @@ async function main() {
     where: { email: 'admin@mutualist.co' },
     update: {
       password: hashedPassword,
+      role: Role.ADMIN,
     },
     create: {
       email: 'admin@mutualist.co',
       password: hashedPassword,
       name: 'Admin',
+      role: Role.ADMIN,
     },
   });
 
   console.log('✅ Created user:', user.email);
 
+  /*
   // Create life portfolio items
   const portfolios = [
     {
@@ -102,7 +105,9 @@ async function main() {
   }
 
   console.log(`✅ Created ${portfolios.length} portfolio items`);
+  */
 
+  /*
   // Create blogs
   const blogs = [
     {
@@ -113,9 +118,16 @@ async function main() {
       image: `${storageBaseUrl}/blogs/client/1.png`, // Using Supabase URL
       rotation: -2,
       content: `
-        <p class="mb-6">Effective business branding is what comes to mind when you hear words like "fast food" or "e-commerce." For fast food, you immediately think of McDonald's and its iconic golden arches, which you can easily recall. When we talk about the booming e-commerce market, a certain orange logo accompanied by a catchy Korean song might pop into your head. Why does this happen? Because these brands have successfully embedded themselves in your mind through constant exposure and a clear, consistent identity. Here is a guide on how to enhance your company's branding, so it resonates with consumers and builds lasting loyalty.</p>
-        <h2 class="text-2xl font-bold text-green-mutu mb-4">The Foundation of Business Branding: Product Quality</h2>
-        <p class="mb-6">The quality of a product is one of the most critical factors for consumers. Reputable companies with a proven track record of quality will always be chosen over products from lesser-known businesses. Think about a major mineral water brand; its distinctive logo is so well-known that we often use the brand name as a generic term for mineral water itself. This demonstrates the power of a brand built on a foundation of trust and consistent quality. It is crucial to maintain and continually improve your product quality while also keeping an eye on the quality of your competitors' offerings.</p>
+        <p>Effective business branding is what comes to mind when you hear words like "fast food" or "e-commerce." For fast food, you immediately think of McDonald's and its iconic golden arches, which you can easily recall. When we talk about the booming e-commerce market, a certain orange logo accompanied by a catchy Korean song might pop into your head. Why does this happen? Because these brands have successfully embedded themselves in your mind through constant exposure and a clear, consistent identity. Here is a guide on how to enhance your company's branding, so it resonates with consumers and builds lasting loyalty.</p>
+
+        <h2>The Foundation of Business Branding: Product Quality</h2>
+        <p>The quality of a product is one of the most critical factors for consumers. Reputable companies with a proven track record of quality will always be chosen over products from lesser-known businesses. Think about a major mineral water brand; its distinctive logo is so well-known that we often use the brand name as a generic term for mineral water itself. This demonstrates the power of a brand built on a foundation of trust and consistent quality. It is crucial to maintain and continually improve your product quality while also keeping an eye on the quality of your competitors' offerings.</p>
+
+        <h3>1. Why Quality is the Cornerstone of Your Business?</h3>
+        <p>If you don't have a high-quality product, you can't expect your branding efforts to be successful. No amount of clever marketing or beautiful packaging can compensate for a poor-quality product. A product's quality is the core of its value proposition. When you consistently deliver excellence, your brand's reputation grows organically. This directly impacts customer satisfaction and loyalty. By ensuring your product is superior, you are not just selling an item; you are selling trust and a positive experience, which are the most valuable assets in building a brand.</p>
+
+        <h3>2. Measuring and Improving Quality for Your Business</h3>
+        <p>To maintain a competitive edge, you must continuously measure and improve your product quality. This involves gathering customer feedback through surveys, reviews, and direct communication. Use this data to identify pain points and areas for improvement. Investing in quality control processes is not an expense—it's a direct investment in your business branding. A commitment to excellence shows your customers that you care about their satisfaction, which reinforces their loyalty and encourages positive word-of-mouth recommendations.</p>
       `,
     },
     {
@@ -126,9 +138,9 @@ async function main() {
       image: `${storageBaseUrl}/blogs/client/2.png`,
       rotation: 1,
       content: `
-        <p class="mb-6">Building customer loyalty is essential for long-term success. A strong brand identity helps customers connect with your business on an emotional level.</p>
-        <h2 class="text-2xl font-bold text-green-mutu mb-4">Strategies for Loyalty</h2>
-        <p class="mb-6">Consistency is key. Ensure your messaging, visuals, and customer service are aligned across all channels. Loyalty programs and personalized experiences also go a long way in retaining customers and turning them into brand advocates.</p>
+        <p>Building customer loyalty is essential for long-term success. A strong brand identity helps customers connect with your business on an emotional level.</p>
+        <h2>Strategies for Loyalty</h2>
+        <p>Consistency is key. Ensure your messaging, visuals, and customer service are aligned across all channels. Loyalty programs and personalized experiences also go a long way in retaining customers and turning them into brand advocates.</p>
       `,
     },
     {
@@ -139,9 +151,9 @@ async function main() {
       image: `${storageBaseUrl}/blogs/client/3.png`,
       rotation: -1,
       content: `
-        <p class="mb-6">In today's digital world, having a website is non-negotiable. It serves as your 24/7 storefront and a primary touchpoint for potential customers.</p>
-        <h2 class="text-2xl font-bold text-green-mutu mb-4">Global Reach</h2>
-        <p class="mb-6">A website allows you to reach a global audience, breaking down geographical barriers. It also builds credibility and provides a platform to showcase your products or services, share testimonials, and engage with your audience through content marketing.</p>
+        <p>In today's digital world, having a website is non-negotiable. It serves as your 24/7 storefront and a primary touchpoint for potential customers.</p>
+        <h2>Global Reach</h2>
+        <p>A website allows you to reach a global audience, breaking down geographical barriers. It also builds credibility and provides a platform to showcase your products or services, share testimonials, and engage with your audience through content marketing.</p>
       `,
     },
     {
@@ -152,9 +164,9 @@ async function main() {
       image: `${storageBaseUrl}/blogs/client/4.png`,
       rotation: 2,
       content: `
-        <p class="mb-6">As we approach 2026, digital marketing continues to evolve at a rapid pace. Artificial Intelligence (AI) and Machine Learning (ML) are taking center stage.</p>
-        <h2 class="text-2xl font-bold text-green-mutu mb-4">Hyper-Personalization</h2>
-        <p class="mb-6">Consumers now expect hyper-personalized experiences. Brands that leverage data to deliver tailored content and offers will see higher conversion rates. Voice search optimization and interactive content are also trends to watch closely.</p>
+        <p>As we approach 2026, digital marketing continues to evolve at a rapid pace. Artificial Intelligence (AI) and Machine Learning (ML) are taking center stage.</p>
+        <h2>Hyper-Personalization</h2>
+        <p>Consumers now expect hyper-personalized experiences. Brands that leverage data to deliver tailored content and offers will see higher conversion rates. Voice search optimization and interactive content are also trends to watch closely.</p>
       `,
     },
     {
@@ -165,9 +177,9 @@ async function main() {
       image: `${storageBaseUrl}/blogs/client/5.png`,
       rotation: -1.5,
       content: `
-        <p class="mb-6">Minimalism remains strong, but we are seeing a resurgence of bold colors and experimental typography. Sustainability in design is also becoming a priority.</p>
-        <h2 class="text-2xl font-bold text-green-mutu mb-4">Sustainable Design</h2>
-        <p class="mb-6">From eco-friendly packaging to energy-efficient digital assets, sustainable design is not just a trend but a necessity. Brands are adopting earthy tones and organic shapes to reflect their commitment to the environment.</p>
+        <p>Minimalism remains strong, but we are seeing a resurgence of bold colors and experimental typography. Sustainability in design is also becoming a priority.</p>
+        <h2>Sustainable Design</h2>
+        <p>From eco-friendly packaging to energy-efficient digital assets, sustainable design is not just a trend but a necessity. Brands are adopting earthy tones and organic shapes to reflect their commitment to the environment.</p>
       `,
     },
     {
@@ -178,9 +190,9 @@ async function main() {
       image: `${storageBaseUrl}/blogs/client/6.png`,
       rotation: 0.5,
       content: `
-        <p class="mb-6">Remote work is here to stay. But how do you maintain a strong company culture when your team is scattered across the globe?</p>
-        <h2 class="text-2xl font-bold text-green-mutu mb-4">Communication & trust</h2>
-        <p class="mb-6">Clear communication channels and a culture of trust are the pillars of successful remote teams. Regular virtual check-ins, team-building activities, and respecting work-life balance are essential strategies.</p>
+        <p>Remote work is here to stay. But how do you maintain a strong company culture when your team is scattered across the globe?</p>
+        <h2>Communication & trust</h2>
+        <p>Clear communication channels and a culture of trust are the pillars of successful remote teams. Regular virtual check-ins, team-building activities, and respecting work-life balance are essential strategies.</p>
       `,
     },
   ];
@@ -188,12 +200,13 @@ async function main() {
   for (const blog of blogs) {
     await prisma.blog.upsert({
       where: { slug: blog.slug },
-      update: {},
+      update: { content: blog.content }, // FORCE UPDATE CONTENT
       create: blog,
     });
   }
 
   console.log(`✅ Created ${blogs.length} blog posts`);
+  */
 }
 
 main()

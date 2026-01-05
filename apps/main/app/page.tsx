@@ -5,18 +5,15 @@ import SeeMoreWorks from "../components/home/see-more-works";
 import ClientSection from "../components/home/client-section";
 import SlingshotSection from "../components/home/slingshot-section";
 import CTASection from "../components/home/cta-section";
-import { fetchWorks } from "../services/api";
 
 export default async function Home() {
-  const works = await fetchWorks();
-
   return (
     <div className="min-h-screen font-sans relative overflow-hidden">
       <HeroSection />
       <FolderSection />
       <SlingshotSection />
       <FeaturedPortfolioSection />
-      <SeeMoreWorks works={works} />
+      <SeeMoreWorks />
       <ClientSection />
       <CTASection />
     </div>
