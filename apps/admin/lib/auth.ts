@@ -102,28 +102,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   trustHost: true, // Important for production deployment
 });
-
-import "next-auth/jwt";
-
-// TYPES EXTENSION
-declare module "next-auth" {
-  interface User {
-    role?: string;
-    accessToken?: string;
-  }
-
-  interface Session {
-    accessToken?: string;
-    user: {
-      role?: string;
-    } & import("next-auth").DefaultSession["user"];
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    role?: string;
-    accessToken?: string;
-    id?: string;
-  }
-}
