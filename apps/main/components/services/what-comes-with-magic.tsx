@@ -161,35 +161,36 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
       });
 
       mm.add("(max-width: 767px)", () => {
-        // Mobile: Bouncy Cartoon Pop-in with Tilt
+        // Mobile: Sequential Slide-out "Deck" Animation
         gsap.set(cards, { clearProps: "all" });
-        gsap.set(cards, { zIndex: (i) => 30 - i * 10 }); // Force Z-Index Stacking (Card 1 Top)
+        gsap.set(cards, { zIndex: (i) => 30 - i * 10 });
 
-        gsap.fromTo(
-          cards,
-          {
-            y: 100,
-            opacity: 0,
-            scale: 0.8,
-            rotation: 0, // Start neutral
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            end: "bottom 60%", // Animate while scrolling through the section
+            scrub: 1, // Animation progress tailored to scroll
           },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            rotation: (i) => {
-              if (i === 0) return -6; // Card 1: Tilt Left
-              if (i === 2) return -4; // Card 3: Tilt Right
-              return 0; // Card 2: Straight
-            },
-            duration: 1.2,
-            stagger: 0.2,
-            ease: "elastic.out(1, 0.6)",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 75%",
-            },
-          }
+        });
+
+        // Card 1: Static from start (Already tilted)
+        gsap.set(cards[0], { rotation: -6 });
+
+        // Card 2: Slides out smoothly from behind Card 1 (No fade)
+        tl.fromTo(
+          cards[1],
+          { y: -150, opacity: 1, rotation: 0 }, // Visibly behind Card 1
+          { y: 0, opacity: 1, rotation: 0, duration: 0.6, ease: "power2.out" },
+          0 // Start immediately on scroll
+        );
+
+        // Card 3: Slides out smoothly from behind Card 2 (No fade)
+        tl.fromTo(
+          cards[2],
+          { y: -150, opacity: 1, rotation: 0 },
+          { y: 0, opacity: 1, rotation: -4, duration: 0.6, ease: "power2.out" },
+          "<+=0.2"
         );
       });
     },
