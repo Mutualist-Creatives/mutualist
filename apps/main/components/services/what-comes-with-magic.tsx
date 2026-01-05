@@ -161,8 +161,9 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
       });
 
       mm.add("(max-width: 767px)", () => {
-        // Mobile: Bouncy Cartoon Pop-in
+        // Mobile: Bouncy Cartoon Pop-in with Tilt
         gsap.set(cards, { clearProps: "all" });
+        gsap.set(cards, { zIndex: (i) => 30 - i * 10 }); // Force Z-Index Stacking (Card 1 Top)
 
         gsap.fromTo(
           cards,
@@ -170,13 +171,17 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
             y: 100,
             opacity: 0,
             scale: 0.8,
-            rotation: -5,
+            rotation: 0, // Start neutral
           },
           {
             y: 0,
             opacity: 1,
             scale: 1,
-            rotation: 0,
+            rotation: (i) => {
+              if (i === 0) return -6; // Card 1: Tilt Left
+              if (i === 2) return -4; // Card 3: Tilt Right
+              return 0; // Card 2: Straight
+            },
             duration: 1.2,
             stagger: 0.2,
             ease: "elastic.out(1, 0.6)",
@@ -206,13 +211,19 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
         {/* Initially stacked relative, so we use a container with height */}
         <div
           ref={cardsRef}
-          className="relative w-full max-w-6xl h-auto md:h-[300px] lg:h-[500px] flex flex-col md:flex-row justify-center items-center -space-y-6 md:space-y-0 gap-0"
+          className="relative w-full max-w-6xl h-auto md:h-[300px] lg:h-[500px] flex flex-col md:flex-row justify-center items-center md:space-y-0 gap-0"
         >
           {cards.map((card, index) => (
             <div
               key={card.id}
-              className="relative md:absolute top-0 w-full md:w-[210px] lg:w-[350px] bg-white rounded-2xl p-6 md:p-4 lg:p-6 shadow-xl flex flex-col items-center text-center h-auto md:h-full"
-              style={{ zIndex: cards.length - index }}
+              className={`relative md:absolute top-0 w-full md:w-[210px] lg:w-[350px] bg-white rounded-2xl p-6 md:p-4 lg:p-6 shadow-[0_3.5px_5.5px_0_rgba(0,0,0,0.4)] flex flex-col items-center text-center h-auto md:h-full ${
+                index === 1
+                  ? "-mt-6 md:mt-0"
+                  : index === 2
+                    ? "-mt-2 md:mt-0"
+                    : "mt-0"
+              }`}
+              style={{ zIndex: 30 - index * 10 }}
             >
               {/* Image */}
               <div className="w-full h-48 md:h-28 lg:h-48 relative mb-6 md:mb-4 lg:mb-6">
