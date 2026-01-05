@@ -87,8 +87,15 @@ interface User {
   email?: string | null;
 }
 
-export function AppSidebar({ user }: { user: User }) {
+export function AppSidebar({ user }: { user: User & { role?: string } }) {
   const pathname = usePathname();
+
+  const filteredGroups = sidebarGroups.filter((group) => {
+    if (group.label === "Admin") {
+      return user.role === "ADMIN";
+    }
+    return true;
+  });
 
   return (
     <Sidebar>
@@ -105,7 +112,7 @@ export function AppSidebar({ user }: { user: User }) {
       </SidebarHeader>
 
       <SidebarContent>
-        {sidebarGroups.map((group) => (
+        {filteredGroups.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>

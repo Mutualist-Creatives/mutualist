@@ -39,6 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               id: data.user.id,
               email: data.user.email,
               name: data.user.name,
+              role: data.user.role,
               accessToken: data.access_token, // Persist token
             };
           }
@@ -59,6 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.accessToken = user.accessToken;
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
@@ -66,6 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.accessToken = token.accessToken as string;
         session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
       return session;
     },
@@ -99,3 +102,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   trustHost: true, // Important for production deployment
 });
+
+import "next-auth/jwt";
+
+// TYPES EXTENSION
+declare module "next-auth" {
+  interface User {
+    role?: string;
+    accessToken?: string;
+  }
+
+  interface Session {
+    accessToken?: string;
+    user: {
+      role?: string;
+    } & import("next-auth").DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+    accessToken?: string;
+    id?: string;
+  }
+}
