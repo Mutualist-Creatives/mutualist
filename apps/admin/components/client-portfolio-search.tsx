@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteButton } from "@/components/delete-button";
-import { Search, Pencil, Briefcase } from "lucide-react";
+import { Search, Pencil, Briefcase, Star } from "lucide-react";
 import { Work } from "@/lib/api";
 
 export function ClientPortfolioSearch({ works }: { works: Work[] }) {
@@ -114,6 +114,47 @@ export function ClientPortfolioSearch({ works }: { works: Work[] }) {
                   <span className="text-sm text-muted-foreground">
                     {work.year}
                   </span>
+                  <div
+                    className="ml-auto cursor-pointer"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      // Optimistic toggle
+                      // Note: In a real app we'd use SWR/TanStack Query mutation or a server action to revalidate
+                      // For now, we'll just fire the update and rely on eventual reload if needed,
+                      // or we could force a router refresh.
+                      try {
+                        const worksApi = (await import("@/lib/api")).worksApi;
+                        // Toggle logic
+                        await worksApi.update(work.slug, {
+                          isFeatured: !work.isFeatured,
+                        });
+                        // Refresh to show updated state if we are server-rendering or rely on router
+                        // Using window.location.reload() is heavy, router.refresh() is better for server components
+                        // Since this is a client component, we might want to lift state or use context.
+                        // For simplicity in this task, let's just use router.refresh()
+                        window.location.reload();
+                      } catch (err) {
+                        console.error("Failed to toggle feature", err);
+                      }
+                    }}
+                  >
+                    {/* Star Icon - Filled if featured, Outline if not */}
+                    <div
+                      className={
+                        work.isFeatured
+                          ? "text-yellow-500 fill-yellow-500"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      <Star
+                        className={
+                          work.isFeatured
+                            ? "h-5 w-5 fill-yellow-500 text-yellow-500"
+                            : "h-5 w-5"
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
               </CardHeader>
 

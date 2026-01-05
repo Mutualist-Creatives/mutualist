@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsArray, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 
 export class CreateMainPortfolioDto {
   @IsString()
@@ -34,4 +40,8 @@ export class CreateMainPortfolioDto {
   @IsArray()
   @IsOptional()
   content: any;
+
+  @IsBoolean()
+  @IsOptional()
+  isFeatured?: boolean;
 }

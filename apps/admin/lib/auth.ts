@@ -39,6 +39,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               id: data.user.id,
               email: data.user.email,
               name: data.user.name,
+              role: data.user.role,
               accessToken: data.access_token, // Persist token
             };
           }
@@ -59,6 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.accessToken = user.accessToken;
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
@@ -66,6 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.accessToken = token.accessToken as string;
         session.user.id = token.id as string;
+        session.user.role = token.role as string;
       }
       return session;
     },

@@ -2,6 +2,7 @@
 
 import React, { useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Work } from "../../services/api";
@@ -68,12 +69,13 @@ export default function AnotherWorks({ works }: AnotherWorksProps) {
                       className="block w-full group cursor-pointer"
                     >
                       {/* Image */}
-                      <div className="w-full aspect-[4/3] bg-zinc-300 rounded-lg overflow-hidden relative transition-transform duration-500 group-hover:scale-[1.02]">
+                      <div className="w-full aspect-4/3 bg-zinc-300 rounded-lg overflow-hidden relative transition-transform duration-500 group-hover:scale-[1.02]">
                         {firstImage ? (
-                          <img
+                          <Image
                             src={firstImage}
                             alt={work.title}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-zinc-300" />

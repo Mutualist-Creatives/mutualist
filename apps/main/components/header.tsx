@@ -80,7 +80,7 @@ export default function Header() {
                           <Link
                             key={subItem.name}
                             href={subItem.href}
-                            className="px-6 py-3 text-sm lg:text-base xl:text-lg 2xl:text-xl text-black-mutu hover:bg-cream-mutu hover:text-green-mutu transition-colors whitespace-nowrap text-left"
+                            className="px-6 py-3 text-sm lg:text-base xl:text-lg 2xl:text-xl text-black-mutu hover:bg-gray-100 hover:text-green-mutu transition-colors whitespace-nowrap text-left"
                           >
                             {subItem.name}
                           </Link>

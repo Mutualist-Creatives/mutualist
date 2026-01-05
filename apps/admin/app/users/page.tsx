@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { usersApi } from "@/lib/api";
 import { Plus } from "lucide-react";
@@ -16,6 +18,12 @@ import { ResetPasswordButton } from "@/components/reset-password-button";
 export const dynamic = "force-dynamic";
 
 export default async function UsersPage() {
+  const session = await auth();
+
+  if (session?.user?.role !== "ADMIN") {
+    redirect("/");
+  }
+
   let users: import("@/lib/api").CreatedUser[] = [];
   try {
     users = await usersApi.getAll();

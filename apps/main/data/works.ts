@@ -25,6 +25,7 @@ export interface WorkItem {
   serviceNames: string; // e.g. "Advertising and Branding"
   teams: TeamMember[];
   content: ContentBlock[];
+  isFeatured?: boolean;
 }
 
 export const worksData: WorkItem[] = [
@@ -33,6 +34,7 @@ export const worksData: WorkItem[] = [
     title: "Kokara",
     industry: "Digital Comics",
     year: "2025",
+    isFeatured: true,
     serviceIcons: ["A", "B", "C", "S"], // Example: All active based on image, or maybe specific ones
     serviceNames: "Advertising and Branding",
     teams: [

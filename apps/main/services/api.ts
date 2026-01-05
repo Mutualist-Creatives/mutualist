@@ -7,6 +7,7 @@ export interface Work {
   serviceNames: string;
   teams: { role: string; names: string[] }[];
   content: { type: string; images: string[] }[];
+  isFeatured?: boolean;
 }
 
 export interface Blog {

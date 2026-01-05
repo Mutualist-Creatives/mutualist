@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import Link from "next/link";
 import Image from "next/image";
+import { Work } from "@/services/api";
 
 const itemsData = [
   { color: "bg-purple-mutu", rotate: 2, x: -240 },
@@ -12,7 +14,13 @@ const itemsData = [
   { color: "bg-purple-mutu", rotate: 1, x: 240 },
 ];
 
-export default function FeaturedPortfolioSection() {
+interface FeaturedPortfolioSectionProps {
+  works: Work[];
+}
+
+export default function FeaturedPortfolioSection({
+  works,
+}: FeaturedPortfolioSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scaleFactor, setScaleFactor] = useState(1);
   const [isSmall, setIsSmall] = useState(false);
@@ -143,6 +151,8 @@ export default function FeaturedPortfolioSection() {
     });
   };
 
+  // const featuredWorks = worksData.filter((work) => work.isFeatured); no longer needed, passed as prop
+
   return (
     <section className="w-full bg-white relative overflow-hidden">
       <div className="max-w-screen-2xl mx-auto w-full py-[2em] md:py-[2em] lg:py-20 flex flex-col items-center justify-center relative">
@@ -150,24 +160,43 @@ export default function FeaturedPortfolioSection() {
           ref={containerRef}
           className="relative w-full max-w-6xl h-[180px] md:h-[280px] lg:h-[400px] flex items-center justify-center"
         >
-          {itemsData.map((item, index) => (
-            <div
-              key={index}
-              className={`
+          {itemsData.map((item, index) => {
+            const work = works[index];
+            if (!work) return null;
+
+            // Use the first image from content if available, ideally full-width or just the first in array
+            const bgImage =
+              work?.content?.[0]?.images?.[0] || "/assets/placeholder.png";
+
+            return (
+              <Link
+                key={index}
+                href={work ? `/works/${work.slug}` : "#"}
+                className={`
               card card-${index}
               absolute w-40 h-28 md:w-60 md:h-40 lg:w-80 lg:h-56 xl:w-96 xl:h-64 rounded-xl shadow-lg cursor-pointer
               ${item.color}
-              flex items-center justify-center
+              flex items-center justify-center overflow-hidden
             `}
-              style={{ transform: getResponsiveTransform(item) }}
-              onMouseEnter={() => pushSiblings(index)}
-              onMouseLeave={resetSiblings}
-            >
-              <span className="text-white font-medium text-xs md:text-sm lg:text-xl opacity-0 hover:opacity-100 transition-opacity">
-                Project {index + 1}
-              </span>
-            </div>
-          ))}
+                style={{ transform: getResponsiveTransform(item) }}
+                onMouseEnter={() => pushSiblings(index)}
+                onMouseLeave={resetSiblings}
+              >
+                <>
+                  <Image
+                    src={bgImage}
+                    alt={work.title || "Project"}
+                    fill
+                    className="object-cover opacity-90 transition-opacity hover:opacity-100"
+                  />
+                  <div className="absolute inset-0 bg-black/20 hover:bg-black/0 transition-colors" />
+                  <span className="relative z-10 text-white font-medium text-xs md:text-sm lg:text-xl opacity-0 hover:opacity-100 transition-opacity pointer-events-none drop-shadow-md">
+                    {work.title}
+                  </span>
+                </>
+              </Link>
+            );
+          })}
         </div>
 
         {/* Label */}
