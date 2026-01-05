@@ -20,6 +20,7 @@ import {
 import { Save, AlertCircle, Plus, Trash2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 
 interface MainPortfolioFormProps {
   work?: Work;
@@ -53,6 +54,7 @@ export function MainPortfolioForm({
     serviceIcons: (work?.serviceIcons as string[]) || [],
     teams: work?.teams || [{ role: "Creative Director", names: [""] }],
     content: work?.content || [{ type: "full-width", images: [""] }],
+    isFeatured: work?.isFeatured || false,
   });
 
   const [contentFiles, setContentFiles] = useState<{
@@ -399,6 +401,29 @@ export function MainPortfolioForm({
                     setFormData({ ...formData, serviceNames: e.target.value })
                   }
                 />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isFeatured"
+                    checked={formData.isFeatured || false}
+                    onCheckedChange={(checked: boolean) =>
+                      setFormData({ ...formData, isFeatured: checked })
+                    }
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <Label
+                      htmlFor="isFeatured"
+                      className="text-base font-semibold"
+                    >
+                      Feature this portfolio?
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Do you want add this to featured portoflio?
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </TabsContent>

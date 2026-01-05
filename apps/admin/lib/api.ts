@@ -1,7 +1,7 @@
 import { auth } from "./auth";
 import { getSession } from "next-auth/react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 const getAuthHeaders = async (tokenOverride?: string) => {
   if (tokenOverride) {
@@ -146,6 +146,7 @@ export interface Work {
   }>;
   createdAt: string;
   updatedAt: string;
+  isFeatured?: boolean;
 }
 
 export interface CreateWorkDto {
@@ -163,6 +164,7 @@ export interface CreateWorkDto {
     type: string;
     images: string[];
   }>;
+  isFeatured?: boolean;
 }
 
 export const worksApi = {
