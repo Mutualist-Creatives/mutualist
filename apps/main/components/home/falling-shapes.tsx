@@ -57,6 +57,16 @@ export default function FallingShapes() {
 
     const bodies: Matter.Body[] = [];
 
+    // Determine extra count based on resolution
+    let resolutionIncrement = 0;
+    if (width >= 3840) {
+      resolutionIncrement = 4;
+    } else if (width >= 2560) {
+      resolutionIncrement = 2;
+    } else if (width > 1440) {
+      resolutionIncrement = 1;
+    }
+
     // 1. Building Blocks
     const blockTextures = [
       "/assets/home/hero/building_block_black.png",
@@ -65,12 +75,14 @@ export default function FallingShapes() {
       "/assets/home/hero/building_block_yellow.png",
     ];
 
-    // Create a balanced array: 4 of each color
+    const countPerBlockType = 4 + resolutionIncrement;
+
+    // Create a balanced array
     const balancedTextures = [
-      ...Array(4).fill(blockTextures[0]), // Black
-      ...Array(4).fill(blockTextures[1]), // Green
-      ...Array(4).fill(blockTextures[2]), // Purple
-      ...Array(4).fill(blockTextures[3]), // Yellow
+      ...Array(countPerBlockType).fill(blockTextures[0]), // Black
+      ...Array(countPerBlockType).fill(blockTextures[1]), // Green
+      ...Array(countPerBlockType).fill(blockTextures[2]), // Purple
+      ...Array(countPerBlockType).fill(blockTextures[3]), // Yellow
     ];
 
     // Shuffle the array to randomize drop order
@@ -115,12 +127,19 @@ export default function FallingShapes() {
     });
 
     // 2. Letter Boxes (Interactive)
-    const letters = [
+    const baseLetters = [
       { text: "A", bg: colors.purple, route: "/services/advertising" },
       { text: "B", bg: colors.green, route: "/services/branding" },
       { text: "C", bg: colors.yellow, route: "/services/character-design" },
       { text: "'s", bg: colors.black, route: "/services/social-media" },
     ];
+
+    const countPerLetterType = 1 + resolutionIncrement;
+    const letters: typeof baseLetters = [];
+
+    for (let i = 0; i < countPerLetterType; i++) {
+      letters.push(...baseLetters);
+    }
 
     letters.forEach((item) => {
       const x = Math.random() * width;
@@ -441,7 +460,7 @@ export default function FallingShapes() {
   return (
     <div
       ref={sceneRef}
-      className="absolute inset-0 pointer-events-auto z-0 max-w-screen-2xl mx-auto left-0 right-0"
+      className="absolute inset-0 pointer-events-auto z-0 mx-auto left-0 right-0"
       style={{ pointerEvents: "all", touchAction: "pan-y" }}
     />
   );

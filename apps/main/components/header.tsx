@@ -96,7 +96,7 @@ export default function Header() {
           {/* Right: CTA Button & Hamburger */}
           <div className="shrink-0 flex items-center gap-3 md:gap-4 relative z-50">
             <Link
-              href="/consult"
+              href="https://wa.me/6281808008839"
               className="text-[10px] md:text-sm lg:text-base xl:text-lg 2xl:text-xl inline-block px-3 py-1.5 md:px-5 md:py-2.5 lg:px-8 lg:py-3 2xl:px-10 2xl:py-4 rounded-full bg-green-mutu text-yellow-mutu font-bold hover:bg-purple-mutu transition-all duration-300 whitespace-nowrap"
             >
               Consult Now
