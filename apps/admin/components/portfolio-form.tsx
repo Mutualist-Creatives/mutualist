@@ -91,14 +91,15 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
       "image/png",
       "image/gif",
       "image/webp",
+      "video/mp4",
     ];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Only image files are allowed (JPEG, PNG, GIF, WebP)");
+      toast.error("Only image files are allowed (JPEG, PNG, GIF, WebP, MP4)");
       return;
     }
 
     // Validate file size (max 5MB per image)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 10 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
       toast.error(
