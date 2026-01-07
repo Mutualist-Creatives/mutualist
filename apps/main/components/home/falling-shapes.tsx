@@ -57,14 +57,11 @@ export default function FallingShapes() {
 
     const bodies: Matter.Body[] = [];
 
-    // Determine extra count based on resolution
+    // Determine extra count based on height
+    // > 1080px -> +1, > 2160px -> +2, etc.
     let resolutionIncrement = 0;
-    if (width >= 3840) {
-      resolutionIncrement = 4;
-    } else if (width >= 2560) {
-      resolutionIncrement = 2;
-    } else if (width > 1440) {
-      resolutionIncrement = 1;
+    if (height > 1080) {
+      resolutionIncrement = Math.floor((height - 1) / 1080);
     }
 
     // 1. Building Blocks

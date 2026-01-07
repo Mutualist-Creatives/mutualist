@@ -7,31 +7,31 @@ import Image from "next/image";
 // Combine the images from Gallery with the layout properties from Featured Portfolio
 const items = [
   {
-    image: "",
+    image: "/assets/about/gallery/1.jpeg",
     color: "bg-purple-mutu",
     rotate: 2,
     x: -240,
   },
   {
-    image: "",
+    image: "/assets/about/gallery/2.jpeg",
     color: "bg-green-mutu",
     rotate: 1,
     x: -120,
   },
   {
-    image: "",
+    image: "/assets/about/gallery/3.jpeg",
     color: "bg-yellow-mutu",
     rotate: -1,
     x: 0,
   },
   {
-    image: "",
+    image: "/assets/about/gallery/4.jpeg",
     color: "bg-black-mutu",
     rotate: -2,
     x: 120,
   },
   {
-    image: "",
+    image: "/assets/about/gallery/5.jpeg",
     color: "bg-purple-mutu",
     rotate: 1,
     x: 240,
