@@ -12,7 +12,7 @@ const parkinsans = Parkinsans({
 });
 
 export const metadata: Metadata = {
-  title: "Mutualist",
+  title: "Mutualist Creatives",
   description: "Mutualist Company Profile",
 };
 

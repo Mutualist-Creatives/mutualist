@@ -39,16 +39,10 @@ export default function ReachUsSection() {
                 </h3>
                 <div className="flex flex-col gap-1">
                   <a
-                    href="mailto:andre@mutualist.co"
+                    href="mailto:hello@mutualist.co"
                     className="text-white hover:opacity-80 transition-opacity break-all"
                   >
-                    andre@mutualist.co
-                  </a>
-                  <a
-                    href="mailto:mutualistlab@gmail.com"
-                    className="text-white hover:opacity-80 transition-opacity break-all"
-                  >
-                    mutualistlab@gmail.com
+                    hello@mutualist.co
                   </a>
                 </div>
               </div>
@@ -59,12 +53,12 @@ export default function ReachUsSection() {
                   Whatsapp
                 </h3>
                 <a
-                  href="https://wa.me/6281808008839"
+                  href="https://wa.me/6287787242397"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white hover:opacity-80 transition-opacity"
                 >
-                  +62 818 0800 8839 (Andre)
+                  +62 877 8724 2397 (Mutu)
                 </a>
               </div>
             </div>
