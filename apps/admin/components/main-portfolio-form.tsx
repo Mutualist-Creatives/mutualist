@@ -205,6 +205,30 @@ export function MainPortfolioForm({
   ) => {
     if (!file) return;
 
+    // Validate file type
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+    ];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only image files and MP4 videos are allowed");
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      toast.error(
+        `File "${file.name}" is ${sizeMB}MB. Each file must not exceed 10MB.`
+      );
+      return;
+    }
+
     // Preview
     const url = URL.createObjectURL(file);
     updateBlockImage(blockIndex, imgIndex, url);
@@ -597,7 +621,7 @@ export function MainPortfolioForm({
                             onClick={() => {
                               const input = document.createElement("input");
                               input.type = "file";
-                              input.accept = "image/*";
+                              input.accept = "image/*,video/mp4";
                               input.onchange = (e) => {
                                 const file = (e.target as HTMLInputElement)
                                   .files?.[0];
