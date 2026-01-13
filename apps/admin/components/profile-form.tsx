@@ -6,6 +6,14 @@ import { usersApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -16,6 +24,7 @@ interface ProfileFormProps {
     id: string;
     email: string | null;
     name: string | null;
+    role?: string;
   };
 }
 
@@ -29,12 +38,18 @@ export function ProfileForm({ user }: ProfileFormProps) {
     name: user.name || "",
     email: user.email || "",
     password: "",
+    confirmPassword: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
     try {
       const data: Record<string, string> = {
@@ -53,7 +68,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
       toast.success("Profile updated!");
       router.refresh();
-      setFormData({ ...formData, password: "" }); // Clear password
+      setFormData({ ...formData, password: "", confirmPassword: "" });
     } catch (err) {
       const error = err as Error;
       console.error(error);
@@ -65,60 +80,103 @@ export function ProfileForm({ user }: ProfileFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card className="w-full max-w-2xl">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>My Profile</CardTitle>
+              <CardDescription>
+                Manage your personal information and security settings.
+              </CardDescription>
+            </div>
+            {user.role && (
+              <Badge variant="secondary" className="text-sm">
+                {user.role}
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-      <div className="space-y-4 border p-4 rounded-lg bg-card">
-        <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-        </div>
+          <div className="grid gap-6">
+            {/* General Info */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  required
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  disabled
+                  value={formData.email}
+                  className="bg-muted text-muted-foreground"
+                />
+              </div>
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            required
-            disabled // Often good to disable email change, but user can re-enable if logic exists
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-          />
-          <p className="text-xs text-muted-foreground">
-            Email cannot be changed.
-          </p>
-        </div>
+            {/* Password Section */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="password">New Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Only if changing"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Retype Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Confirm new password"
+                  disabled={!formData.password}
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">New Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Leave blank to keep current password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
-        </div>
+      <div className="flex justify-start gap-4">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="gap-2 cursor-pointer"
+        >
+          <Save className="h-4 w-4" />
+          {loading ? "Saving..." : "Save Changes"}
+        </Button>
       </div>
-
-      <Button type="submit" disabled={loading} className="gap-2">
-        <Save className="h-4 w-4" />
-        {loading ? "Saving..." : "Update Profile"}
-      </Button>
     </form>
   );
 }

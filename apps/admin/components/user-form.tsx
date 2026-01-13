@@ -6,8 +6,22 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Save, X, AlertCircle } from "lucide-react";
+import { Save, X, AlertCircle, Wand2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { usersApi } from "@/lib/api";
 
@@ -20,8 +34,25 @@ export function UserForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    role: "ADMIN",
     password: "",
   });
+
+  const generatePassword = () => {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setFormData({ ...formData, password });
+    toast.success("Password generated!");
+  };
+
+  const copyPassword = () => {
+    navigator.clipboard.writeText(formData.password);
+    toast.success("Password copied to clipboard");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,62 +79,133 @@ export function UserForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card className="w-full max-w-2xl">
+        <CardHeader>
+          <CardTitle>Create New User</CardTitle>
+          <CardDescription>
+            Add a new administrator or editor to the dashboard.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
-      <div className="space-y-4 border p-4 rounded-lg bg-card">
-        <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            required
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-        </div>
+          <div className="grid gap-6">
+            {/* Name & Role */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  required
+                  placeholder="e.g. John Doe"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                />
+              </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-          />
-        </div>
+              <div className="space-y-2">
+                <Label htmlFor="role">Role</Label>
+                <Select
+                  value={formData.role}
+                  onValueChange={(val) =>
+                    setFormData({ ...formData, role: val })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="EDITOR">Editor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            required
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
-        </div>
-      </div>
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                placeholder="e.g. john@example.com"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </div>
 
-      <div className="flex gap-4">
-        <Button type="submit" disabled={loading} className="gap-2">
+            {/* Password */}
+            <div className="space-y-2">
+              <Label htmlFor="password">Initial Password</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    id="password"
+                    type="text"
+                    required
+                    placeholder="Click generate to create secure password"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className="pr-10"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={copyPassword}
+                    className="absolute right-0 top-0 h-full px-3 text-muted-foreground hover:text-foreground cursor-pointer"
+                    title="Copy Password"
+                    disabled={!formData.password}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={generatePassword}
+                  className="gap-2 cursor-pointer"
+                >
+                  <Wand2 className="h-4 w-4" />
+                  Generate
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                The user can change this later from their profile. Copy this to
+                share with them securely.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex gap-4 mt-6">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="gap-2 cursor-pointer"
+        >
           <Save className="h-4 w-4" />
-          {loading ? "Saving..." : "Create User"}
+          {loading ? "Creating..." : "Create User"}
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={() => router.back()}
-          className="gap-2"
+          className="gap-2 cursor-pointer"
         >
           <X className="h-4 w-4" />
           Cancel

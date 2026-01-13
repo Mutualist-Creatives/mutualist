@@ -1,17 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+import { Save, X, Upload, Loader2, RefreshCw } from "lucide-react";
+
 import { Blog } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Save, X, AlertCircle, Upload } from "lucide-react";
-import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { RichTextEditor } from "./blog-form/rich-text-editor";
+import { blogSchema, BlogFormValues } from "./blog-form/blog-schema";
 
 interface BlogFormProps {
   blog?: Blog;
@@ -21,71 +39,116 @@ export function BlogForm({ blog }: BlogFormProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    blog?.image || null
+  );
 
-  const [formData, setFormData] = useState({
-    slug: blog?.slug || "",
-    title: blog?.title || "",
-    category: blog?.category || "Article",
-    date: blog?.date || new Date().toISOString().split("T")[0],
-    image: blog?.image || "",
-    content: blog?.content || "",
+  const form = useForm<BlogFormValues>({
+    resolver: zodResolver(blogSchema),
+    defaultValues: {
+      slug: blog?.slug || "",
+      title: blog?.title || "",
+      category: blog?.category || "Article",
+      date: blog?.date || new Date().toISOString().split("T")[0],
+      image: blog?.image || "",
+      rotation: blog?.rotation || Math.floor(Math.random() * 11) - 5, // Random -5 to 5
+      content: blog?.content || "",
+    },
   });
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  };
 
-  const handleFileSelect = (file: File | null) => {
+  // Auto-generate slug from title
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "title") {
+        const slug = generateSlug(value.title || "");
+        form.setValue("slug", slug, { shouldValidate: true });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filenameInput, setFilenameInput] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  // File Select Handler
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size limits to 5MB");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size limits to 10MB");
       return;
     }
 
-    setImageFile(file);
+    // Set preview immediately
     const previewUrl = URL.createObjectURL(file);
-    setFormData({ ...formData, image: previewUrl });
-    toast.success("Image selected. Will be uploaded on save.");
+    setImagePreview(previewUrl);
+
+    // Set state for renaming
+    setSelectedFile(file);
+    // Default name: original name without extension
+    const nameWithoutExt =
+      file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
+    setFilenameInput(nameWithoutExt);
   };
 
-  const uploadFile = async (): Promise<string | null> => {
-    if (!imageFile) return formData.image;
-
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
-    const uploadData = new FormData();
-    uploadData.append("file", imageFile);
-    uploadData.append("bucket", "main");
-    uploadData.append("folder", "blogs");
-
-    const res = await fetch(`${apiUrl}/upload`, {
-      method: "POST",
-      body: uploadData,
-    });
-
-    if (!res.ok) throw new Error("Failed to upload image");
-    const data = await res.json();
-    return data.publicUrl;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  // Actual Upload Handler
+  const handleUploadConfirm = async () => {
+    if (!selectedFile) return;
     setUploading(true);
-    setError("");
 
     try {
-      const imageUrl = await uploadFile();
-
-      const data = {
-        ...formData,
-        image: imageUrl || "",
-      };
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      formData.append("bucket", "main");
+      formData.append("folder", "blogs");
+      // Append the custom filename
+      if (filenameInput) {
+        formData.append("filename", filenameInput);
+      }
 
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
+      const res = await fetch(`${apiUrl}/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Failed to upload image");
+      const data = await res.json();
+      form.setValue("image", data.publicUrl);
+      toast.success("Image uploaded successfully");
+
+      // Clear selection state after success
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onSubmit = async (values: BlogFormValues) => {
+    setLoading(true);
+    try {
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
       const url = blog ? `${apiUrl}/blogs/${blog.slug}` : `${apiUrl}/blogs`;
+
+      // Should ensure rotation is set if missing (though default handles it)
+      if (values.rotation === undefined) {
+        values.rotation = Math.floor(Math.random() * 11) - 5;
+      }
 
       const res = await fetch(url, {
         method: blog ? "PATCH" : "POST",
@@ -93,7 +156,7 @@ export function BlogForm({ blog }: BlogFormProps) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session?.accessToken}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(values),
       });
 
       if (!res.ok) {
@@ -108,153 +171,244 @@ export function BlogForm({ blog }: BlogFormProps) {
       router.refresh();
     } catch (err) {
       const error = err as Error;
-      console.error(error);
-      setError(error.message);
       toast.error(error.message);
     } finally {
       setLoading(false);
-      setUploading(false);
     }
   };
 
-  const generateSlug = () => {
-    const slug = formData.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-    setFormData({ ...formData, slug });
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+          {/* Main Content Area */}
+          <div className="space-y-6 min-w-0">
+            <div className="space-y-4 border p-4 rounded-lg bg-card">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Blog Post Title" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-      <div className="space-y-4 border p-4 rounded-lg bg-card">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              required
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              onBlur={() => !formData.slug && generateSlug()}
-            />
+              {/* Hidden Slug Field */}
+              <input type="hidden" {...form.register("slug")} />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Article">Article</SelectItem>
+                        <SelectItem value="News">News</SelectItem>
+                        <SelectItem value="Tutorial">Tutorial</SelectItem>
+                        <SelectItem value="Thoughts">Thoughts</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Content</FormLabel>
+                    <FormControl>
+                      <RichTextEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="slug">Slug</Label>
-            <Input
-              id="slug"
-              required
-              value={formData.slug}
-              onChange={(e) =>
-                setFormData({ ...formData, slug: e.target.value })
-              }
-            />
+
+          {/* Sidebar / Metadata */}
+          <div className="space-y-6">
+            <div className="space-y-4 border p-4 rounded-lg bg-card">
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <FormLabel>Cover Image</FormLabel>
+                <div className="border rounded-md p-4 space-y-4">
+                  {imagePreview ? (
+                    <div className="relative aspect-video rounded-md overflow-hidden border bg-muted group">
+                      <Image
+                        src={imagePreview}
+                        alt="Preview"
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <div className="relative">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="opacity-100" // Button itself visible
+                            onClick={() => {
+                              const input =
+                                document.getElementById("image-upload");
+                              if (input) input.click();
+                            }}
+                          >
+                            Change
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="aspect-video rounded-md border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors"
+                      onClick={() => {
+                        const input = document.getElementById("image-upload");
+                        if (input) input.click();
+                      }}
+                    >
+                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                      <span className="text-sm text-muted-foreground">
+                        Upload Cover Image
+                      </span>
+                    </div>
+                  )}
+
+                  {/* File Rename & Upload Action */}
+                  {selectedFile && (
+                    <div className="flex gap-2 items-end animate-in fade-in slide-in-from-top-1">
+                      <div className="flex-1 space-y-1">
+                        <FormLabel className="text-xs">File Name</FormLabel>
+                        <Input
+                          value={filenameInput}
+                          onChange={(e) => setFilenameInput(e.target.value)}
+                          placeholder="filename-without-extension"
+                          className="h-8"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleUploadConfirm}
+                        disabled={uploading}
+                      >
+                        {uploading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4" />
+                        )}
+                        <span className="ml-2">Upload</span>
+                      </Button>
+                    </div>
+                  )}
+
+                  <Input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                  />
+                  {/* Keep the form field sync with the URL */}
+                  <input type="hidden" {...form.register("image")} />
+                </div>
+              </div>
+
+              {/* Rotation (Hidden/Auto) - but we can show refresh button if desired */}
+              <FormField
+                control={form.control}
+                name="rotation"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Rotation (deg)</FormLabel>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => {
+                          const newRotation =
+                            Math.floor(Math.random() * 11) - 5;
+                          field.onChange(newRotation);
+                          toast.success(`Rotation set to ${newRotation}deg`);
+                        }}
+                        title="Generate new random rotation"
+                      >
+                        <RefreshCw className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </FormControl>
+                    <FormDescription>Auto-generated (-5 to 5)</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
-              required
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              required
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
-            />
-          </div>
+        <div className="flex gap-4 pt-4 border-t">
+          <Button type="submit" disabled={loading} className="gap-2">
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4" />
+            )}
+            {blog ? "Update Blog" : "Create Blog"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            disabled={loading}
+          >
+            Cancel
+          </Button>
         </div>
-
-        <div className="space-y-2">
-          <Label>Cover Image</Label>
-          <div className="flex gap-2">
-            <Input
-              value={formData.image}
-              onChange={(e) =>
-                setFormData({ ...formData, image: e.target.value })
-              }
-              placeholder="Image URL"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={() => {
-                const input = document.createElement("input");
-                input.type = "file";
-                input.accept = "image/*";
-                input.onchange = (e) => {
-                  const file = (e.target as HTMLInputElement).files?.[0];
-                  if (file) handleFileSelect(file);
-                };
-                input.click();
-              }}
-            >
-              <Upload className="h-4 w-4" />
-            </Button>
-          </div>
-          {formData.image && (
-            <Image
-              src={formData.image}
-              alt="Preview"
-              width={320}
-              height={160}
-              className="mt-2 h-40 object-cover rounded border"
-            />
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="content">Content</Label>
-          <Textarea
-            id="content"
-            required
-            rows={10}
-            value={formData.content}
-            onChange={(e) =>
-              setFormData({ ...formData, content: e.target.value })
-            }
-          />
-        </div>
-      </div>
-
-      <div className="flex gap-4">
-        <Button type="submit" disabled={loading || uploading} className="gap-2">
-          <Save className="h-4 w-4" />
-          {loading ? "Saving..." : blog ? "Update Blog" : "Create Blog"}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.back()}
-          className="gap-2"
-        >
-          <X className="h-4 w-4" />
-          Cancel
-        </Button>
-      </div>
-    </form>
+      </form>
+    </Form>
   );
 }

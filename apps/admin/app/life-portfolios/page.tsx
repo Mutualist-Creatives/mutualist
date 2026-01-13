@@ -15,7 +15,7 @@ export default async function PortfoliosPage() {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-6 lg:p-8">
+    <div className="flex-1 space-y-6 p-6 lg:p-8 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

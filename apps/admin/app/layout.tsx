@@ -5,6 +5,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
+import { AdminBreadcrumb } from "@/components/admin-breadcrumb";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -42,11 +43,10 @@ export default async function RootLayout({
             <SidebarProvider>
               <AppSidebar user={session.user || { name: "Admin", email: "" }} />
               <main className="flex-1 w-full">
-                <div className="border-b bg-background">
-                  <div className="flex h-14 items-center px-4 lg:px-6">
-                    <SidebarTrigger />
-                  </div>
-                </div>
+                <header className="flex h-14 items-center gap-2 border-b bg-background/95 px-4 lg:px-6 backdrop-blur supports-backdrop-filter:bg-background/60 sticky top-0 z-30">
+                  <SidebarTrigger />
+                  <AdminBreadcrumb />
+                </header>
                 <div className="flex-1">{children}</div>
               </main>
               <Toaster />

@@ -21,17 +21,8 @@ export default async function EditPortfolioPage({
 
   return (
     <div className="flex-1 space-y-6 p-6 lg:p-8">
-      {/* Back Button */}
-      <Link href="/life-portfolios">
-        <Button variant="ghost" className="gap-2 -ml-2">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Portfolios
-        </Button>
-      </Link>
-
       {/* Header */}
       <div className="flex items-center gap-2">
-        <Pencil className="h-6 w-6" />
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Edit Portfolio</h2>
           <p className="text-muted-foreground">

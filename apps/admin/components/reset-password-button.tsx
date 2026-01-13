@@ -49,7 +49,7 @@ export function ResetPasswordButton({
         <Button
           variant="ghost"
           size="sm"
-          className="gap-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+          className="gap-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 cursor-pointer"
         >
           <KeyRound className="h-4 w-4" />
           Reset

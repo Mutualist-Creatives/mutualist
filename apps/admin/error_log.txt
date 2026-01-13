@@ -1,0 +1,25 @@
+$ cross-env NODE_OPTIONS="--max-old-space-size=4096" next build
+ΓÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+Failed to compile.
+
+./components/ui/breadcrumb.tsx:44:6
+Type error: Type '{ ref?: Ref<HTMLAnchorElement> | undefined; key?: Key | null | undefined; download?: any; href?: string | undefined; hrefLang?: string | undefined; media?: string | undefined; ... 282 more ...; className: string; }' is not assignable to type 'RefAttributes<HTMLElement>'.
+  Types of property 'ref' are incompatible.
+    Type 'Ref<HTMLAnchorElement> | undefined' is not assignable to type 'Ref<HTMLElement> | undefined'.
+      Type '(instance: HTMLAnchorElement | null) => void | (() => VoidOrUndefinedOnly)' is not assignable to type 'Ref<HTMLElement> | undefined'.
+        Type '(instance: HTMLAnchorElement | null) => void | (() => VoidOrUndefinedOnly)' is not assignable to type '(instance: HTMLElement | null) => void | (() => VoidOrUndefinedOnly)'.
+          Type 'void | (() => VoidOrUndefinedOnly)' is not assignable to type 'void | (() => VoidOrUndefinedOnly)'. Two different types with this name exist, but they are unrelated.
+            Type '() => VoidOrUndefinedOnly' is not assignable to type 'void | (() => VoidOrUndefinedOnly)'.
+              Type '() => VoidOrUndefinedOnly' is not assignable to type '() => VoidOrUndefinedOnly'. Two different types with this name exist, but they are unrelated.
+                Type 'VoidOrUndefinedOnly' is not assignable to type 'VoidOrUndefinedOnly'. Two different types with this name exist, but they are unrelated.
+                  Type '{ [UNDEFINED_VOID_ONLY]: never; }' is not assignable to type 'VoidOrUndefinedOnly'.
+
+  42 |
+  43 |   return (
+> 44 |     <Comp
+     |      ^
+  45 |       data-slot="breadcrumb-link"
+  46 |       className={cn("hover:text-foreground transition-colors", className)}
+  47 |       {...props}
+Next.js build worker exited with code: 1 and signal: null
+error: script "build" exited with code 1

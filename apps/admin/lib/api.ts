@@ -283,11 +283,13 @@ export interface CreatedUser {
   id: string;
   email: string;
   name: string;
+  role: string;
 }
 
 export interface CreateUserDto {
   email: string;
   name: string;
+  role?: string;
   password?: string;
 }
 

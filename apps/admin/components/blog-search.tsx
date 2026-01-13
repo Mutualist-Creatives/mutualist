@@ -144,7 +144,8 @@ export function BlogSearch({ blogs }: { blogs: Blog[] }) {
 
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground line-clamp-2">
-                  {blog.content}
+                  {blog.content.replace(/<[^>]*>?/gm, "").substring(0, 150) +
+                    "..."}
                 </p>
 
                 <div className="flex gap-2 pt-2">

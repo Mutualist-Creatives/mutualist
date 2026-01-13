@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { DeleteButton } from "@/components/delete-button";
 import { Search, Pencil, Briefcase, Star } from "lucide-react";
 import { Work } from "@/lib/api";
+
+const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
 
 export function ClientPortfolioSearch({ works }: { works: Work[] }) {
   const [search, setSearch] = useState("");
@@ -40,6 +43,15 @@ export function ClientPortfolioSearch({ works }: { works: Work[] }) {
       return matchesSearch && matchesIndustry;
     });
   }, [works, search, industryFilter]);
+
+  const getThumbnail = (work: Work) => {
+    for (const block of work.content) {
+      if (block.images && block.images.length > 0) {
+        return block.images[0];
+      }
+    }
+    return null;
+  };
 
   return (
     <div className="space-y-4">
@@ -98,95 +110,126 @@ export function ClientPortfolioSearch({ works }: { works: Work[] }) {
         </Card>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredWorks.map((work) => (
-            <Card
-              key={work.slug}
-              className="overflow-hidden group hover:shadow-lg transition-all"
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                  <CardTitle className="text-lg line-clamp-1">
-                    {work.title}
-                  </CardTitle>
+          {filteredWorks.map((work) => {
+            const thumbnail = getThumbnail(work);
+            return (
+              <Card
+                key={work.slug}
+                className="overflow-hidden group hover:shadow-lg transition-all"
+              >
+                {/* Thumbnail */}
+                <div className="aspect-video relative bg-muted">
+                  {thumbnail ? (
+                    isVideo(thumbnail) ? (
+                      <video
+                        src={thumbnail}
+                        className="w-full h-full object-cover"
+                        muted
+                        loop
+                        playsInline
+                        autoPlay // Optional: hover play or auto
+                      />
+                    ) : (
+                      <Image
+                        src={thumbnail}
+                        alt={work.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    )
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <Briefcase className="h-12 w-12 text-muted-foreground/20" />
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="secondary">{work.industry}</Badge>
-                  <span className="text-sm text-muted-foreground">
-                    {work.year}
-                  </span>
-                  <div
-                    className="ml-auto cursor-pointer"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      // Optimistic toggle
-                      // Note: In a real app we'd use SWR/TanStack Query mutation or a server action to revalidate
-                      // For now, we'll just fire the update and rely on eventual reload if needed,
-                      // or we could force a router refresh.
-                      try {
-                        const worksApi = (await import("@/lib/api")).worksApi;
-                        // Toggle logic
-                        await worksApi.update(work.slug, {
-                          isFeatured: !work.isFeatured,
-                        });
-                        // Refresh to show updated state if we are server-rendering or rely on router
-                        // Using window.location.reload() is heavy, router.refresh() is better for server components
-                        // Since this is a client component, we might want to lift state or use context.
-                        // For simplicity in this task, let's just use router.refresh()
-                        window.location.reload();
-                      } catch (err) {
-                        console.error("Failed to toggle feature", err);
-                      }
-                    }}
-                  >
-                    {/* Star Icon - Filled if featured, Outline if not */}
+
+                <CardHeader>
+                  <div className="flex items-start justify-between gap-2">
+                    <CardTitle className="text-lg line-clamp-1">
+                      {work.title}
+                    </CardTitle>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge variant="secondary">{work.industry}</Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {work.year}
+                    </span>
                     <div
-                      className={
-                        work.isFeatured
-                          ? "text-yellow-500 fill-yellow-500"
-                          : "text-muted-foreground"
-                      }
+                      className="ml-auto cursor-pointer"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        // Optimistic toggle
+                        // Note: In a real app we'd use SWR/TanStack Query mutation or a server action to revalidate
+                        // For now, we'll just fire the update and rely on eventual reload if needed,
+                        // or we could force a router refresh.
+                        try {
+                          const worksApi = (await import("@/lib/api")).worksApi;
+                          // Toggle logic
+                          await worksApi.update(work.slug, {
+                            isFeatured: !work.isFeatured,
+                          });
+                          // Refresh to show updated state if we are server-rendering or rely on router
+                          // Using window.location.reload() is heavy, router.refresh() is better for server components
+                          // Since this is a client component, we might want to lift state or use context.
+                          // For simplicity in this task, let's just use router.refresh()
+                          window.location.reload();
+                        } catch (err) {
+                          console.error("Failed to toggle feature", err);
+                        }
+                      }}
                     >
-                      <Star
+                      {/* Star Icon - Filled if featured, Outline if not */}
+                      <div
                         className={
                           work.isFeatured
-                            ? "h-5 w-5 fill-yellow-500 text-yellow-500"
-                            : "h-5 w-5"
+                            ? "text-yellow-500 fill-yellow-500"
+                            : "text-muted-foreground"
                         }
-                      />
+                      >
+                        <Star
+                          className={
+                            work.isFeatured
+                              ? "h-5 w-5 fill-yellow-500 text-yellow-500"
+                              : "h-5 w-5"
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
+                </CardHeader>
 
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground line-clamp-2">
-                  {work.serviceNames}
-                </p>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground line-clamp-2">
+                    {work.serviceNames}
+                  </p>
 
-                <div className="flex gap-2 pt-2">
-                  <Link
-                    href={`/main-portfolios/${work.slug}`}
-                    className="flex-1"
-                  >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full gap-2"
+                  <div className="flex gap-2 pt-2">
+                    <Link
+                      href={`/main-portfolios/${work.slug}`}
+                      className="flex-1"
                     >
-                      <Pencil className="h-4 w-4" />
-                      Edit
-                    </Button>
-                  </Link>
-                  <DeleteButton
-                    id={work.slug}
-                    title={work.title}
-                    endpoint="main-portfolios"
-                    variant="outline"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full gap-2"
+                      >
+                        <Pencil className="h-4 w-4" />
+                        Edit
+                      </Button>
+                    </Link>
+                    <DeleteButton
+                      id={work.slug}
+                      title={work.title}
+                      endpoint="main-portfolios"
+                      variant="outline"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

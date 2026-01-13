@@ -6,6 +6,8 @@ interface WorkContentProps {
   work: WorkItem;
 }
 
+const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
+
 export default function WorkContent({ work }: WorkContentProps) {
   return (
     <div className="w-full md:w-3/5 lg:w-2/3 bg-white pt-4 md:pt-32 pb-20 px-0 flex flex-col gap-2 md:gap-3 lg:gap-4 items-end ml-auto">
@@ -17,16 +19,29 @@ export default function WorkContent({ work }: WorkContentProps) {
                 key={index}
                 className="w-full rounded-lg md:rounded-2xl overflow-hidden bg-zinc-200"
               >
-                <div className="relative w-full aspect-video">
+                <div className="relative w-full">
                   {block.images[0] ? (
-                    <Image
-                      src={block.images[0]}
-                      alt=""
-                      fill
-                      className="object-cover"
-                    />
+                    isVideo(block.images[0]) ? (
+                      <video
+                        src={block.images[0]}
+                        className="w-full h-auto bg-zinc-200"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                      />
+                    ) : (
+                      <Image
+                        src={block.images[0]}
+                        alt=""
+                        width={0}
+                        height={0}
+                        sizes="100vw"
+                        className="w-full h-auto bg-zinc-200"
+                      />
+                    )
                   ) : (
-                    <div className="w-full h-full bg-zinc-200" />
+                    <div className="w-full aspect-video bg-zinc-200" />
                   )}
                 </div>
               </div>
@@ -42,9 +57,27 @@ export default function WorkContent({ work }: WorkContentProps) {
                     key={i}
                     className="w-full rounded-lg md:rounded-2xl overflow-hidden bg-zinc-200"
                   >
-                    <div className="relative w-full aspect-square">
+                    <div className="relative w-full">
                       {img ? (
-                        <Image src={img} alt="" fill className="object-cover" />
+                        isVideo(img) ? (
+                          <video
+                            src={img}
+                            className="w-full h-auto bg-zinc-200"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        ) : (
+                          <Image
+                            src={img}
+                            alt=""
+                            width={0}
+                            height={0}
+                            sizes="100vw"
+                            className="w-full h-auto bg-zinc-200"
+                          />
+                        )
                       ) : (
                         <div className="w-full h-full bg-zinc-200" />
                       )}
@@ -64,9 +97,27 @@ export default function WorkContent({ work }: WorkContentProps) {
                     key={i}
                     className="w-full rounded-lg md:rounded-2xl overflow-hidden bg-zinc-200"
                   >
-                    <div className="relative w-full aspect-square">
+                    <div className="relative w-full">
                       {img ? (
-                        <Image src={img} alt="" fill className="object-cover" />
+                        isVideo(img) ? (
+                          <video
+                            src={img}
+                            className="w-full h-auto bg-zinc-200"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        ) : (
+                          <Image
+                            src={img}
+                            alt=""
+                            width={0}
+                            height={0}
+                            sizes="100vw"
+                            className="w-full h-auto bg-zinc-200"
+                          />
+                        )
                       ) : (
                         <div className="w-full h-full bg-zinc-200" />
                       )}

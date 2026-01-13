@@ -19,13 +19,31 @@ export class UploadService {
     this.supabase = createClient(supabaseUrl, supabaseKey) as SupabaseClient;
   }
 
-  async uploadFile(file: Express.Multer.File, bucket: string, folder?: string) {
+  async uploadFile(
+    file: Express.Multer.File,
+    bucket: string,
+    folder?: string,
+    customName?: string,
+  ) {
     try {
-      // Generate unique filename
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(2, 8);
       const fileExt = file.originalname.split('.').pop();
-      const baseFileName = `${timestamp}-${randomString}.${fileExt}`;
+      let baseFileName: string;
+
+      if (customName) {
+        // Sanitize custom name: remove special chars, keep alphanumeric, dots, dashes, underscores
+        const sanitized = customName.replace(/[^a-zA-Z0-9-_\.]/g, '-');
+        // ensure extension is present or append it
+        if (sanitized.endsWith(`.${fileExt}`)) {
+          baseFileName = sanitized;
+        } else {
+          baseFileName = `${sanitized}.${fileExt}`;
+        }
+      } else {
+        // Generate unique filename
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 8);
+        baseFileName = `${timestamp}-${randomString}.${fileExt}`;
+      }
 
       // Add folder prefix if provided
       const fileName = folder ? `${folder}/${baseFileName}` : baseFileName;
@@ -35,7 +53,7 @@ export class UploadService {
         .from(bucket)
         .upload(fileName, file.buffer, {
           contentType: file.mimetype,
-          upsert: false,
+          upsert: true,
         });
 
       if (error) {

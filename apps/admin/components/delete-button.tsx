@@ -75,10 +75,10 @@ export function DeleteButton({
           size="sm"
           className={
             variant === "ghost"
-              ? "gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+              ? "gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
               : variant === "outline"
-                ? "gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
-                : "gap-2"
+                ? "gap-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 cursor-pointer"
+                : "gap-2 cursor-pointer"
           }
         >
           <Trash2 className="h-4 w-4" />
