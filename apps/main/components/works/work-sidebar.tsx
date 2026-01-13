@@ -15,17 +15,17 @@ export default function WorkSidebar({ work }: WorkSidebarProps) {
         <h1 className="text-3xl md:text-2xl lg:text-5xl font-medium text-purple-mutu mb-2">
           {work.title}
         </h1>
-        <p className="text-sm md:text-base lg:text-xl font-medium text-black-mutu">
+        <p className="text-sm md:text-base lg:text-xl font-medium text-black-mutu font-[family-name:var(--font-instrument-sans)]">
           {work.industry}
         </p>
-        <p className="text-sm md:text-base lg:text-xl font-medium text-black-mutu">
+        <p className="text-sm md:text-base lg:text-xl font-medium text-black-mutu font-[family-name:var(--font-instrument-sans)]">
           {work.year}
         </p>
       </div>
 
       {/* Services */}
       <div className="flex flex-col gap-3 md:gap-4">
-        <h3 className="text-sm md:text-lg lg:text-xl font-medium text-purple-mutu">
+        <h3 className="text-sm md:text-lg lg:text-xl font-bold text-purple-mutu">
           Services
         </h3>
 
@@ -51,7 +51,7 @@ export default function WorkSidebar({ work }: WorkSidebarProps) {
           })}
         </div>
 
-        <p className="text-sm md:text-sm lg:text-base font-medium text-black-mutu">
+        <p className="text-sm md:text-sm lg:text-base font-medium text-black-mutu font-[family-name:var(--font-instrument-sans)]">
           {work.serviceNames}
         </p>
       </div>
@@ -90,7 +90,7 @@ export default function WorkSidebar({ work }: WorkSidebarProps) {
                   {team.names.map((name, i) => (
                     <span
                       key={i}
-                      className="text-sm md:text-sm lg:text-base font-medium text-black-mutu"
+                      className="text-sm md:text-sm lg:text-base font-medium text-black-mutu font-[family-name:var(--font-instrument-sans)]"
                     >
                       {name}
                     </span>

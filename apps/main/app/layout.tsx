@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Parkinsans } from "next/font/google";
+import { Parkinsans, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 
 import Header from "../components/header";
@@ -7,6 +7,12 @@ import Footer from "../components/footer";
 
 const parkinsans = Parkinsans({
   variable: "--font-parkinsans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const instrumentSans = Instrument_Sans({
+  variable: "--font-instrument-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -25,7 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${parkinsans.variable} antialiased`}>
+      <body
+        className={`${parkinsans.variable} ${instrumentSans.variable} antialiased`}
+      >
         <Header />
         {children}
         <Footer />
