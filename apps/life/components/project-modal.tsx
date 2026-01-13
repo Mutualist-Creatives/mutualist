@@ -118,37 +118,53 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     const newIndex =
       currentImageIndex === 0 ? images.length - 1 : currentImageIndex - 1;
 
-    // Preload next image first
-    setNextImageIndex(newIndex);
+    // Preload image first, then start transition
+    const img = new window.Image();
+    img.src = images[newIndex];
 
-    // Wait for image to load
-    setTimeout(() => {
+    const startTransition = () => {
       if (currentImageRef.current && nextImageRef.current) {
-        // Show next image behind current
-        gsap.set(nextImageRef.current, { opacity: 1, zIndex: 1 });
+        // Disable transition during reset
+        currentImageRef.current.style.transition = "none";
+        nextImageRef.current.style.transition = "none";
 
-        // Fade out current image to reveal next
-        gsap.to(currentImageRef.current, {
-          opacity: 0,
-          duration: 0.4,
-          ease: "power2.inOut",
-          onComplete: () => {
-            // Wait for fade to complete, then swap
-            setTimeout(() => {
-              if (currentImageRef.current && nextImageRef.current) {
-                // Reset opacity instantly (no animation)
-                gsap.set(currentImageRef.current, { opacity: 1, zIndex: 2 });
-                gsap.set(nextImageRef.current, { opacity: 0, zIndex: 1 });
-
-                // Update state after visual reset
-                setCurrentImageIndex(newIndex);
-                setIsTransitioning(false);
-              }
-            }, 16); // One frame delay
-          },
-        });
+        // Reset opacities instantly
+        currentImageRef.current.style.opacity = "1";
+        nextImageRef.current.style.opacity = "0";
       }
-    }, 100);
+
+      // Set next image index (it's now preloaded)
+      setNextImageIndex(newIndex);
+
+      // Wait for React to render, then crossfade
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (currentImageRef.current && nextImageRef.current) {
+            // Re-enable transition for crossfade
+            currentImageRef.current.style.transition =
+              "opacity 0.35s ease-in-out";
+            nextImageRef.current.style.transition = "opacity 0.35s ease-in-out";
+
+            // Now do the crossfade
+            nextImageRef.current.style.opacity = "1";
+            currentImageRef.current.style.opacity = "0";
+          }
+
+          // After crossfade completes, sync indices
+          setTimeout(() => {
+            setCurrentImageIndex(newIndex);
+            setIsTransitioning(false);
+          }, 350);
+        });
+      });
+    };
+
+    // If already cached, start immediately; otherwise wait for load
+    if (img.complete) {
+      startTransition();
+    } else {
+      img.onload = startTransition;
+    }
   };
 
   const handleNextImage = () => {
@@ -158,37 +174,53 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
     const newIndex =
       currentImageIndex === images.length - 1 ? 0 : currentImageIndex + 1;
 
-    // Preload next image first
-    setNextImageIndex(newIndex);
+    // Preload image first, then start transition
+    const img = new window.Image();
+    img.src = images[newIndex];
 
-    // Wait for image to load
-    setTimeout(() => {
+    const startTransition = () => {
       if (currentImageRef.current && nextImageRef.current) {
-        // Show next image behind current
-        gsap.set(nextImageRef.current, { opacity: 1, zIndex: 1 });
+        // Disable transition during reset
+        currentImageRef.current.style.transition = "none";
+        nextImageRef.current.style.transition = "none";
 
-        // Fade out current image to reveal next
-        gsap.to(currentImageRef.current, {
-          opacity: 0,
-          duration: 0.4,
-          ease: "power2.inOut",
-          onComplete: () => {
-            // Wait for fade to complete, then swap
-            setTimeout(() => {
-              if (currentImageRef.current && nextImageRef.current) {
-                // Reset opacity instantly (no animation)
-                gsap.set(currentImageRef.current, { opacity: 1, zIndex: 2 });
-                gsap.set(nextImageRef.current, { opacity: 0, zIndex: 1 });
-
-                // Update state after visual reset
-                setCurrentImageIndex(newIndex);
-                setIsTransitioning(false);
-              }
-            }, 16); // One frame delay
-          },
-        });
+        // Reset opacities instantly
+        currentImageRef.current.style.opacity = "1";
+        nextImageRef.current.style.opacity = "0";
       }
-    }, 100);
+
+      // Set next image index (it's now preloaded)
+      setNextImageIndex(newIndex);
+
+      // Wait for React to render, then crossfade
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (currentImageRef.current && nextImageRef.current) {
+            // Re-enable transition for crossfade
+            currentImageRef.current.style.transition =
+              "opacity 0.35s ease-in-out";
+            nextImageRef.current.style.transition = "opacity 0.35s ease-in-out";
+
+            // Now do the crossfade
+            nextImageRef.current.style.opacity = "1";
+            currentImageRef.current.style.opacity = "0";
+          }
+
+          // After crossfade completes, sync indices
+          setTimeout(() => {
+            setCurrentImageIndex(newIndex);
+            setIsTransitioning(false);
+          }, 350);
+        });
+      });
+    };
+
+    // If already cached, start immediately; otherwise wait for load
+    if (img.complete) {
+      startTransition();
+    } else {
+      img.onload = startTransition;
+    }
   };
 
   return (
@@ -245,31 +277,63 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             </div>
           </button>
 
-          {/* Current Image */}
-          <div ref={currentImageRef} className="relative w-full h-full z-[2]">
-            <Image
-              src={images[currentImageIndex]}
-              alt={project.title}
-              fill
-              className="object-contain"
-              style={{ objectPosition: "center" }}
-              sizes="(max-width: 768px) 100vw, 60vw"
-              quality={90}
-              priority={currentImageIndex === 0}
-            />
+          {/* Next Media (behind current for crossfade) */}
+          <div
+            ref={nextImageRef}
+            className="absolute inset-0 z-1 opacity-0"
+            style={{ transition: "opacity 0.3s ease-in-out" }}
+          >
+            {images[nextImageIndex]?.match(/\.(mp4|webm|mov|ogg)$/i) ? (
+              <video
+                src={images[nextImageIndex]}
+                className="w-full h-full object-contain"
+                style={{ objectPosition: "center" }}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <Image
+                src={images[nextImageIndex]}
+                alt={project.title}
+                fill
+                className="object-contain"
+                style={{ objectPosition: "center" }}
+                sizes="(max-width: 768px) 100vw, 60vw"
+                quality={90}
+              />
+            )}
           </div>
 
-          {/* Next Image (for crossfade) */}
-          <div ref={nextImageRef} className="absolute inset-0 z-[1] opacity-0">
-            <Image
-              src={images[nextImageIndex]}
-              alt={project.title}
-              fill
-              className="object-contain"
-              style={{ objectPosition: "center" }}
-              sizes="(max-width: 768px) 100vw, 60vw"
-              quality={90}
-            />
+          {/* Current Media (on top) */}
+          <div
+            ref={currentImageRef}
+            className="absolute inset-0 z-2"
+            style={{ transition: "opacity 0.3s ease-in-out" }}
+          >
+            {images[currentImageIndex]?.match(/\.(mp4|webm|mov|ogg)$/i) ? (
+              <video
+                src={images[currentImageIndex]}
+                className="w-full h-full object-contain"
+                style={{ objectPosition: "center" }}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <Image
+                src={images[currentImageIndex]}
+                alt={project.title}
+                fill
+                className="object-contain"
+                style={{ objectPosition: "center" }}
+                sizes="(max-width: 768px) 100vw, 60vw"
+                quality={90}
+                priority={currentImageIndex === 0}
+              />
+            )}
           </div>
 
           {/* Carousel Arrows - Only show if multiple images */}

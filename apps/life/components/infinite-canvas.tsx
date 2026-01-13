@@ -424,13 +424,26 @@ export function InfiniteCanvas() {
           (() => {
             // Generate skeleton items for visible viewport
             const skeletonItems = [];
+
+            // Vertical viewport bounds
             const viewportTop = -position.y - 500;
             const viewportBottom =
               -position.y + (window?.innerHeight || 800) + 500;
 
+            // Horizontal viewport bounds
+            const viewportLeft = -position.x - 500;
+            const viewportRight =
+              -position.x + (window?.innerWidth || 1200) + 500;
+
             // Calculate which rows are visible
             const startRow = Math.floor(viewportTop / 500); // Approximate row height
             const endRow = Math.ceil(viewportBottom / 500);
+
+            // Calculate which columns are visible
+            const startCol = Math.floor(
+              viewportLeft / config.FULL_COLUMN_WIDTH
+            );
+            const endCol = Math.ceil(viewportRight / config.FULL_COLUMN_WIDTH);
 
             // Aspect ratios for skeleton variants
             const aspectRatios = {
@@ -444,17 +457,21 @@ export function InfiniteCanvas() {
               "short",
             ];
 
-            // Generate skeletons for visible rows (allow negative for buffer, but start from 0 minimum)
-            // Add extra buffer rows above and below
+            // Generate skeletons for visible rows and columns
             const bufferRows = 3;
+            const bufferCols = 2;
             for (
-              let row = Math.max(0, startRow - bufferRows);
+              let row = startRow - bufferRows;
               row <= endRow + bufferRows;
               row++
             ) {
-              for (let col = 0; col < config.COLUMN_COUNT; col++) {
+              for (
+                let col = startCol - bufferCols;
+                col <= endCol + bufferCols;
+                col++
+              ) {
                 const index = row * config.COLUMN_COUNT + col;
-                const variant = variants[index % 3];
+                const variant = variants[Math.abs(index) % 3];
                 const x = col * config.FULL_COLUMN_WIDTH;
 
                 // Calculate Y position
@@ -462,22 +479,32 @@ export function InfiniteCanvas() {
                   Math.abs(col) % 2 === 1 ? config.STAGGER_OFFSET : 0;
                 let y = staggerOffset;
 
-                // Calculate accumulated height
+                // Calculate accumulated height (handle both positive and negative rows)
                 const heightMap = {
                   tall: config.CARD_WIDTH * aspectRatios.tall,
                   medium: config.CARD_WIDTH * aspectRatios.medium,
                   short: config.CARD_WIDTH * aspectRatios.short,
                 };
 
-                for (let i = 0; i < row; i++) {
-                  const prevVariant =
-                    variants[(i * config.COLUMN_COUNT + col) % 3];
-                  y += heightMap[prevVariant] + config.GAP;
+                if (row >= 0) {
+                  // Positive rows: accumulate downward
+                  for (let i = 0; i < row; i++) {
+                    const prevVariant =
+                      variants[Math.abs(i * config.COLUMN_COUNT + col) % 3];
+                    y += heightMap[prevVariant] + config.GAP;
+                  }
+                } else {
+                  // Negative rows: accumulate upward
+                  for (let i = -1; i >= row; i--) {
+                    const prevVariant =
+                      variants[Math.abs(i * config.COLUMN_COUNT + col) % 3];
+                    y -= heightMap[prevVariant] + config.GAP;
+                  }
                 }
 
                 skeletonItems.push(
                   <div
-                    key={`skeleton-${index}`}
+                    key={`skeleton-${row}-${col}`}
                     style={{
                       position: "absolute",
                       width: config.CARD_WIDTH,
@@ -488,6 +515,7 @@ export function InfiniteCanvas() {
                     <PortfolioCardSkeleton
                       variant={variant}
                       width={config.CARD_WIDTH}
+                      themed
                     />
                   </div>
                 );
