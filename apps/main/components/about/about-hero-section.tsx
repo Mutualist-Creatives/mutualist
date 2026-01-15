@@ -21,7 +21,7 @@ export default function AboutHeroSection() {
 
       {/* Content */}
       <div className="relative z-10 w-full h-full flex items-end justify-center px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 pb-20 text-center">
-        <h1 className="max-w-xs md:max-w-xl lg:max-w-3xl text-sm md:text-xl lg:text-2xl font-medium text-purple-mutu leading-relaxed">
+        <h1 className="max-w-xs md:max-w-xl lg:max-w-3xl text-sm md:text-xl lg:text-2xl font-medium text-purple-mutu leading-relaxed font-[family-name:var(--font-instrument-sans)]">
           Mutualist Creatives is a design studio that blends bold ideas with
           clear strategy to help brands grow with purpose. Rooted in
           storytelling and guided by intention, we believe great design

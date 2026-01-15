@@ -61,7 +61,7 @@ export default function WorkSidebar({ work }: WorkSidebarProps) {
         <h3 className="text-sm md:text-lg lg:text-xl font-bold text-purple-mutu">
           Teams
         </h3>
-        <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-4 lg:gap-x-4 gap-y-3 md:gap-y-4">
+        <div className="grid grid-cols-[max-content_1fr] gap-x-4 md:gap-x-4 lg:gap-x-4 gap-y-3 md:gap-y-4 font-[family-name:var(--font-instrument-sans)]">
           {(() => {
             // Group teams by role
             const groupedTeams = work.teams.reduce(

@@ -44,7 +44,7 @@ export default function BlogsPage() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xs md:text-sm lg:text-xl font-medium text-black-mutu max-w-[275px] md:max-w-2xl mb-8">
+        <p className="text-xs md:text-sm lg:text-xl font-medium text-black-mutu max-w-[275px] md:max-w-2xl mb-8 font-[family-name:var(--font-instrument-sans)]">
           Discover what&apos;s next! Our blogs sparks new ways of thinking and
           inspiration.
         </p>
@@ -82,7 +82,7 @@ export default function BlogsPage() {
             <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
               No blogs found at the moment.
             </p>
-            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40">
+            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-[family-name:var(--font-instrument-sans)]">
               Please check back later or refresh the page.
             </p>
           </div>

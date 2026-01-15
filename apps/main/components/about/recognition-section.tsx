@@ -63,7 +63,7 @@ export default function RecognitionSection() {
           </h2>
         </div>
 
-        <div className="space-y-16 md:space-y-20 max-w-xs md:max-w-lg lg:max-w-2xl mx-auto">
+        <div className="space-y-16 md:space-y-20 max-w-xs md:max-w-lg lg:max-w-2xl mx-auto font-[family-name:var(--font-instrument-sans)]">
           {recognitions.map((rec, index) => (
             <div key={index} className="text-center">
               <h3 className="text-2xl md:text-3xl font-bold text-green-mutu mb-6">

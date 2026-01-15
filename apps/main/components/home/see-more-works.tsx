@@ -59,7 +59,7 @@ export default function SeeMoreWorks() {
             <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
               No works found at the moment.
             </p>
-            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40">
+            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-[family-name:var(--font-instrument-sans)]">
               Please check back later or refresh the page.
             </p>
           </div>
