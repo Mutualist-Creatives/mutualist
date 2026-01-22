@@ -46,17 +46,17 @@ export default async function Home() {
 
   // Calculate stats
   const recentPortfoliosCount = portfolios.filter(
-    (p) => new Date(p.createdAt).getFullYear() === new Date().getFullYear()
+    (p) => new Date(p.createdAt).getFullYear() === new Date().getFullYear(),
   ).length;
   const recentWorksCount = works.filter(
-    (w) => new Date(w.createdAt).getFullYear() === new Date().getFullYear()
+    (w) => new Date(w.createdAt).getFullYear() === new Date().getFullYear(),
   ).length;
 
   // Unified Activity Stream
   const activityLimit = 9;
   const combinedActivity = [
     ...works.map((w) => ({
-      type: "Main",
+      type: "Mutualist",
       id: w.slug,
       slug: w.slug,
       title: w.title,
@@ -67,7 +67,7 @@ export default async function Home() {
       link: `/main-portfolios/${w.slug}`,
     })),
     ...portfolios.map((p) => ({
-      type: "Life",
+      type: "Life at Mutu",
       id: p.id,
       slug: p.id,
       title: p.title,

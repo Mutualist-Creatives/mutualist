@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { fetchWorks, Work } from "../../services/api";
-import Link from "next/link"; // Added Link for navigation
+import Link from "next/link";
 import Image from "next/image";
 
 export default function WorksPage() {
@@ -14,7 +14,10 @@ export default function WorksPage() {
     async function loadWorks() {
       try {
         const data = await fetchWorks();
-        setWorks(data);
+        const sortedData = [...data].sort((a, b) => {
+          return parseInt(b.year) - parseInt(a.year);
+        });
+        setWorks(sortedData);
       } catch (error) {
         console.error("Failed to load works", error);
       } finally {
@@ -48,7 +51,7 @@ export default function WorksPage() {
           <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
             No works found at the moment.
           </p>
-          <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-[family-name:var(--font-instrument-sans)]">
+          <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-(family-name:--font-instrument-sans)">
             Please check back later or refresh the page.
           </p>
         </div>
@@ -81,74 +84,42 @@ export default function WorksPage() {
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-1 md:flex-row md:justify-between md:items-end mt-2 md:mt-3">
-                    <div className="flex flex-col w-full md:flex-1 min-w-0 md:mr-4">
-                      {/* Mobile: Title + Year */}
-                      <div className="flex md:hidden items-center gap-1.5 mb-1">
-                        <h3 className="text-xs font-bold text-purple-mutu uppercase truncate">
-                          {work.title}
-                        </h3>
-                        <span className="text-xs font-bold text-purple-mutu shrink-0">
-                          {work.year}
-                        </span>
+                  <div className="flex lg:block w-full h-auto mb-0 md:-mb-3 lg:-mb-2  gap-2">
+                    <div className="w-auto h-auto text-xs md:text-base lg:text-2xl font-semibold md:font-bold text-purple-mutu uppercase">
+                      {work.title}
+                    </div>
+                    <div className="block lg:hidden w-auto h-auto text-xs md:text-base font-semibold md:font-bold text-purple-mutu">
+                      {work.year}
+                    </div>
+                  </div>
+
+                  <div className="w-full h-auto flex flex-row-reverse md:flex-row justify-between items-center">
+                    <div className="w-full h-auto flex justify-start items-center text-purple-mutu">
+                      <div className="hidden lg:block w-auto h-auto text-base lg:text-lg font-bold ">
+                        {work.year}
                       </div>
-
-                      {/* Desktop: Title */}
-                      <h3 className="hidden md:block md:text-xl lg:text-2xl font-bold text-purple-mutu uppercase line-clamp-1 mb-1">
-                        {work.title}
-                      </h3>
-
-                      {/* Desktop: Year + Industry */}
-                      <div className="hidden md:block md:text-base lg:text-lg font-bold text-purple-mutu">
-                        {work.year}{" "}
-                        <span className="italic font-normal hidden lg:inline-block lg:text-base ml-1">
-                          {work.industry}
-                        </span>
-                      </div>
-
-                      {/* Mobile: ABCS + Industry */}
-                      <div className="flex md:hidden items-center gap-2">
-                        {/* Tags (ABCS) */}
-                        <div className="flex gap-0.5">
-                          {["A", "B", "C", "S"].map((label) => {
-                            const isActive = work.serviceIcons?.includes(label);
-                            return (
-                              <div
-                                key={label}
-                                className={`w-5 h-5 rounded hover:scale-110 font-extrabold text-[10px] flex items-center justify-center border-2 border-purple-mutu transition-all ${
-                                  isActive
-                                    ? "bg-purple-mutu text-cream-mutu"
-                                    : "bg-transparent text-purple-mutu"
-                                }`}
-                              >
-                                {label}
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <span className="text-[10px] italic font-normal text-purple-mutu line-clamp-1 flex-1">
-                          {work.industry}
-                        </span>
+                      <div className="w-full h-auto italic font-normal text-[10px] md:text-xs lg:text-sm ml-2 md:ml-0 lg:ml-2 line-clamp-1">
+                        {work.industry}
                       </div>
                     </div>
-
-                    {/* Desktop: Tags (ABCS) - Right Side */}
-                    <div className="hidden md:flex md:gap-1.5 lg:gap-2 shrink-0">
-                      {["A", "B", "C", "S"].map((label) => {
-                        const isActive = work.serviceIcons?.includes(label);
-                        return (
-                          <div
-                            key={label}
-                            className={`md:w-6 md:h-6 lg:w-8 lg:h-8 rounded-lg font-extrabold md:text-[10px] lg:text-sm flex items-center justify-center border-2 border-purple-mutu transition-colors ${
-                              isActive
-                                ? "bg-purple-mutu text-cream-mutu"
-                                : "bg-transparent text-purple-mutu"
-                            }`}
-                          >
-                            {label}
-                          </div>
-                        );
-                      })}
+                    <div className="w-auto h-auto">
+                      <div className="flex gap-0.5 md:gap-1.5 lg:gap-1.5 xl:gap-2 shrink-0 justify-end">
+                        {["A", "B", "C", "S"].map((label) => {
+                          const isActive = work.serviceIcons?.includes(label);
+                          return (
+                            <div
+                              key={label}
+                              className={`flex w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 rounded md:rounded-lg font-extrabold text-xs lg:text-sm items-center justify-center border-2 border-purple-mutu transition-colors ${
+                                isActive
+                                  ? "bg-purple-mutu text-cream-mutu"
+                                  : "bg-transparent text-purple-mutu"
+                              }`}
+                            >
+                              {label}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </motion.div>

@@ -16,7 +16,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [imageAspectRatio, setImageAspectRatio] = useState(1);
   const [isLandscape, setIsLandscape] = useState(
-    typeof window !== "undefined" && window.innerWidth > window.innerHeight
+    typeof window !== "undefined" && window.innerWidth > window.innerHeight,
   );
   const images = project.images;
   const currentImageRef = React.useRef<HTMLDivElement>(null);
@@ -51,13 +51,13 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
       gsap.fromTo(
         backdropRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 0.3, ease: "power2.out" }
+        { opacity: 1, duration: 0.3, ease: "power2.out" },
       );
 
       gsap.fromTo(
         modalRef.current,
         { scale: 0.95, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" }
+        { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" },
       );
     }
 
@@ -90,7 +90,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
           duration: 0.2,
           ease: "power2.in",
         },
-        "<"
+        "<",
       );
     }
   };
@@ -269,11 +269,12 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
             onClick={handleClose}
             className={`${
               isLandscape && window.innerWidth >= 768 ? "hidden" : "flex"
-            } absolute top-4 right-4 w-8 h-8 items-center justify-center hover:opacity-50 transition-opacity z-[20]`}
+            } absolute top-4 right-4 w-10 h-10 items-center justify-center hover:scale-110 transition-all z-[20] rounded-full shadow-lg`}
+            style={{ backgroundColor: "#121212" }}
           >
-            <div className="relative w-6 h-6">
-              <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
-              <div className="absolute w-6 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
+            <div className="relative w-5 h-5">
+              <div className="absolute w-5 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
+              <div className="absolute w-5 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
             </div>
           </button>
 
@@ -425,15 +426,16 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 onClick={handleClose}
                 className={`${
                   isLandscape && window.innerWidth >= 768 ? "flex" : "hidden"
-                } absolute w-8 h-8 items-center justify-center hover:opacity-50 transition-opacity z-10`}
+                } absolute w-10 h-10 items-center justify-center hover:scale-110 transition-all z-10 rounded-full shadow-lg`}
                 style={{
                   top: "3rem",
                   right: "3rem",
+                  backgroundColor: "#121212",
                 }}
               >
-                <div className="relative w-6 h-6">
-                  <div className="absolute w-6 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
-                  <div className="absolute w-6 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
+                <div className="relative w-5 h-5">
+                  <div className="absolute w-5 h-0.5 bg-white rounded-full transform rotate-45 top-1/2 -translate-y-1/2" />
+                  <div className="absolute w-5 h-0.5 bg-white rounded-full transform -rotate-45 top-1/2 -translate-y-1/2" />
                 </div>
               </button>
 

@@ -7,7 +7,7 @@ export default function ReachUsSection() {
         <div className="grid grid-cols-2 md:grid-cols-3 items-start gap-4 md:gap-20">
           {/* Left Side: Title */}
           <div className="col-span-1">
-            <h2 className="text-3xl md:text-5xl xl:text-6xl font-bold text-yellow-mutu">
+            <h2 className="text-3xl md:text-5xl xl:text-6xl font-semibold text-yellow-mutu">
               Reach Us
             </h2>
           </div>
