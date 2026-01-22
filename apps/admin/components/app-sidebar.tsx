@@ -67,7 +67,7 @@ const sidebarGroups = [
     ],
   },
   {
-    label: "Main",
+    label: "Mutualist",
     items: [
       {
         title: "Portfolios",
@@ -82,7 +82,7 @@ const sidebarGroups = [
     ],
   },
   {
-    label: "Life",
+    label: "Life at Mutu",
     items: [
       {
         title: "Portfolios",
