@@ -120,13 +120,13 @@ export default async function Home() {
           <Link href="/life-projects/new">
             <Button variant="outline" className="gap-2 cursor-pointer">
               <Plus className="h-4 w-4" />
-              Add Life
+              Add Project
             </Button>
           </Link>
           <Link href="/main-portfolios/new">
             <Button className="gap-2 cursor-pointer">
               <Plus className="h-4 w-4" />
-              Add Main
+              Add Portfolio
             </Button>
           </Link>
         </div>
