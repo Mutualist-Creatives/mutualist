@@ -120,22 +120,92 @@ export default function BlogsDetailPage({ params }: BlogsDetailPageProps) {
                 </h3>
                 <p className="text-sm text-black-mutu mb-4">Share this Blog:</p>
                 <div className="flex flex-row justify-between w-full md:grid md:grid-cols-3 md:w-fit md:gap-3">
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                  {/* WhatsApp */}
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      const shareText = `✨ Check out this insightful article from Mutualist Creatives!\n\n📖 ${blog.title}\n\n🔗 ${url}`;
+                      window.open(
+                        `https://wa.me/?text=${encodeURIComponent(shareText)}`,
+                        "_blank",
+                      );
+                    }}
+                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
+                    title="Share on WhatsApp"
+                  >
                     <MessageCircle size={20} />
                   </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                  {/* Instagram - Copy Link */}
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      const shareText = `✨ Check out this insightful article from Mutualist Creatives!\n\n📖 ${blog.title}\n\n🔗 ${url}`;
+                      navigator.clipboard.writeText(shareText);
+                      alert(
+                        "Caption & link copied! You can now paste it on Instagram.",
+                      );
+                    }}
+                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
+                    title="Copy link for Instagram"
+                  >
                     <Instagram size={20} />
                   </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                  {/* Twitter/X */}
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      const shareText = `✨ Check out this insightful article from @MutualistCreatives!\n\n📖 ${blog.title}`;
+                      window.open(
+                        `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
+                        "_blank",
+                      );
+                    }}
+                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
+                    title="Share on X (Twitter)"
+                  >
                     <Twitter size={20} />
                   </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                    <Globe size={20} /> {/* Reddit replacement */}
+                  {/* Reddit */}
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      const title = `${blog.title} | Mutualist Creatives`;
+                      window.open(
+                        `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+                        "_blank",
+                      );
+                    }}
+                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
+                    title="Share on Reddit"
+                  >
+                    <Globe size={20} />
                   </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                  {/* LinkedIn */}
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      window.open(
+                        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+                        "_blank",
+                      );
+                    }}
+                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
+                    title="Share on LinkedIn"
+                  >
                     <Linkedin size={20} />
                   </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
+                  {/* Facebook */}
+                  <button
+                    onClick={() => {
+                      const url = window.location.href;
+                      window.open(
+                        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+                        "_blank",
+                      );
+                    }}
+                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
+                    title="Share on Facebook"
+                  >
                     <Facebook size={20} />
                   </button>
                 </div>

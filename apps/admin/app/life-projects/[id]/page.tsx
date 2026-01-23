@@ -24,9 +24,9 @@ export default async function EditPortfolioPage({
       {/* Header */}
       <div className="flex items-center gap-2">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Edit Portfolio</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Edit Project</h2>
           <p className="text-muted-foreground">
-            Update portfolio information for &quot;{portfolio.title}&quot;
+            Update project information for &quot;{portfolio.title}&quot;
           </p>
         </div>
       </div>
@@ -34,9 +34,9 @@ export default async function EditPortfolioPage({
       {/* Form Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Portfolio Information</CardTitle>
+          <CardTitle>Project Information</CardTitle>
           <CardDescription>
-            Make changes to the portfolio details below
+            Make changes to the project details below
           </CardDescription>
         </CardHeader>
         <CardContent>

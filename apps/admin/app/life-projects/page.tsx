@@ -19,15 +19,15 @@ export default async function PortfoliosPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Portfolios</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Projects</h2>
           <p className="text-muted-foreground">
-            Manage your portfolio collection
+            Manage your life projects collection
           </p>
         </div>
-        <Link href="/life-portfolios/new">
+        <Link href="/life-projects/new">
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
-            Add Portfolio
+            Add Project
           </Button>
         </Link>
       </div>
