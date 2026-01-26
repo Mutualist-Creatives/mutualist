@@ -5,14 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { fetchBlogBySlug, fetchBlogs, Blog } from "../../../services/api"; // Added fetchBlogs for 'Other Blogs'
-import {
-  MessageCircle,
-  Instagram,
-  Twitter,
-  Linkedin,
-  Facebook,
-  Globe,
-} from "lucide-react";
+import { Share2, Check } from "lucide-react";
 import CTASection from "@/components/home/cta-section";
 
 interface BlogsDetailPageProps {
@@ -31,6 +24,7 @@ export default function BlogsDetailPage({ params }: BlogsDetailPageProps) {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [otherBlogs, setOtherBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -119,95 +113,31 @@ export default function BlogsDetailPage({ params }: BlogsDetailPageProps) {
                   Feeling Insightful?
                 </h3>
                 <p className="text-sm text-black-mutu mb-4">Share this Blog:</p>
-                <div className="flex flex-row justify-between w-full md:grid md:grid-cols-3 md:w-fit md:gap-3">
-                  {/* WhatsApp */}
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      const shareText = `✨ Check out this insightful article from Mutualist Creatives!\n\n📖 ${blog.title}\n\n🔗 ${url}`;
-                      window.open(
-                        `https://wa.me/?text=${encodeURIComponent(shareText)}`,
-                        "_blank",
-                      );
-                    }}
-                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
-                    title="Share on WhatsApp"
-                  >
-                    <MessageCircle size={20} />
-                  </button>
-                  {/* Instagram - Copy Link */}
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      const shareText = `✨ Check out this insightful article from Mutualist Creatives!\n\n📖 ${blog.title}\n\n🔗 ${url}`;
-                      navigator.clipboard.writeText(shareText);
-                      alert(
-                        "Caption & link copied! You can now paste it on Instagram.",
-                      );
-                    }}
-                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
-                    title="Copy link for Instagram"
-                  >
-                    <Instagram size={20} />
-                  </button>
-                  {/* Twitter/X */}
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      const shareText = `✨ Check out this insightful article from @MutualistCreatives!\n\n📖 ${blog.title}`;
-                      window.open(
-                        `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
-                        "_blank",
-                      );
-                    }}
-                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
-                    title="Share on X (Twitter)"
-                  >
-                    <Twitter size={20} />
-                  </button>
-                  {/* Reddit */}
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      const title = `${blog.title} | Mutualist Creatives`;
-                      window.open(
-                        `https://reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
-                        "_blank",
-                      );
-                    }}
-                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
-                    title="Share on Reddit"
-                  >
-                    <Globe size={20} />
-                  </button>
-                  {/* LinkedIn */}
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      window.open(
-                        `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-                        "_blank",
-                      );
-                    }}
-                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
-                    title="Share on LinkedIn"
-                  >
-                    <Linkedin size={20} />
-                  </button>
-                  {/* Facebook */}
-                  <button
-                    onClick={() => {
-                      const url = window.location.href;
-                      window.open(
-                        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-                        "_blank",
-                      );
-                    }}
-                    className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors"
-                    title="Share on Facebook"
-                  >
-                    <Facebook size={20} />
-                  </button>
+                <button
+                  onClick={() => {
+                    const url = window.location.href;
+                    navigator.clipboard.writeText(url);
+                    setShowToast(true);
+                    setTimeout(() => setShowToast(false), 2000);
+                  }}
+                  className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors cursor-pointer"
+                  title="Copy link to clipboard"
+                >
+                  <Share2 size={20} />
+                </button>
+
+                {/* Toast Notification */}
+                <div
+                  className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-green-mutu text-white px-5 py-3 rounded-xl shadow-lg transition-all duration-300 ${
+                    showToast
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-4 pointer-events-none"
+                  }`}
+                >
+                  <Check size={18} />
+                  <span className="text-sm font-medium">
+                    Link copied to clipboard!
+                  </span>
                 </div>
               </div>
 

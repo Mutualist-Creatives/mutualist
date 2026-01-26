@@ -32,11 +32,14 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  // Local state for files: Map<blockIndex, Map<imgIndex, File>>
-  // We use Record<number, Record<number, File>> for simplicity
+  // Local state for files: Map<blockId, Map<imgIndex, File>>
+  // Using block ID (from useFieldArray) instead of numeric index for drag-and-drop stability
   const [contentFiles, setContentFiles] = useState<
-    Record<number, Record<number, File>>
+    Record<string, Record<number, File>>
   >({});
+
+  // Track block field IDs in their current order (synced from ContentForm)
+  const [blockFieldIds, setBlockFieldIds] = useState<string[]>([]);
 
   const form = useForm<PortfolioFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,7 +63,8 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
 
   const uploadAllFiles = async (
     currentContent: PortfolioFormValues["content"],
-    projectTitle: string
+    projectTitle: string,
+    blockIdToIndex: Map<string, number>,
   ): Promise<PortfolioFormValues["content"]> => {
     const apiUrl =
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
@@ -77,9 +81,16 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "");
 
-    // Iterate over files state
-    for (const [blockIdxStr, blockFiles] of Object.entries(contentFiles)) {
-      const blockIndex = parseInt(blockIdxStr);
+    // Iterate over files state (keyed by block ID)
+    for (const [blockId, blockFiles] of Object.entries(contentFiles)) {
+      // Get the current index from the mapping
+      const blockIndex = blockIdToIndex.get(blockId);
+      if (blockIndex === undefined) {
+        console.warn(
+          `Block ID ${blockId} not found in current form state, skipping`,
+        );
+        continue;
+      }
 
       for (const [imgIdxStr, file] of Object.entries(blockFiles)) {
         const imgIndex = parseInt(imgIdxStr);
@@ -140,9 +151,18 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
       // 1. Upload Files
       if (Object.keys(contentFiles).length > 0) {
         toast.info("Uploading media...");
+        // Build blockId to index mapping using the tracked block field IDs
+        const blockIdToIndex = new Map<string, number>();
+        blockFieldIds.forEach((id, index) => {
+          if (contentFiles[id]) {
+            blockIdToIndex.set(id, index);
+          }
+        });
+
         const updatedContent = await uploadAllFiles(
           values.content,
-          values.title
+          values.title,
+          blockIdToIndex,
         );
         values.content = updatedContent;
       }
@@ -207,6 +227,7 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
               <ContentForm
                 contentFiles={contentFiles}
                 setContentFiles={setContentFiles}
+                onBlockFieldsChange={setBlockFieldIds}
               />
             </TabsContent>
           </Tabs>
