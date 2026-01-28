@@ -44,32 +44,19 @@ export default function BlogsPage() {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xs md:text-sm lg:text-xl font-medium text-black-mutu max-w-[275px] md:max-w-2xl mb-8 font-[family-name:var(--font-instrument-sans)]">
+        <p className="text-xs md:text-sm lg:text-xl font-medium text-black-mutu max-w-[275px] md:max-w-2xl mb-8 font-instrument">
           Discover what&apos;s next! Our blogs sparks new ways of thinking and
           inspiration.
         </p>
-
-        {/* ABCS Tags (Outlined) */}
-        <div className="flex gap-3">
-          {["A", "B", "C", "S"].map((label) => (
-            <div
-              key={label}
-              className="w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 rounded-lg md:rounded-xl border-2 border-purple-mutu text-purple-mutu font-bold text-lg flex items-center justify-center"
-            >
-              {label}
-            </div>
-          ))}
-        </div>
       </div>
 
-      {/* Cards Grid */}
       {/* Cards Grid */}
       <div className="max-w-5xl mx-auto">
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="flex flex-col gap-3 animate-pulse">
-                <div className="w-full aspect-[16/6] bg-gray-200 rounded-2xl"></div>
+                <div className="w-full aspect-16/6 bg-gray-200 rounded-2xl"></div>
                 <div className="p-5 flex flex-col gap-3">
                   <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
                   <div className="h-3 bg-gray-200 rounded w-1/2 mx-auto"></div>
@@ -82,7 +69,7 @@ export default function BlogsPage() {
             <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
               No blogs found at the moment.
             </p>
-            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-[family-name:var(--font-instrument-sans)]">
+            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-instrument">
               Please check back later or refresh the page.
             </p>
           </div>
@@ -103,7 +90,7 @@ export default function BlogsPage() {
                     {/* Card Container */}
                     <div className="bg-cream-mutu rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                       {/* Image */}
-                      <div className="w-full aspect-[16/6] bg-zinc-300 relative overflow-hidden">
+                      <div className="w-full aspect-16/6 bg-zinc-300 relative overflow-hidden">
                         {item.image ? (
                           <Image
                             src={item.image}

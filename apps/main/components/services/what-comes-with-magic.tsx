@@ -237,12 +237,12 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
               </div>
 
               {/* Title */}
-              <h3 className="w-[70%] text-xl md:text-base lg:text-xl font-medium text-[#8B1D4F] mb-4 md:mb-2 lg:mb-4 leading-tight">
+              <h3 className="w-[70%] text-xl md:text-base lg:text-xl font-medium text-[#8B1D4F] mb-4 md:mb-2 lg:mb-4 leading-tight font-sans">
                 {card.title}
               </h3>
 
               {/* Description */}
-              <p className="w-full text-sm md:text-[10px] lg:text-sm font-medium text-black-mutu leading-relaxed">
+              <p className="w-full text-sm md:text-[10px] lg:text-sm font-medium text-black-mutu leading-relaxed font-instrument">
                 {card.description}
               </p>
             </div>

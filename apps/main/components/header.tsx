@@ -34,8 +34,8 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300">
-        <div className="mx-auto max-w-screen-2xl w-full flex items-center justify-between px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 py-4 md:py-5 lg:py-6 2xl:py-8">
+      <header className="fixed top-0 left-0 w-full z-50 bg-white transition-all duration-300 font-instrument">
+        <div className="mx-auto max-w-screen-2xl w-full flex items-center justify-between px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 py-4 md:py-5 lg:py-6 2xl:py-6">
           {/* Left: Logo */}
           <div className="shrink-0 relative z-50">
             <Link href="/">
