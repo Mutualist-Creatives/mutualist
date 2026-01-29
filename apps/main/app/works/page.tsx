@@ -85,13 +85,11 @@ export default function WorksPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
           {works
-            .filter((work) => {
-              if (filters.length === 0) return true;
-              return (
-                work.serviceIcons?.length === filters.length &&
-                filters.every((filter) => work.serviceIcons?.includes(filter))
-              );
-            })
+            .filter(
+              (work) =>
+                filters.length === 0 ||
+                filters.every((filter) => work.serviceIcons?.includes(filter)),
+            )
             .map((work, index) => {
               // Simple deterministic random-like tilt based on index
               const tilt = index % 2 === 0 ? 2 : -2;
