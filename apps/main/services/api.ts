@@ -30,7 +30,8 @@ export async function fetchWorks() {
       console.error(`Status: ${res.status} ${res.statusText}`);
       throw new Error("Failed to fetch works");
     }
-    return res.json();
+    const text = await res.text();
+    return text ? JSON.parse(text) : [];
   } catch (error) {
     console.error("Error fetching works:", error);
     return [];
@@ -43,7 +44,8 @@ export async function fetchWorkBySlug(slug: string) {
       next: { revalidate: 60 },
     });
     if (!res.ok) return undefined;
-    return res.json();
+    const text = await res.text();
+    return text ? JSON.parse(text) : undefined;
   } catch (error) {
     console.error(`Error fetching work ${slug}:`, error);
     return undefined;
@@ -54,7 +56,8 @@ export async function fetchBlogs() {
   try {
     const res = await fetch(`${API_URL}/blogs`, { cache: "no-store" });
     if (!res.ok) return [];
-    return res.json();
+    const text = await res.text();
+    return text ? JSON.parse(text) : [];
   } catch (error) {
     console.error("Error fetching blogs:", error);
     return [];
@@ -65,7 +68,8 @@ export async function fetchBlogBySlug(slug: string) {
   try {
     const res = await fetch(`${API_URL}/blogs/${slug}`, { cache: "no-store" });
     if (!res.ok) return undefined;
-    return res.json();
+    const text = await res.text();
+    return text ? JSON.parse(text) : undefined;
   } catch (error) {
     console.error(`Error fetching blog ${slug}:`, error);
     return undefined;
