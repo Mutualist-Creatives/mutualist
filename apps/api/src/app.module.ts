@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { PrismaModule } from './prisma/prisma.module';
 import { LifePortfolioModule } from './life-portfolio/life-portfolio.module';
@@ -13,6 +15,10 @@ import { UsersModule } from './users/users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: process.env.UPLOAD_DIR || join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
     }),
     PrismaModule,
     UsersModule,

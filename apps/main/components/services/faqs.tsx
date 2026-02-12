@@ -113,7 +113,7 @@ export function FAQs({ category }: FAQsProps) {
                 >
                   <div
                     className={clsx(
-                      "flex-shrink-0 w-6 h-6 md:w-8 md:h-8 rounded-lg border-2 flex items-center justify-center transition-colors duration-300 mt-1",
+                      "shrink-0 w-6 h-6 md:w-8 md:h-8 rounded-lg border-2 flex items-center justify-center transition-colors duration-300 mt-1",
                       openIndex === index
                         ? "border-purple-mutu bg-purple-mutu text-white"
                         : "border-purple-mutu text-purple-mutu group-hover:bg-purple-mutu group-hover:text-white",

@@ -1,22 +1,33 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class UploadService {
-  private supabase: SupabaseClient;
+  private readonly logger = new Logger(UploadService.name);
+  private readonly uploadDir: string;
+  private readonly apiBaseUrl: string;
 
   constructor(private configService: ConfigService) {
-    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
-    const supabaseKey = this.configService.get<string>('SUPABASE_SERVICE_KEY');
+    this.uploadDir = this.configService.get<string>('UPLOAD_DIR', './uploads');
+    this.apiBaseUrl = this.configService.get<string>(
+      'API_BASE_URL',
+      'http://localhost:8080',
+    );
 
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error(
-        'SUPABASE_URL and SUPABASE_SERVICE_KEY must be defined in environment variables',
-      );
+    // Ensure upload directory exists
+    if (!fs.existsSync(this.uploadDir)) {
+      try {
+        fs.mkdirSync(this.uploadDir, { recursive: true });
+        this.logger.log(`Created upload directory: ${this.uploadDir}`);
+      } catch (error) {
+        this.logger.error(
+          `Failed to create upload directory: ${this.uploadDir}`,
+          error,
+        );
+      }
     }
-
-    this.supabase = createClient(supabaseUrl, supabaseKey) as SupabaseClient;
   }
 
   async uploadFile(
@@ -30,9 +41,8 @@ export class UploadService {
       let baseFileName: string;
 
       if (customName) {
-        // Sanitize custom name: remove special chars, keep alphanumeric, dots, dashes, underscores
+        // Sanitize custom name
         const sanitized = customName.replace(/[^a-zA-Z0-9-_\.]/g, '-');
-        // ensure extension is present or append it
         if (sanitized.endsWith(`.${fileExt}`)) {
           baseFileName = sanitized;
         } else {
@@ -45,105 +55,91 @@ export class UploadService {
         baseFileName = `${timestamp}-${randomString}.${fileExt}`;
       }
 
-      // Add folder prefix if provided
-      const fileName = folder ? `${folder}/${baseFileName}` : baseFileName;
+      // Treat "bucket" as a top-level folder in the uploads directory
+      const bucketPath = path.join(this.uploadDir, bucket);
+      const targetFolder = folder ? path.join(bucketPath, folder) : bucketPath;
 
-      // Upload to Supabase Storage
-      const { data, error } = await this.supabase.storage
-        .from(bucket)
-        .upload(fileName, file.buffer, {
-          contentType: file.mimetype,
-          upsert: true,
-        });
-
-      if (error) {
-        throw new BadRequestException(`Upload failed: ${error.message}`);
+      if (!fs.existsSync(targetFolder)) {
+        fs.mkdirSync(targetFolder, { recursive: true });
       }
 
-      // Get public URL
-      const {
-        data: { publicUrl },
-      } = this.supabase.storage.from(bucket).getPublicUrl(data.path);
+      const filePath = path.join(targetFolder, baseFileName);
+
+      // Write file to disk
+      fs.writeFileSync(filePath, file.buffer);
+      this.logger.log(`File saved to: ${filePath}`);
+
+      // Construct public URL
+      // URL format: {API_BASE_URL}/uploads/{bucket}/{folder}/{filename}
+      const relativePath = folder
+        ? `${bucket}/${folder}/${baseFileName}`
+        : `${bucket}/${baseFileName}`;
+
+      // Ensure no double slashes if base url has one
+      const baseUrl = this.apiBaseUrl.replace(/\/$/, '');
+      const publicUrl = `${baseUrl}/uploads/${relativePath}`;
 
       return {
-        fileName: data.path,
+        fileName: relativePath, // Keeping 'fileName' key for compatibility, though it usually meant path
         publicUrl,
         bucket,
       };
     } catch (error) {
       const err = error as Error;
+      this.logger.error(`Upload failed: ${err.message}`, err.stack);
       throw new BadRequestException(`Failed to upload file: ${err.message}`);
     }
   }
 
   async deleteFile(fileUrl: string): Promise<boolean> {
     try {
-      // Extract bucket and file path from URL
-      // URL format: https://{project}.supabase.co/storage/v1/object/public/{bucket}/{path}
-      const urlParts = fileUrl.split('/storage/v1/object/public/');
-      if (urlParts.length !== 2) {
-        console.warn('Invalid Supabase URL format, skipping:', fileUrl);
-        // Don't throw error, just skip this file
+      // fileUrl example: http://localhost:8080/uploads/bucket/folder/file.jpg
+      // We need to extract 'bucket/folder/file.jpg'
+
+      const urlObj = new URL(fileUrl);
+      const pathName = urlObj.pathname; // /uploads/bucket/folder/file.jpg
+
+      // Remove /uploads/ prefix
+      const relativePath = pathName.replace(/^\/uploads\//, '');
+
+      // Prevent directory traversal attacks
+      if (relativePath.includes('..')) {
+        this.logger.warn(`Invalid file path attempted: ${relativePath}`);
         return false;
       }
 
-      const [bucket, ...pathParts] = urlParts[1].split('/');
-      const filePath = pathParts.join('/');
+      const filePath = path.join(this.uploadDir, relativePath);
 
-      if (!bucket || !filePath) {
-        console.warn(
-          'Could not extract bucket or path from URL, skipping:',
-          fileUrl,
-        );
-        // Don't throw error, just skip this file
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        this.logger.log(`Deleted file: ${filePath}`);
+        return true;
+      } else {
+        this.logger.warn(`File not found for deletion: ${filePath}`);
         return false;
       }
-
-      console.log(`Deleting file from bucket: ${bucket}, path: ${filePath}`);
-
-      // Delete from Supabase Storage
-      const { error } = await this.supabase.storage
-        .from(bucket)
-        .remove([filePath]);
-
-      if (error) {
-        console.error('Supabase delete error:', error);
-        // Don't throw error, just log and continue
-        console.warn(`Failed to delete file ${filePath}, continuing anyway`);
-        return false;
-      }
-
-      console.log(`Successfully deleted file: ${filePath}`);
-      return true;
     } catch (error) {
-      console.error('Failed to delete file:', error);
-      // Don't throw error, just log and continue
-      console.warn(`Error deleting file ${fileUrl}, continuing anyway`);
+      this.logger.error(`Failed to delete file: ${fileUrl}`, error);
       return false;
     }
   }
 
   async deleteMultipleFiles(fileUrls: string[]): Promise<void> {
     if (!fileUrls || fileUrls.length === 0) {
-      console.log('No files to delete');
       return;
     }
 
-    console.log(`Attempting to delete ${fileUrls.length} files from storage`);
+    this.logger.log(`Attempting to delete ${fileUrls.length} files`);
 
-    // Delete files but don't fail if some deletions fail
     const results = await Promise.allSettled(
       fileUrls.map((url) => this.deleteFile(url)),
     );
 
-    const successful = results.filter((r) => r.status === 'fulfilled').length;
-    const failed = results.filter((r) => r.status === 'rejected').length;
-
-    console.log(
-      `File deletion complete: ${successful} successful, ${failed} failed`,
+    const successful = results.filter(
+      (r) => r.status === 'fulfilled' && r.value === true,
+    ).length;
+    this.logger.log(
+      `File deletion complete: ${successful} successful out of ${fileUrls.length}`,
     );
-
-    // Don't throw error even if some deletions failed
-    // Portfolio deletion should continue
   }
 }
