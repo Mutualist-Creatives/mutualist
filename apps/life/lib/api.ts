@@ -1,6 +1,9 @@
 import { Portfolio } from "@/data/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const API_URL =
+  typeof window === "undefined" && process.env.INTERNAL_API_URL
+    ? process.env.INTERNAL_API_URL
+    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 // Retry configuration
 const MAX_RETRIES = 3;
@@ -10,7 +13,7 @@ const RETRY_DELAY = 1000; // 1 second
 async function fetchWithRetry<T>(
   url: string,
   options: RequestInit = {},
-  retries = MAX_RETRIES
+  retries = MAX_RETRIES,
 ): Promise<T> {
   try {
     const res = await fetch(url, {
@@ -29,7 +32,7 @@ async function fetchWithRetry<T>(
       const delay = RETRY_DELAY * (MAX_RETRIES - retries + 1);
       console.warn(
         `Fetch failed, retrying in ${delay}ms... (${retries} retries left)`,
-        error
+        error,
       );
       await new Promise((resolve) => setTimeout(resolve, delay));
       return fetchWithRetry<T>(url, options, retries - 1);
@@ -41,7 +44,7 @@ async function fetchWithRetry<T>(
 export const portfolioApi = {
   async getAll(): Promise<Portfolio[]> {
     try {
-      return await fetchWithRetry<Portfolio[]>(`${API_URL}/life-portfolios`);
+      return await fetchWithRetry<Portfolio[]>(`${API_URL}/life-projects`);
     } catch (error) {
       console.error("Error fetching portfolios:", error);
       throw error; // Throw error so SWR can handle it
@@ -50,9 +53,7 @@ export const portfolioApi = {
 
   async getById(id: string): Promise<Portfolio> {
     try {
-      return await fetchWithRetry<Portfolio>(
-        `${API_URL}/life-portfolios/${id}`
-      );
+      return await fetchWithRetry<Portfolio>(`${API_URL}/life-projects/${id}`);
     } catch (error) {
       console.error("Error fetching portfolio:", error);
       throw error;
@@ -62,7 +63,7 @@ export const portfolioApi = {
   async getCategories(): Promise<string[]> {
     try {
       return await fetchWithRetry<string[]>(
-        `${API_URL}/life-portfolios/categories`
+        `${API_URL}/life-projects/categories`,
       );
     } catch (error) {
       console.error("Error fetching categories:", error);

@@ -33,6 +33,21 @@ services:
       - mutualist-api
     restart: always
 
+  mutualist-life:
+    container_name: mutualist-life
+    image: mutualist-life:latest
+    build:
+      context: .
+      dockerfile: apps/life/Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080/api
+      - INTERNAL_API_URL=http://mutualist-api:8080/api
+    depends_on:
+      - mutualist-api
+    restart: always
+
   mutualist-api:
     container_name: mutualist-api
     image: mutualist-api:latest

@@ -1,9 +1,0 @@
-
-F:\PROJECTS\Web App\mutualist\apps\api\src\upload\upload.controller.ts
-  10:3  error  'FileTypeValidator' is defined but never used  @typescript-eslint/no-unused-vars
-
-F:\PROJECTS\Web App\mutualist\apps\api\src\upload\upload.service.ts
-  33:3  error  Async method 'uploadFile' has no 'await' expression  @typescript-eslint/require-await
-
-✖ 2 problems (2 errors, 0 warnings)
-

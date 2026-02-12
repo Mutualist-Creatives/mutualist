@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   reactStrictMode: false,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -13,13 +15,13 @@ const nextConfig: NextConfig = {
       {
         protocol: "http",
         hostname: "localhost",
-        port: "3002",
+        port: "8080",
         pathname: "/uploads/**",
       },
       {
         protocol: "http",
         hostname: "mutualist-api",
-        port: "3002",
+        port: "8080",
         pathname: "/uploads/**",
       },
       {
