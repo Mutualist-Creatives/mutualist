@@ -14,7 +14,10 @@ export default function SeeMoreWorks() {
     async function loadWorks() {
       try {
         const data = await fetchWorks();
-        setWorks(data);
+        const sortedData = [...data].sort((a, b) => {
+          return parseInt(b.year) - parseInt(a.year);
+        });
+        setWorks(sortedData.slice(0, 6));
       } catch (error) {
         console.error("Failed to load works", error);
       } finally {
@@ -23,9 +26,6 @@ export default function SeeMoreWorks() {
     }
     loadWorks();
   }, []);
-
-  // Take only the first 6 items if there are more
-  const displayWorks = works.slice(0, 6);
 
   return (
     <section className="w-full bg-cream-mutu relative z-30">
@@ -44,7 +44,7 @@ export default function SeeMoreWorks() {
 
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
-            {[...Array(3)].map((_, i) => (
+            {[...Array(6)].map((_, i) => (
               <div key={i} className="flex flex-col gap-4 animate-pulse">
                 <div className="w-full aspect-4/3 bg-gray-200 rounded-lg"></div>
                 <div className="flex flex-col gap-2">
@@ -54,26 +54,22 @@ export default function SeeMoreWorks() {
               </div>
             ))}
           </div>
-        ) : displayWorks.length === 0 ? (
+        ) : works.length === 0 ? (
           <div className="w-full py-20 flex flex-col items-center justify-center text-center px-4">
             <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
               No works found at the moment.
             </p>
-            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-[family-name:var(--font-instrument-sans)]">
+            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-(family-name:--font-instrument-sans)">
               Please check back later or refresh the page.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
-            {displayWorks.map((work, index) => {
-              // Simple deterministic random-like tilt based on index
+            {works.map((work, index) => {
               const tilt = index % 2 === 0 ? 2 : -2;
 
-              // Get first image from content if available
-              const firstImage = work.content?.[0]?.images?.[0] || "";
-
               return (
-                <Link key={work.slug} href={`/works/${work.slug}`}>
+                <Link key={index} href={`/works/${work.slug}`}>
                   <motion.div
                     className="flex flex-col gap-2 md:gap-4 group cursor-pointer"
                     whileHover={{ rotate: tilt, scale: 1.02 }}
@@ -81,9 +77,9 @@ export default function SeeMoreWorks() {
                   >
                     {/* Image */}
                     <div className="w-full aspect-4/3 bg-gray-200 rounded-lg overflow-hidden relative">
-                      {firstImage ? (
+                      {work.content?.[0]?.images?.[0] ? (
                         <Image
-                          src={firstImage}
+                          src={work.content[0].images[0]}
                           alt={work.title}
                           fill
                           className="object-cover"
@@ -95,82 +91,60 @@ export default function SeeMoreWorks() {
                       )}
                     </div>
 
-                    <div className="flex flex-col gap-1 md:flex-row md:justify-between md:items-end mt-2 md:mt-3">
-                      <div className="flex flex-col w-full md:flex-1 min-w-0 md:mr-4">
-                        {/* Mobile: Title + Year */}
-                        <div className="flex md:hidden items-center gap-1.5 mb-1">
-                          <h3 className="text-xs font-bold text-purple-mutu uppercase truncate">
-                            {work.title}
-                          </h3>
-                          <span className="text-xs font-bold text-purple-mutu shrink-0">
-                            {work.year}
-                          </span>
+                    <div className="flex lg:block w-full h-auto mb-0 md:-mb-3 lg:-mb-2 gap-2">
+                      <div className="w-auto h-auto text-xs md:text-base lg:text-2xl font-semibold md:font-bold text-purple-mutu uppercase">
+                        {work.title}
+                      </div>
+                      <div className="block lg:hidden w-auto h-auto text-xs md:text-base font-semibold md:font-bold text-purple-mutu">
+                        {work.year}
+                      </div>
+                    </div>
+
+                    <div className="w-full h-auto flex flex-row-reverse md:flex-row justify-between items-center">
+                      <div className="w-full h-auto flex justify-start items-center text-purple-mutu">
+                        <div className="hidden lg:block w-auto h-auto text-base lg:text-lg font-bold ">
+                          {work.year}
                         </div>
-
-                        {/* Desktop: Title */}
-                        <h3 className="hidden md:block md:text-xl lg:text-2xl font-bold text-purple-mutu uppercase line-clamp-1 mb-1">
-                          {work.title}
-                        </h3>
-
-                        {/* Desktop: Year + Industry */}
-                        <div className="hidden md:block md:text-base lg:text-lg font-bold text-purple-mutu">
-                          {work.year}{" "}
-                          <span className="italic font-normal hidden lg:inline-block lg:text-base ml-1">
-                            {work.industry}
-                          </span>
-                        </div>
-
-                        {/* Mobile: ABCS + Industry */}
-                        <div className="flex md:hidden items-center gap-2">
-                          {/* Tags (ABCS) */}
-                          <div className="flex gap-0.5">
-                            {["A", "B", "C", "S"].map((label) => {
-                              const isActive =
-                                work.serviceIcons?.includes(label);
-                              return (
-                                <div
-                                  key={label}
-                                  className={`w-5 h-5 rounded hover:scale-110 font-extrabold text-[8px] flex items-center justify-center border-2 border-purple-mutu transition-all ${
-                                    isActive
-                                      ? "bg-purple-mutu text-cream-mutu"
-                                      : "bg-transparent text-purple-mutu"
-                                  }`}
-                                >
-                                  {label}
-                                </div>
-                              );
-                            })}
-                          </div>
-                          <span className="text-[10px] italic font-normal text-purple-mutu line-clamp-1 flex-1">
-                            {work.industry}
-                          </span>
+                        <div className="w-full h-auto italic font-normal text-[10px] md:text-xs lg:text-sm ml-2 md:ml-0 lg:ml-2 line-clamp-1">
+                          {work.industry}
                         </div>
                       </div>
-
-                      {/* Desktop: Tags (ABCS) - Right Side */}
-                      <div className="hidden md:flex md:gap-1.5 lg:gap-2 shrink-0">
-                        {["A", "B", "C", "S"].map((label) => {
-                          const isActive = work.serviceIcons?.includes(label);
-                          return (
-                            <div
-                              key={label}
-                              className={`md:w-6 md:h-6 lg:w-8 lg:h-8 rounded-lg font-extrabold md:text-[8px] lg:text-sm flex items-center justify-center border-2 border-purple-mutu transition-colors ${
-                                isActive
-                                  ? "bg-purple-mutu text-cream-mutu"
-                                  : "bg-transparent text-purple-mutu"
-                              }`}
-                              onMouseEnter={(e) => e.stopPropagation()}
-                            >
-                              {label}
-                            </div>
-                          );
-                        })}
+                      <div className="w-auto h-auto">
+                        <div className="flex gap-0.5 md:gap-1.5 lg:gap-1.5 xl:gap-2 shrink-0 justify-end">
+                          {["A", "B", "C", "S"].map((label) => {
+                            const isActive = work.serviceIcons?.includes(label);
+                            return (
+                              <div
+                                key={label}
+                                className={`flex w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 rounded md:rounded-lg font-extrabold text-xs lg:text-sm items-center justify-center border-2 border-purple-mutu transition-colors ${
+                                  isActive
+                                    ? "bg-purple-mutu text-cream-mutu"
+                                    : "bg-transparent text-purple-mutu"
+                                }`}
+                              >
+                                {label}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
                 </Link>
               );
             })}
+          </div>
+        )}
+
+        {/* See All button at bottom */}
+        {!loading && works.length > 0 && (
+          <div className="w-full flex md:hidden justify-center mt-8 md:mt-12">
+            <Link
+              href="/works"
+              className="text-sm md:text-lg font-medium text-purple-mutu border-2 border-purple-mutu rounded-full px-4 py-1"
+            >
+              See All
+            </Link>
           </div>
         )}
       </div>

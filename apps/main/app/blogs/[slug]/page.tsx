@@ -5,14 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { fetchBlogBySlug, fetchBlogs, Blog } from "../../../services/api"; // Added fetchBlogs for 'Other Blogs'
-import {
-  MessageCircle,
-  Instagram,
-  Twitter,
-  Linkedin,
-  Facebook,
-  Globe,
-} from "lucide-react";
+import { Share2, Check } from "lucide-react";
 import CTASection from "@/components/home/cta-section";
 
 interface BlogsDetailPageProps {
@@ -31,6 +24,7 @@ export default function BlogsDetailPage({ params }: BlogsDetailPageProps) {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [otherBlogs, setOtherBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -119,25 +113,31 @@ export default function BlogsDetailPage({ params }: BlogsDetailPageProps) {
                   Feeling Insightful?
                 </h3>
                 <p className="text-sm text-black-mutu mb-4">Share this Blog:</p>
-                <div className="flex flex-row justify-between w-full md:grid md:grid-cols-3 md:w-fit md:gap-3">
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                    <MessageCircle size={20} />
-                  </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                    <Instagram size={20} />
-                  </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                    <Twitter size={20} />
-                  </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                    <Globe size={20} /> {/* Reddit replacement */}
-                  </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                    <Linkedin size={20} />
-                  </button>
-                  <button className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors">
-                    <Facebook size={20} />
-                  </button>
+                <button
+                  onClick={() => {
+                    const url = window.location.href;
+                    navigator.clipboard.writeText(url);
+                    setShowToast(true);
+                    setTimeout(() => setShowToast(false), 2000);
+                  }}
+                  className="w-10 h-10 rounded-xl border-2 border-black-mutu flex items-center justify-center hover:bg-black-mutu hover:text-white transition-colors cursor-pointer"
+                  title="Copy link to clipboard"
+                >
+                  <Share2 size={20} />
+                </button>
+
+                {/* Toast Notification */}
+                <div
+                  className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-green-mutu text-white px-5 py-3 rounded-xl shadow-lg transition-all duration-300 ${
+                    showToast
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-4 pointer-events-none"
+                  }`}
+                >
+                  <Check size={18} />
+                  <span className="text-sm font-medium">
+                    Link copied to clipboard!
+                  </span>
                 </div>
               </div>
 

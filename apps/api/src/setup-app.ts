@@ -27,6 +27,7 @@ export function setupApp(app: INestApplication) {
         // In prod, use ENV or fall back
         'http://localhost:3000',
         'http://localhost:3001',
+        'http://localhost:3002',
       ];
 
   app.enableCors({

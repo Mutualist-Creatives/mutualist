@@ -1,0 +1,738 @@
+{
+  "info": {
+    "_postman_id": "mutualist-api-collection",
+    "name": "Mutualist API",
+    "description": "API Documentation for Mutualist Creative Agency Platform.\n\n## Authentication\nMost endpoints require JWT authentication. Use the Login endpoint to get a token, then set it in the Authorization header as `Bearer <token>`.\n\n## Base URL\n- Local: `http://localhost:3001`\n- Production: `{{baseUrl}}`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "description": "Authentication endpoints for user login and token management.",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.access_token) {",
+                  "        pm.collectionVariables.set('accessToken', response.access_token);",
+                  "        console.log('Token saved to collection variables');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@mutualist.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate user with email and password.\n\n**Request Body:**\n- `email` (string, required): User's email address\n- `password` (string, required): User's password\n\n**Response:**\n- `access_token` (string): JWT token for authentication\n- `user` (object): User details"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@mutualist.com\",\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"clxxxxxxxxxx\",\n    \"email\": \"admin@mutualist.com\",\n    \"name\": \"Admin\",\n    \"role\": \"ADMIN\"\n  }\n}"
+            },
+            {
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"wrong@email.com\",\n  \"password\": \"wrongpassword\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"statusCode\": 401,\n  \"message\": \"Invalid credentials\",\n  \"error\": \"Unauthorized\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "👤 Users",
+      "description": "User management endpoints. All endpoints require JWT authentication.",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Get a list of all users.\n\n**Authentication:** Required (Bearer Token)\n\n**Response:** Array of user objects"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"id\": \"clxxxxxxxxxx\",\n    \"email\": \"admin@mutualist.com\",\n    \"name\": \"Admin\",\n    \"role\": \"ADMIN\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "clxxxxxxxxxx",
+                  "description": "User ID (CUID)"
+                }
+              ]
+            },
+            "description": "Get a specific user by their ID.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `id` (string): User's CUID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@mutualist.com\",\n  \"password\": \"password123\",\n  \"name\": \"New User\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Create a new user.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): User's email address\n- `password` (string, required): User's password\n- `name` (string, optional): User's display name\n- `role` (enum, optional): USER or ADMIN (default: USER)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@mutualist.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "clxxxxxxxxxx",
+                  "description": "User ID (CUID)"
+                }
+              ]
+            },
+            "description": "Update an existing user.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `id` (string): User's CUID\n\n**Request Body:** (all optional)\n- `email` (string): User's email address\n- `name` (string): User's display name\n- `role` (enum): USER or ADMIN"
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/:id/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id", "reset-password"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "clxxxxxxxxxx",
+                  "description": "User ID (CUID)"
+                }
+              ]
+            },
+            "description": "Reset a user's password to default.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `id` (string): User's CUID"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "clxxxxxxxxxx",
+                  "description": "User ID (CUID)"
+                }
+              ]
+            },
+            "description": "Delete a user.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `id` (string): User's CUID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📁 Main Portfolio",
+      "description": "Portfolio management for the main website. Public read access, authenticated write access.",
+      "item": [
+        {
+          "name": "Get All Portfolios",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/main-portfolios",
+              "host": ["{{baseUrl}}"],
+              "path": ["main-portfolios"]
+            },
+            "description": "Get all portfolio items.\n\n**Authentication:** Not required (Public)\n\n**Response:** Array of portfolio objects"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"id\": \"clxxxxxxxxxx\",\n    \"slug\": \"project-name\",\n    \"title\": \"Project Name\",\n    \"industry\": \"Technology\",\n    \"year\": \"2024\",\n    \"serviceIcons\": [\"A\", \"B\", \"C\"],\n    \"serviceNames\": \"Advertising, Branding, Creative\",\n    \"isFeatured\": true,\n    \"teams\": [\n      { \"role\": \"Creative Director\", \"names\": [\"John Doe\"] }\n    ],\n    \"content\": [\n      { \"type\": \"image\", \"images\": [\"https://storage.example.com/image.jpg\"] }\n    ],\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Portfolio by Slug",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/main-portfolios/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["main-portfolios", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "project-name",
+                  "description": "Portfolio slug"
+                }
+              ]
+            },
+            "description": "Get a specific portfolio by slug.\n\n**Authentication:** Not required (Public)\n\n**Path Parameters:**\n- `slug` (string): Portfolio's unique slug"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Portfolio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"new-project\",\n  \"title\": \"New Project\",\n  \"industry\": \"Technology\",\n  \"year\": \"2024\",\n  \"serviceIcons\": [\"A\", \"B\"],\n  \"serviceNames\": \"Advertising, Branding\",\n  \"isFeatured\": false,\n  \"teams\": [\n    {\n      \"role\": \"Creative Director\",\n      \"names\": [\"John Doe\"]\n    },\n    {\n      \"role\": \"Designer\",\n      \"names\": [\"Jane Smith\", \"Bob Wilson\"]\n    }\n  ],\n  \"content\": [\n    {\n      \"type\": \"image\",\n      \"images\": [\"https://storage.example.com/image1.jpg\", \"https://storage.example.com/image2.jpg\"]\n    },\n    {\n      \"type\": \"video\",\n      \"images\": [\"https://storage.example.com/video.mp4\"]\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/main-portfolios",
+              "host": ["{{baseUrl}}"],
+              "path": ["main-portfolios"]
+            },
+            "description": "Create a new portfolio item.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `slug` (string, required): URL-friendly unique identifier\n- `title` (string, required): Portfolio title\n- `industry` (string, required): Industry category\n- `year` (string, required): Year of the project\n- `serviceIcons` (string[], required): Array of service abbreviations (A, B, C, S)\n- `serviceNames` (string, required): Comma-separated service names\n- `isFeatured` (boolean, optional): Whether to feature on homepage\n- `teams` (array, optional): Array of { role: string, names: string[] }\n- `content` (array, optional): Array of { type: string, images: string[] }"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Portfolio",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Project Title\",\n  \"isFeatured\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/main-portfolios/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["main-portfolios", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "project-name",
+                  "description": "Portfolio slug"
+                }
+              ]
+            },
+            "description": "Update an existing portfolio.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `slug` (string): Portfolio's unique slug\n\n**Request Body:** (all optional)\n- Any field from CreatePortfolio"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Portfolio",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/main-portfolios/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["main-portfolios", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "project-name",
+                  "description": "Portfolio slug"
+                }
+              ]
+            },
+            "description": "Delete a portfolio.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `slug` (string): Portfolio's unique slug"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🎨 Life Portfolio",
+      "description": "Portfolio management for the Life section. Public read access, authenticated write access.",
+      "item": [
+        {
+          "name": "Get All Life Portfolios",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/life-portfolios",
+              "host": ["{{baseUrl}}"],
+              "path": ["life-portfolios"]
+            },
+            "description": "Get all life portfolio items.\n\n**Authentication:** Not required (Public)\n\n**Response:** Array of life portfolio objects"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"id\": \"clxxxxxxxxxx\",\n    \"title\": \"Life Project\",\n    \"createdBy\": \"Photographer Name\",\n    \"year\": \"2024\",\n    \"categories\": [\"Photography\", \"Portrait\"],\n    \"description\": \"Project description\",\n    \"images\": [\"https://storage.example.com/image.jpg\"],\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Categories",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/life-portfolios/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["life-portfolios", "categories"]
+            },
+            "description": "Get all unique categories from life portfolios.\n\n**Authentication:** Not required (Public)\n\n**Response:** Array of category strings"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\"Photography\", \"Portrait\", \"Landscape\", \"Street\"]"
+            }
+          ]
+        },
+        {
+          "name": "Get Life Portfolio by ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/life-portfolios/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["life-portfolios", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "clxxxxxxxxxx",
+                  "description": "Life Portfolio ID (CUID)"
+                }
+              ]
+            },
+            "description": "Get a specific life portfolio by ID.\n\n**Authentication:** Not required (Public)\n\n**Path Parameters:**\n- `id` (string): Life Portfolio's CUID"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Life Portfolio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Life Project\",\n  \"createdBy\": \"Photographer Name\",\n  \"year\": \"2024\",\n  \"categories\": [\"Photography\", \"Portrait\"],\n  \"description\": \"Detailed project description with markdown support.\",\n  \"images\": [\n    \"https://storage.example.com/image1.jpg\",\n    \"https://storage.example.com/image2.jpg\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/life-portfolios",
+              "host": ["{{baseUrl}}"],
+              "path": ["life-portfolios"]
+            },
+            "description": "Create a new life portfolio item.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `title` (string, required): Project title\n- `createdBy` (string, required): Creator/photographer name\n- `year` (string, required): Year of creation\n- `categories` (string[], required): Array of category tags\n- `description` (string, required): Project description\n- `images` (string[], required): Array of image URLs"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Life Portfolio",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Life Project\",\n  \"categories\": [\"Photography\", \"Landscape\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/life-portfolios/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["life-portfolios", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "clxxxxxxxxxx",
+                  "description": "Life Portfolio ID (CUID)"
+                }
+              ]
+            },
+            "description": "Update an existing life portfolio.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `id` (string): Life Portfolio's CUID\n\n**Request Body:** (all optional)\n- Any field from CreateLifePortfolio"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Life Portfolio",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/life-portfolios/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["life-portfolios", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "clxxxxxxxxxx",
+                  "description": "Life Portfolio ID (CUID)"
+                }
+              ]
+            },
+            "description": "Delete a life portfolio.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `id` (string): Life Portfolio's CUID\n\n**Response:** 204 No Content"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📝 Blogs",
+      "description": "Blog management endpoints. Public read access, authenticated write access.",
+      "item": [
+        {
+          "name": "Get All Blogs",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["blogs"]
+            },
+            "description": "Get all blog posts.\n\n**Authentication:** Not required (Public)\n\n**Response:** Array of blog objects"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "[\n  {\n    \"id\": \"clxxxxxxxxxx\",\n    \"slug\": \"blog-post-title\",\n    \"title\": \"Blog Post Title\",\n    \"category\": \"Technology\",\n    \"date\": \"August 4, 2025\",\n    \"image\": \"https://storage.example.com/blog-image.jpg\",\n    \"rotation\": 2.5,\n    \"content\": \"Blog content in markdown...\",\n    \"createdAt\": \"2024-01-01T00:00:00.000Z\",\n    \"updatedAt\": \"2024-01-01T00:00:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get Blog by Slug",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blogs/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["blogs", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "blog-post-title",
+                  "description": "Blog post slug"
+                }
+              ]
+            },
+            "description": "Get a specific blog post by slug.\n\n**Authentication:** Not required (Public)\n\n**Path Parameters:**\n- `slug` (string): Blog's unique slug"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slug\": \"new-blog-post\",\n  \"title\": \"New Blog Post\",\n  \"category\": \"Technology\",\n  \"date\": \"January 22, 2026\",\n  \"image\": \"https://storage.example.com/blog-image.jpg\",\n  \"rotation\": 0,\n  \"content\": \"# Blog Content\\n\\nThis is the blog content in **markdown** format.\\n\\n## Section 1\\n\\nParagraph with details...\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/blogs",
+              "host": ["{{baseUrl}}"],
+              "path": ["blogs"]
+            },
+            "description": "Create a new blog post.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `slug` (string, required): URL-friendly unique identifier\n- `title` (string, required): Blog title\n- `category` (string, required): Blog category\n- `date` (string, required): Display date (e.g., \"August 4, 2025\")\n- `image` (string, optional): Featured image URL\n- `rotation` (number, optional): Image rotation in degrees\n- `content` (string, required): Blog content in markdown"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Blog Title\",\n  \"content\": \"# Updated Content\\n\\nNew content here...\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/blogs/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["blogs", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "blog-post-title",
+                  "description": "Blog post slug"
+                }
+              ]
+            },
+            "description": "Update an existing blog post.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `slug` (string): Blog's unique slug\n\n**Request Body:** (all optional)\n- Any field from CreateBlog"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blogs/:slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["blogs", ":slug"],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "blog-post-title",
+                  "description": "Blog post slug"
+                }
+              ]
+            },
+            "description": "Delete a blog post.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `slug` (string): Blog's unique slug"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📤 Upload",
+      "description": "File upload endpoints for images and videos.",
+      "item": [
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Image or video file (max 10MB)"
+                },
+                {
+                  "key": "bucket",
+                  "value": "portfolio-images",
+                  "type": "text",
+                  "description": "Storage bucket name (optional, default: portfolio-images)"
+                },
+                {
+                  "key": "folder",
+                  "value": "projects",
+                  "type": "text",
+                  "description": "Folder path within bucket (optional)"
+                },
+                {
+                  "key": "filename",
+                  "value": "custom-filename",
+                  "type": "text",
+                  "description": "Custom filename without extension (optional)"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload"]
+            },
+            "description": "Upload an image or video file to cloud storage.\n\n**Authentication:** Not required (but should be protected in production)\n\n**Request Body (multipart/form-data):**\n- `file` (file, required): The file to upload. Accepts image/* or video/mp4. Max size: 10MB\n- `bucket` (string, optional): Storage bucket name. Default: \"portfolio-images\"\n- `folder` (string, optional): Folder path within the bucket\n- `filename` (string, optional): Custom filename (without extension)\n\n**Response:**\n- `url` (string): Public URL of the uploaded file\n- `path` (string): Storage path of the file"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"url\": \"https://storage.example.com/portfolio-images/projects/image.jpg\",\n  \"path\": \"portfolio-images/projects/image.jpg\"\n}"
+            },
+            {
+              "name": "Bad Request - Invalid File Type",
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"statusCode\": 400,\n  \"message\": \"Validation failed (current file type is application/pdf, expected type is image/* or video/mp4)\",\n  \"error\": \"Bad Request\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

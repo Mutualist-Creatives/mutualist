@@ -73,7 +73,7 @@ export default function GallerySection() {
           stagger: 0.06,
           ease: "elastic.out(1, 0.8)",
           delay: 0.5,
-        }
+        },
       );
     }, containerRef);
 
@@ -93,7 +93,7 @@ export default function GallerySection() {
 
   const getPushedTransform = (
     baseTransform: string,
-    offsetX: number
+    offsetX: number,
   ): string => {
     const translateRegex = /translate\(([-0-9.]+)px\)/;
     const match = baseTransform.match(translateRegex);
@@ -174,7 +174,7 @@ export default function GallerySection() {
       <div className="max-w-screen-2xl mx-auto w-full px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 flex flex-col items-center justify-center relative">
         {/* Title */}
         <div className="w-full z-20 relative">
-          <h2 className="text-3xl md:text-5xl font-bold text-purple-mutu text-left">
+          <h2 className="text-3xl md:text-5xl font-semibold text-purple-mutu text-left">
             Gallery
           </h2>
         </div>
@@ -212,7 +212,7 @@ export default function GallerySection() {
       </div>
 
       {/* Mascot */}
-      <div className="absolute bottom-[-10%] right-[5%] w-[150px] md:w-[200px] lg:w-[2t0px] z-30 pointer-events-none">
+      <div className="absolute bottom-[-10%] right-[5%] w-[150px] md:w-[200px] lg:w-[250px] z-30 pointer-events-none">
         <Image
           src="/assets/about/gallery/gallery_mascot.png"
           alt="Gallery Mascot"

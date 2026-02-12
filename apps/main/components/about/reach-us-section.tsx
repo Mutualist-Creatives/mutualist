@@ -7,13 +7,13 @@ export default function ReachUsSection() {
         <div className="grid grid-cols-2 md:grid-cols-3 items-start gap-4 md:gap-20">
           {/* Left Side: Title */}
           <div className="col-span-1">
-            <h2 className="text-3xl md:text-5xl xl:text-6xl font-bold text-yellow-mutu">
+            <h2 className="text-3xl md:text-5xl xl:text-6xl font-semibold text-yellow-mutu">
               Reach Us
             </h2>
           </div>
 
           {/* Right Side: Contact Info */}
-          <div className="col-span-1 md:col-span-2 min-w-0 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm lg:text-base break-words">
+          <div className="col-span-1 md:col-span-2 min-w-0 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-sm lg:text-base wrap-break-word">
             {/* Column 1 */}
             <div className="space-y-10">
               {/* Office */}
@@ -21,7 +21,7 @@ export default function ReachUsSection() {
                 <h3 className="text-xl font-bold text-yellow-mutu mb-2">
                   Office
                 </h3>
-                <p className="text-white leading-relaxed font-[family-name:var(--font-instrument-sans)]">
+                <p className="text-white leading-relaxed font-instrument">
                   Victoria River Park
                   <br />
                   Blok A10 No 20 BSD City,
@@ -37,7 +37,7 @@ export default function ReachUsSection() {
                 <h3 className="text-xl font-bold text-yellow-mutu mb-2">
                   Email
                 </h3>
-                <div className="flex flex-col gap-1 font-[family-name:var(--font-instrument-sans)]">
+                <div className="flex flex-col gap-1 font-instrument">
                   <a
                     href="mailto:hello@mutualist.co"
                     className="text-white hover:opacity-80 transition-opacity break-all"
@@ -56,7 +56,7 @@ export default function ReachUsSection() {
                   href="https://wa.me/6287787242397"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:opacity-80 transition-opacity font-[family-name:var(--font-instrument-sans)]"
+                  className="text-white hover:opacity-80 transition-opacity font-instrument"
                 >
                   +62 877 8724 2397 (Mutu)
                 </a>
@@ -74,7 +74,7 @@ export default function ReachUsSection() {
                   href="https://instagram.com/mutualistcreatives"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:opacity-80 transition-opacity font-[family-name:var(--font-instrument-sans)]"
+                  className="text-white hover:opacity-80 transition-opacity font-instrument"
                 >
                   @mutualistcreatives
                 </a>
@@ -89,7 +89,7 @@ export default function ReachUsSection() {
                   href="https://behance.net/mutualistcreatives"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:opacity-80 transition-opacity font-[family-name:var(--font-instrument-sans)]"
+                  className="text-white hover:opacity-80 transition-opacity font-instrument"
                 >
                   Mutualist Creatives
                 </a>
@@ -100,7 +100,7 @@ export default function ReachUsSection() {
                 <h3 className="text-xl font-bold text-yellow-mutu mb-2">
                   Join Us
                 </h3>
-                <div className="text-white leading-relaxed space-y-4 font-[family-name:var(--font-instrument-sans)]">
+                <div className="text-white leading-relaxed space-y-4 font-instrument">
                   <p>
                     Interested to join as a fellow Mutual? Send your CV and
                     Portfolio to{" "}

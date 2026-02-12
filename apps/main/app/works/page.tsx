@@ -3,18 +3,22 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { fetchWorks, Work } from "../../services/api";
-import Link from "next/link"; // Added Link for navigation
+import Link from "next/link";
 import Image from "next/image";
 
 export default function WorksPage() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<string[]>([]);
 
   useEffect(() => {
     async function loadWorks() {
       try {
         const data = await fetchWorks();
-        setWorks(data);
+        const sortedData = [...data].sort((a, b) => {
+          return parseInt(b.year) - parseInt(a.year);
+        });
+        setWorks(sortedData);
       } catch (error) {
         console.error("Failed to load works", error);
       } finally {
@@ -25,11 +29,37 @@ export default function WorksPage() {
   }, []);
   return (
     <main className="min-h-screen w-full font-sans bg-white pt-32 pb-20 max-w-screen-2xl mx-auto px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24">
-      {/* <div className="w-full mb-16 text-center">
+      <div className="w-full mb-10 md:mb-16 text-center space-y-2">
         <h1 className="text-5xl md:text-6xl font-medium text-purple-mutu">
-          Works
+          Our Works
         </h1>
-      </div> */}
+
+        {/* Filters */}
+        <div className="flex gap-2 justify-center">
+          {["A", "B", "C", "S"].map((label) => {
+            const isActive = filters.includes(label);
+            return (
+              <button
+                key={label}
+                onClick={() =>
+                  setFilters((prev) =>
+                    isActive
+                      ? prev.filter((f) => f !== label)
+                      : [...prev, label],
+                  )
+                }
+                className={`w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 rounded-lg md:rounded-xl cursor-pointer border-2 border-purple-mutu font-bold text-lg md:text-xl flex items-center justify-center transition-colors ${
+                  isActive
+                    ? "bg-purple-mutu text-white"
+                    : "text-purple-mutu hover:bg-purple-mutu/10"
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
@@ -48,74 +78,71 @@ export default function WorksPage() {
           <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
             No works found at the moment.
           </p>
-          <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-[family-name:var(--font-instrument-sans)]">
+          <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-(family-name:--font-instrument-sans)">
             Please check back later or refresh the page.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
-          {works.map((work, index) => {
-            // Simple deterministic random-like tilt based on index
-            const tilt = index % 2 === 0 ? 2 : -2;
+          {works
+            .filter(
+              (work) =>
+                filters.length === 0 ||
+                filters.every((filter) => work.serviceIcons?.includes(filter)),
+            )
+            .map((work, index) => {
+              // Simple deterministic random-like tilt based on index
+              const tilt = index % 2 === 0 ? 2 : -2;
 
-            return (
-              <Link key={index} href={`/works/${work.slug}`}>
-                <motion.div
-                  className="flex flex-col gap-2 md:gap-4 group cursor-pointer"
-                  whileHover={{ rotate: tilt, scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  {/* Image Placeholder */}
-                  <div className="w-full aspect-4/3 bg-gray-200 rounded-lg overflow-hidden relative">
-                    {work.content?.[0]?.images?.[0] ? (
-                      <Image
-                        src={work.content[0].images[0]}
-                        alt={work.title}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        No Image
-                      </div>
-                    )}
-                  </div>
+              return (
+                <Link key={index} href={`/works/${work.slug}`}>
+                  <motion.div
+                    className="flex flex-col gap-2 md:gap-4 group cursor-pointer"
+                    whileHover={{ rotate: tilt, scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    {/* Image Placeholder */}
+                    <div className="w-full aspect-4/3 bg-gray-200 rounded-lg overflow-hidden relative">
+                      {work.content?.[0]?.images?.[0] ? (
+                        <Image
+                          src={work.content[0].images[0]}
+                          alt={work.title}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          No Image
+                        </div>
+                      )}
+                    </div>
 
-                  <div className="flex flex-col gap-1 md:flex-row md:justify-between md:items-end mt-2 md:mt-3">
-                    <div className="flex flex-col w-full md:flex-1 min-w-0 md:mr-4">
-                      {/* Mobile: Title + Year */}
-                      <div className="flex md:hidden items-center gap-1.5 mb-1">
-                        <h3 className="text-xs font-bold text-purple-mutu uppercase truncate">
-                          {work.title}
-                        </h3>
-                        <span className="text-xs font-bold text-purple-mutu shrink-0">
-                          {work.year}
-                        </span>
-                      </div>
-
-                      {/* Desktop: Title */}
-                      <h3 className="hidden md:block md:text-xl lg:text-2xl font-bold text-purple-mutu uppercase line-clamp-1 mb-1">
+                    <div className="flex lg:block w-full h-auto mb-0 md:-mb-3 lg:-mb-2  gap-2">
+                      <div className="w-auto h-auto text-xs md:text-base lg:text-2xl font-semibold md:font-bold text-purple-mutu uppercase">
                         {work.title}
-                      </h3>
-
-                      {/* Desktop: Year + Industry */}
-                      <div className="hidden md:block md:text-base lg:text-lg font-bold text-purple-mutu">
-                        {work.year}{" "}
-                        <span className="italic font-normal hidden lg:inline-block lg:text-base ml-1">
-                          {work.industry}
-                        </span>
                       </div>
+                      <div className="block lg:hidden w-auto h-auto text-xs md:text-base font-semibold md:font-bold text-purple-mutu">
+                        {work.year}
+                      </div>
+                    </div>
 
-                      {/* Mobile: ABCS + Industry */}
-                      <div className="flex md:hidden items-center gap-2">
-                        {/* Tags (ABCS) */}
-                        <div className="flex gap-0.5">
+                    <div className="w-full h-auto flex flex-row-reverse md:flex-row justify-between items-center">
+                      <div className="w-full h-auto flex justify-start items-center text-purple-mutu">
+                        <div className="hidden lg:block w-auto h-auto text-base lg:text-lg font-bold ">
+                          {work.year}
+                        </div>
+                        <div className="w-full h-auto italic font-normal text-[10px] md:text-xs lg:text-sm ml-2 md:ml-0 lg:ml-2 line-clamp-1">
+                          {work.industry}
+                        </div>
+                      </div>
+                      <div className="w-auto h-auto">
+                        <div className="flex gap-0.5 md:gap-1.5 lg:gap-1.5 xl:gap-2 shrink-0 justify-end">
                           {["A", "B", "C", "S"].map((label) => {
                             const isActive = work.serviceIcons?.includes(label);
                             return (
                               <div
                                 key={label}
-                                className={`w-5 h-5 rounded hover:scale-110 font-extrabold text-[10px] flex items-center justify-center border-2 border-purple-mutu transition-all ${
+                                className={`flex w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 rounded md:rounded-lg font-extrabold text-xs lg:text-sm items-center justify-center border-2 border-purple-mutu transition-colors ${
                                   isActive
                                     ? "bg-purple-mutu text-cream-mutu"
                                     : "bg-transparent text-purple-mutu"
@@ -126,35 +153,12 @@ export default function WorksPage() {
                             );
                           })}
                         </div>
-                        <span className="text-[10px] italic font-normal text-purple-mutu line-clamp-1 flex-1">
-                          {work.industry}
-                        </span>
                       </div>
                     </div>
-
-                    {/* Desktop: Tags (ABCS) - Right Side */}
-                    <div className="hidden md:flex md:gap-1.5 lg:gap-2 shrink-0">
-                      {["A", "B", "C", "S"].map((label) => {
-                        const isActive = work.serviceIcons?.includes(label);
-                        return (
-                          <div
-                            key={label}
-                            className={`md:w-6 md:h-6 lg:w-8 lg:h-8 rounded-lg font-extrabold md:text-[10px] lg:text-sm flex items-center justify-center border-2 border-purple-mutu transition-colors ${
-                              isActive
-                                ? "bg-purple-mutu text-cream-mutu"
-                                : "bg-transparent text-purple-mutu"
-                            }`}
-                          >
-                            {label}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </motion.div>
-              </Link>
-            );
-          })}
+                  </motion.div>
+                </Link>
+              );
+            })}
         </div>
       )}
     </main>

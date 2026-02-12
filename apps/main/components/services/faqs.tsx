@@ -116,7 +116,7 @@ export function FAQs({ category }: FAQsProps) {
                       "flex-shrink-0 w-6 h-6 md:w-8 md:h-8 rounded-lg border-2 flex items-center justify-center transition-colors duration-300 mt-1",
                       openIndex === index
                         ? "border-purple-mutu bg-purple-mutu text-white"
-                        : "border-purple-mutu text-purple-mutu group-hover:bg-purple-mutu group-hover:text-white"
+                        : "border-purple-mutu text-purple-mutu group-hover:bg-purple-mutu group-hover:text-white",
                     )}
                   >
                     {openIndex === index ? (
@@ -126,7 +126,7 @@ export function FAQs({ category }: FAQsProps) {
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm md:text-base lg:text-lg font-bold text-black-mutu py-1">
+                    <h3 className="text-sm md:text-base lg:text-lg font-bold text-black-mutu py-1 font-sans">
                       {item.question}
                     </h3>
                     <div
@@ -134,10 +134,10 @@ export function FAQs({ category }: FAQsProps) {
                         "overflow-hidden transition-all duration-300 ease-in-out",
                         openIndex === index
                           ? "max-h-96 opacity-100 mt-2"
-                          : "max-h-0 opacity-0"
+                          : "max-h-0 opacity-0",
                       )}
                     >
-                      <p className="text-black-mutu leading-relaxed font-normal text-sm md:text-sm lg:text-base text-opacity-80">
+                      <p className="text-black-mutu leading-relaxed font-normal text-sm md:text-sm lg:text-base text-opacity-80 font-instrument">
                         {item.answer}
                       </p>
                     </div>

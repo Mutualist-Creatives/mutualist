@@ -160,7 +160,7 @@ export function PortfolioSearch({ portfolios }: { portfolios: Portfolio[] }) {
 
                 <div className="flex gap-2 pt-2">
                   <Link
-                    href={`/life-portfolios/${portfolio.id}`}
+                    href={`/life-projects/${portfolio.id}`}
                     className="flex-1"
                   >
                     <Button

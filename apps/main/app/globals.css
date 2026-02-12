@@ -24,6 +24,7 @@
   --color-yellow-mutu: var(--yellow-mutu);
 
   --font-sans: var(--font-parkinsans);
+  --font-instrument: var(--font-instrument-sans);
 }
 
 @media (prefers-color-scheme: dark) {

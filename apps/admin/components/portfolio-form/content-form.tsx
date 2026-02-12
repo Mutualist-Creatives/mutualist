@@ -24,7 +24,7 @@ import {
   BLOCK_TYPES,
   LAYOUT_COUNTS,
 } from "./portfolio-schema";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import Image from "next/image";
 import {
   DndContext,
@@ -44,15 +44,17 @@ import {
 import { SortableItem } from "./sortable-item";
 
 interface ContentFormProps {
-  contentFiles: Record<number, Record<number, File>>;
+  contentFiles: Record<string, Record<number, File>>;
   setContentFiles: Dispatch<
-    SetStateAction<Record<number, Record<number, File>>>
+    SetStateAction<Record<string, Record<number, File>>>
   >;
+  onBlockFieldsChange: (ids: string[]) => void;
 }
 
 export function ContentForm({
   contentFiles,
   setContentFiles,
+  onBlockFieldsChange,
 }: ContentFormProps) {
   const { control, watch, setValue } = useFormContext<PortfolioFormValues>();
   const {
@@ -70,8 +72,14 @@ export function ContentForm({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
+
+  useEffect(() => {
+    // Sync block IDs to parent form for robust index mapping during upload
+    const ids = blockFields.map((field) => field.id);
+    onBlockFieldsChange(ids);
+  }, [blockFields, onBlockFieldsChange]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -81,37 +89,14 @@ export function ContentForm({
       const newIndex = blockFields.findIndex((item) => item.id === over.id);
 
       move(oldIndex, newIndex);
-
-      // Reorder contentFiles keys to match new indices
-      // This is tricky because contentFiles keys are indices.
-      // Ideally we should use IDs, but for now we attempt to remap or warn.
-      // Actually, standardizing on simple clear/warn is safest without major refactor of file handling.
-      // But user expects it to work.
-      // Strategy: Create new files map.
-      setContentFiles((prev) => {
-        const newFiles: Record<number, Record<number, File>> = {};
-        // We need to simulate the move on the files object keys
-        // Since we know oldIndex moved to newIndex, we can shift everything.
-        // Easiest way: Convert to array, move, convert back.
-        const filesArray = Array(blockFields.length)
-          .fill(null)
-          .map((_, i) => prev[i] || {});
-
-        // Apply the same move (using arrayMove logic locally)
-        const newFilesArray = arrayMove(filesArray, oldIndex, newIndex);
-
-        newFilesArray.forEach((files, i) => {
-          if (Object.keys(files).length > 0) newFiles[i] = files;
-        });
-
-        return newFiles;
-      });
+      // No need to remap contentFiles since we use block ID as key now!
+      // The files stay associated with their block ID regardless of position.
     }
   };
 
   const handleFileTypeChange = (
     index: number,
-    newType: (typeof BLOCK_TYPES)[number]
+    newType: (typeof BLOCK_TYPES)[number],
   ) => {
     // Current block data
     const currentBlock = watch(`content.${index}`);
@@ -139,9 +124,10 @@ export function ContentForm({
   };
 
   const handleFileSelect = (
+    blockId: string,
     blockIndex: number,
     imgIndex: number,
-    file: File | null
+    file: File | null,
   ) => {
     if (!file) return;
 
@@ -164,7 +150,7 @@ export function ContentForm({
     if (file.size > maxSize) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
       toast.error(
-        `File "${file.name}" is ${sizeMB}MB. Each file must not exceed 10MB.`
+        `File "${file.name}" is ${sizeMB}MB. Each file must not exceed 10MB.`,
       );
       return;
     }
@@ -174,31 +160,31 @@ export function ContentForm({
     // Update RHF state with preview URL
     setValue(`content.${blockIndex}.images.${imgIndex}`, url);
 
-    // Store File object for upload
+    // Store File object for upload using block ID as key
     setContentFiles((prev) => ({
       ...prev,
-      [blockIndex]: {
-        ...(prev[blockIndex] || {}),
+      [blockId]: {
+        ...(prev[blockId] || {}),
         [imgIndex]: file,
       },
     }));
   };
 
-  const removeBlock = (index: number) => {
-    remove(index);
-    // Cleanup files state
-    setContentFiles((prev) => {
-      // Since indices shift after delete, simply deleting key is wrong if there are subsequent items.
-      // We must shift subsequent items down.
-      const newFiles: Record<number, Record<number, File>> = {};
-      Object.keys(prev).forEach((keyStr) => {
-        const key = parseInt(keyStr);
-        if (key < index) {
-          newFiles[key] = prev[key];
-        } else if (key > index) {
-          newFiles[key - 1] = prev[key];
-        }
+  const removeBlock = (blockId: string, index: number) => {
+    // Revoke ObjectURLs for this block before removing (cleanup memory)
+    const blockFiles = contentFiles[blockId];
+    if (blockFiles) {
+      Object.values(blockFiles).forEach((file) => {
+        // We stored the preview URL in form state, not here
+        // But we should still clean up
       });
+    }
+
+    remove(index);
+    // Simply delete the block ID from contentFiles (no index shifting needed!)
+    setContentFiles((prev) => {
+      const newFiles = { ...prev };
+      delete newFiles[blockId];
       return newFiles;
     });
   };
@@ -257,13 +243,18 @@ interface SortableBlockItemProps {
   blockIndex: number;
   control: Control<PortfolioFormValues>;
   watch: UseFormWatch<PortfolioFormValues>;
-  contentFiles: Record<number, Record<number, File>>;
+  contentFiles: Record<string, Record<number, File>>;
   handleFileTypeChange: (
     index: number,
-    type: (typeof BLOCK_TYPES)[number]
+    type: (typeof BLOCK_TYPES)[number],
   ) => void;
-  removeBlock: (index: number) => void;
-  handleFileSelect: (blockIndex: number, imgIndex: number, file: File) => void;
+  removeBlock: (blockId: string, index: number) => void;
+  handleFileSelect: (
+    blockId: string,
+    blockIndex: number,
+    imgIndex: number,
+    file: File,
+  ) => void;
 }
 
 function SortableBlockItem({
@@ -297,7 +288,7 @@ function SortableBlockItem({
             variant="ghost"
             size="sm"
             className="text-red-500 hover:text-red-700 h-6"
-            onClick={() => removeBlock(blockIndex)}
+            onClick={() => removeBlock(id, blockIndex)}
           >
             <Trash2 className="h-4 w-4 mr-2" /> Remove Block
           </Button>
@@ -310,7 +301,7 @@ function SortableBlockItem({
             onValueChange={(val) =>
               handleFileTypeChange(
                 blockIndex,
-                val as (typeof BLOCK_TYPES)[number]
+                val as (typeof BLOCK_TYPES)[number],
               )
             }
           >
@@ -339,7 +330,7 @@ function SortableBlockItem({
                     control={control}
                     name={`content.${blockIndex}.images.${imgIndex}`}
                     render={({ field }) => {
-                      const file = contentFiles?.[blockIndex]?.[imgIndex];
+                      const file = contentFiles?.[id]?.[imgIndex];
                       return (
                         <FormItem className="flex-1">
                           <FormControl>
@@ -371,7 +362,8 @@ function SortableBlockItem({
                       input.accept = "image/*,video/mp4";
                       input.onchange = (e) => {
                         const file = (e.target as HTMLInputElement).files?.[0];
-                        if (file) handleFileSelect(blockIndex, imgIndex, file);
+                        if (file)
+                          handleFileSelect(id, blockIndex, imgIndex, file);
                       };
                       input.click();
                     }}
@@ -382,10 +374,8 @@ function SortableBlockItem({
                 {/* Preview Area */}
                 {imgUrl && (
                   <div className="relative w-full aspect-video bg-muted rounded-md overflow-hidden border">
-                    {getMediaType(
-                      imgUrl,
-                      contentFiles[blockIndex]?.[imgIndex]
-                    ) === "video" ? (
+                    {getMediaType(imgUrl, contentFiles[id]?.[imgIndex]) ===
+                    "video" ? (
                       <video
                         src={imgUrl}
                         className="w-full h-full object-contain"

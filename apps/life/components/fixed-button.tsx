@@ -188,7 +188,7 @@ export function FixedButton({
             setIsAnimating(false);
             // Animate X icon and links after morph complete
             const topElements = [xIconRef.current, ...linksRef.current].filter(
-              Boolean
+              Boolean,
             );
             gsap.fromTo(
               topElements,
@@ -199,7 +199,7 @@ export function FixedButton({
                 duration: 0.4,
                 stagger: 0.1,
                 ease: "power2.out",
-              }
+              },
             );
 
             // Animate categories from bottom
@@ -214,7 +214,7 @@ export function FixedButton({
                 stagger: 0.08,
                 ease: "power2.out",
                 delay: 0.2,
-              }
+              },
             );
           },
         });
@@ -333,7 +333,7 @@ export function FixedButton({
                       style={{ backgroundColor: color }}
                     />
                   </button>
-                )
+                ),
               )}
             </div>
           )}
@@ -399,7 +399,7 @@ export function FixedButton({
                   ref={(el) => {
                     linksRef.current[1] = el;
                   }}
-                  href="https://behance.net"
+                  href="https://www.behance.net/mutualist"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:opacity-70 transition-opacity opacity-0"
@@ -411,7 +411,7 @@ export function FixedButton({
                   ref={(el) => {
                     linksRef.current[2] = el;
                   }}
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/mutualistcreatives"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:opacity-70 transition-opacity opacity-0"
@@ -443,7 +443,7 @@ export function FixedButton({
                     category === "All"
                       ? portfolios.length
                       : portfolios.filter((p) =>
-                          p.categories.includes(category)
+                          p.categories.includes(category),
                         ).length;
 
                   // Disable if no content (except "All")
@@ -459,7 +459,7 @@ export function FixedButton({
                       onClick={() => {
                         if (!isDisabled && onCategoryChange) {
                           onCategoryChange(
-                            category === "All" ? null : category
+                            category === "All" ? null : category,
                           );
                         }
                       }}

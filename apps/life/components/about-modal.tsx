@@ -13,7 +13,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
   const modalRef = React.useRef<HTMLDivElement>(null);
   const backdropRef = React.useRef<HTMLDivElement>(null);
   const [isLandscape, setIsLandscape] = React.useState(
-    typeof window !== "undefined" && window.innerWidth > window.innerHeight
+    typeof window !== "undefined" && window.innerWidth > window.innerHeight,
   );
 
   // Detect orientation changes
@@ -36,13 +36,13 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
         gsap.fromTo(
           backdropRef.current,
           { opacity: 0 },
-          { opacity: 1, duration: 0.3, ease: "power2.out" }
+          { opacity: 1, duration: 0.3, ease: "power2.out" },
         );
 
         gsap.fromTo(
           modalRef.current,
           { scale: 0.95, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" }
+          { scale: 1, opacity: 1, duration: 0.4, ease: "power2.out" },
         );
       }
     }
@@ -72,7 +72,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           duration: 0.2,
           ease: "power2.in",
         },
-        "<"
+        "<",
       );
     }
   };
@@ -96,12 +96,12 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm"
       onClick={handleClose}
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-2xl md:rounded-3xl p-6"
+        className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-2xl md:rounded-3xl px-6"
         style={{ backgroundColor: "#121212" }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -120,7 +120,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
         {/* Content */}
         <div className="flex flex-col items-center text-center">
           {/* Logo */}
-          <div className="w-28 h-12 md:w-36 md:h-14 lg:w-40 lg:h-16 relative mb-8 md:mb-12 lg:mb-15">
+          <div className="w-28 h-12 md:w-36 md:h-14 lg:w-40 lg:h-16 relative mt-8 md:mt-12 lg:mt-15">
             <Image
               src="/assets/logo/logo.gif"
               alt="Mutualist Logo"
@@ -131,7 +131,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
 
           {/* Text */}
           <p
-            className="font-serif leading-relaxed max-w-3xl text-white mb-8 md:mb-12 lg:mb-15"
+            className="font-serif leading-relaxed max-w-3xl text-white my-8 md:my-12 lg:my-15"
             style={{
               fontSize:
                 isLandscape && window.innerWidth >= 768 ? "1.5rem" : "1.25rem",
@@ -146,7 +146,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           </p>
 
           {/* GIFs - Responsive grid */}
-          <div className="flex flex-wrap justify-center gap-2 md:gap-3 w-full max-w-md md:max-w-none">
+          <div className="flex flex-wrap justify-center gap-2 md:gap-3 w-full max-w-md md:max-w-none mb-8 md:mb-12 lg:mb-15">
             {gifs.map((num) => (
               <div
                 key={num}

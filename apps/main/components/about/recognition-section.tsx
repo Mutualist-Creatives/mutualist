@@ -63,7 +63,7 @@ export default function RecognitionSection() {
           </h2>
         </div>
 
-        <div className="space-y-16 md:space-y-20 max-w-xs md:max-w-lg lg:max-w-2xl mx-auto font-[family-name:var(--font-instrument-sans)]">
+        <div className="space-y-16 md:space-y-20 max-w-xs md:max-w-lg lg:max-w-2xl mx-auto">
           {recognitions.map((rec, index) => (
             <div key={index} className="text-center">
               <h3 className="text-2xl md:text-3xl font-bold text-green-mutu mb-6">
@@ -73,7 +73,7 @@ export default function RecognitionSection() {
                 {rec.items.map((item, i) => (
                   <li
                     key={i}
-                    className="text-black-mutu text-sm md:text-lg font-medium"
+                    className="text-black-mutu text-sm md:text-lg font-medium font-instrument"
                   >
                     {item}
                   </li>
@@ -164,7 +164,7 @@ export default function RecognitionSection() {
         />
       </motion.div>
 
-      <motion.div
+      {/* <motion.div
         drag
         dragConstraints={containerRef}
         className="absolute bottom-20 right-80 w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 z-30 cursor-grab active:cursor-grabbing"
@@ -176,7 +176,7 @@ export default function RecognitionSection() {
           height={160}
           className="w-full h-full object-contain pointer-events-none"
         />
-      </motion.div>
+      </motion.div> */}
     </section>
   );
 }

@@ -13,7 +13,7 @@ const serviceData = {
     {
       id: 1,
       image: "/assets/services/advertising/1.png",
-      title: "Be Seen, Be Clicked,Be Remembered",
+      title: "Be Seen, Be Clicked, Be Remembered",
       description:
         "Scroll-stopping digital ads, thoughtfully designed and optimized for Meta, Google, and TikTok. Built to convert impressions into clicks.",
     },
@@ -182,7 +182,7 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
           cards[1],
           { y: -150, opacity: 1, rotation: 0 }, // Visibly behind Card 1
           { y: 0, opacity: 1, rotation: 0, duration: 0.6, ease: "power2.out" },
-          0 // Start immediately on scroll
+          0, // Start immediately on scroll
         );
 
         // Card 3: Slides out smoothly from behind Card 2 (No fade)
@@ -190,11 +190,11 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
           cards[2],
           { y: -150, opacity: 1, rotation: 0 },
           { y: 0, opacity: 1, rotation: -4, duration: 0.6, ease: "power2.out" },
-          "<+=0.2"
+          "<+=0.2",
         );
       });
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   return (
@@ -212,7 +212,7 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
         {/* Initially stacked relative, so we use a container with height */}
         <div
           ref={cardsRef}
-          className="relative w-full max-w-6xl h-auto md:h-[300px] lg:h-[500px] flex flex-col md:flex-row justify-center items-center md:space-y-0 gap-0"
+          className="relative w-full max-w-6xl h-auto md:h-[300px] lg:h-[450px] flex flex-col md:flex-row justify-center items-center md:space-y-0 gap-0"
         >
           {cards.map((card, index) => (
             <div
@@ -237,12 +237,12 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
               </div>
 
               {/* Title */}
-              <h3 className="w-[70%] text-xl md:text-base lg:text-xl font-medium text-[#8B1D4F] mb-4 md:mb-2 lg:mb-4 leading-tight">
+              <h3 className="w-[70%] text-xl md:text-base lg:text-xl font-medium text-[#8B1D4F] mb-4 md:mb-2 lg:mb-4 leading-tight font-sans">
                 {card.title}
               </h3>
 
               {/* Description */}
-              <p className="w-full text-sm md:text-[10px] lg:text-sm font-medium text-black-mutu leading-relaxed">
+              <p className="w-full text-sm md:text-[10px] lg:text-sm font-medium text-black-mutu leading-relaxed font-instrument">
                 {card.description}
               </p>
             </div>
