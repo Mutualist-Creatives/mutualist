@@ -40,7 +40,7 @@ export function BlogForm({ blog }: BlogFormProps) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(
-    blog?.image || null
+    blog?.image || null,
   );
 
   const form = useForm<BlogFormValues>({
@@ -143,7 +143,9 @@ export function BlogForm({ blog }: BlogFormProps) {
     try {
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
-      const url = blog ? `${apiUrl}/blogs/${blog.slug}` : `${apiUrl}/blogs`;
+      const url = blog
+        ? `${apiUrl}/mutualist-blogs/${blog.slug}`
+        : `${apiUrl}/mutualist-blogs`;
 
       // Should ensure rotation is set if missing (though default handles it)
       if (values.rotation === undefined) {
@@ -162,12 +164,12 @@ export function BlogForm({ blog }: BlogFormProps) {
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
         throw new Error(
-          errorData?.message || `Failed to save blog (${res.status})`
+          errorData?.message || `Failed to save blog (${res.status})`,
         );
       }
 
       toast.success(blog ? "Blog updated!" : "Blog created!");
-      router.push("/blogs");
+      router.push("/mutualist-blogs");
       router.refresh();
     } catch (err) {
       const error = err as Error;

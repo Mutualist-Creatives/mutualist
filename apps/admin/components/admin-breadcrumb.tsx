@@ -23,9 +23,9 @@ export function AdminBreadcrumb() {
 
   // Map commonly used slugs to readable names
   const pathNames: Record<string, string> = {
-    "main-portfolios": "Main Portfolios",
-    "life-portfolios": "Life Portfolios",
-    blogs: "Blogs",
+    "mutualist-portfolios": "Mutualist Portfolios",
+    "life-projects": "Life Projects",
+    "mutualist-blogs": "Mutualist Blogs",
     users: "Users",
     new: "New",
   };

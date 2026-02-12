@@ -36,12 +36,12 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
   });
 
   const [images, setImages] = useState<string[]>(
-    portfolio?.images && portfolio.images.length > 0 ? portfolio.images : [""]
+    portfolio?.images && portfolio.images.length > 0 ? portfolio.images : [""],
   );
   const [imageFiles, setImageFiles] = useState<(File | null)[]>(
     portfolio?.images && portfolio.images.length > 0
       ? Array(portfolio.images.length).fill(null)
-      : [null]
+      : [null],
   );
   const [uploading, setUploading] = useState(false);
 
@@ -103,7 +103,7 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
     if (file.size > maxSize) {
       const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
       toast.error(
-        `File "${file.name}" is ${sizeMB}MB. Each image must not exceed 10MB.`
+        `File "${file.name}" is ${sizeMB}MB. Each image must not exceed 10MB.`,
       );
       return;
     }
@@ -121,7 +121,7 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
 
     const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
     toast.success(
-      `File "${file.name}" (${sizeMB}MB) selected. Will be uploaded on save.`
+      `File "${file.name}" (${sizeMB}MB) selected. Will be uploaded on save.`,
     );
   };
 
@@ -195,8 +195,8 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
       const url = portfolio
-        ? `${apiUrl}/life-portfolios/${portfolio.id}`
-        : `${apiUrl}/life-portfolios`;
+        ? `${apiUrl}/life-projects/${portfolio.id}`
+        : `${apiUrl}/life-projects`;
 
       const res = await fetch(url, {
         method: portfolio ? "PUT" : "POST",
@@ -211,17 +211,17 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `Failed to save portfolio (${res.status})`
+          errorData.message || `Failed to save portfolio (${res.status})`,
         );
       }
 
       toast.success(
         portfolio
           ? "Portfolio updated successfully!"
-          : "Portfolio created successfully!"
+          : "Portfolio created successfully!",
       );
 
-      router.push("/life-portfolios");
+      router.push("/life-projects");
       router.refresh();
     } catch (err) {
       const error = err as Error;

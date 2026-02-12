@@ -72,12 +72,12 @@ const sidebarGroups = [
       {
         title: "Portfolios",
         icon: Briefcase,
-        href: "/main-portfolios",
+        href: "/mutualist-portfolios",
       },
       {
         title: "Blogs",
         icon: FileText,
-        href: "/blogs",
+        href: "/mutualist-blogs",
       },
     ],
   },

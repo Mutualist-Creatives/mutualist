@@ -64,7 +64,7 @@ export default async function Home() {
       image: w.content[0]?.images[0], // Access first image of first block
       meta: w.year,
       desc: `${w.industry} — ${w.serviceNames}`,
-      link: `/main-portfolios/${w.slug}`,
+      link: `/mutualist-portfolios/${w.slug}`,
     })),
     ...portfolios.map((p) => ({
       type: "Life at Mutu",
@@ -86,7 +86,7 @@ export default async function Home() {
       image: b.image,
       meta: b.category,
       desc: b.content.replace(/<[^>]*>?/gm, "").substring(0, 100) + "...",
-      link: `/blogs/${b.slug}`, // Assuming slug routing for editing
+      link: `/mutualist-blogs/${b.slug}`, // Assuming slug routing for editing
     })),
   ]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -111,7 +111,7 @@ export default async function Home() {
           </p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          <Link href="/blogs/new">
+          <Link href="/mutualist-blogs/new">
             <Button variant="outline" className="gap-2 cursor-pointer">
               <FileText className="h-4 w-4" />
               Write Blog
@@ -123,7 +123,7 @@ export default async function Home() {
               Add Project
             </Button>
           </Link>
-          <Link href="/main-portfolios/new">
+          <Link href="/mutualist-portfolios/new">
             <Button className="gap-2 cursor-pointer">
               <Plus className="h-4 w-4" />
               Add Portfolio

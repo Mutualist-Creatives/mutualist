@@ -175,7 +175,7 @@ export function PortfolioSearch({ portfolios }: { portfolios: Portfolio[] }) {
                   <DeleteButton
                     id={portfolio.id}
                     title={portfolio.title}
-                    endpoint="life-portfolios"
+                    endpoint="life-projects"
                     variant="outline"
                   />
                 </div>

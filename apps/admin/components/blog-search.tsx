@@ -149,7 +149,10 @@ export function BlogSearch({ blogs }: { blogs: Blog[] }) {
                 </p>
 
                 <div className="flex gap-2 pt-2">
-                  <Link href={`/blogs/${blog.slug}`} className="flex-1">
+                  <Link
+                    href={`/mutualist-blogs/${blog.slug}`}
+                    className="flex-1"
+                  >
                     <Button
                       variant="outline"
                       size="sm"
@@ -162,7 +165,7 @@ export function BlogSearch({ blogs }: { blogs: Blog[] }) {
                   <DeleteButton
                     id={blog.slug}
                     title={blog.title}
-                    endpoint="blogs"
+                    endpoint="mutualist-blogs"
                     variant="outline"
                   />
                 </div>

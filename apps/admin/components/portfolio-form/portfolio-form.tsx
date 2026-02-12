@@ -179,7 +179,7 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
       // Clear files state after success to prevent re-upload on subsequent saves
       setContentFiles({});
 
-      router.push("/main-portfolios");
+      router.push("/mutualist-portfolios");
       router.refresh();
     } catch (err) {
       const error = err as Error;
