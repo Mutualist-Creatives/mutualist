@@ -11,10 +11,16 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "https",
-        hostname: "aqmiasmqtueuqvdsgiez.supabase.co",
-        port: "",
-        pathname: "/storage/v1/object/public/**",
+        protocol: "http",
+        hostname: "localhost",
+        port: "3002",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "mutualist-api",
+        port: "3002",
+        pathname: "/uploads/**",
       },
       {
         protocol: "https",

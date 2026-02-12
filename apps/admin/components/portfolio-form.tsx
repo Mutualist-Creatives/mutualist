@@ -139,7 +139,7 @@ export function PortfolioForm({ portfolio }: PortfolioFormProps) {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("bucket", "life");
-        formData.append("folder", "portfolio");
+        formData.append("folder", "projects");
 
         const res = await fetch(`${apiUrl}/upload`, {
           method: "POST",

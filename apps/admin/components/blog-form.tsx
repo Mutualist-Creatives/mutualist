@@ -109,7 +109,7 @@ export function BlogForm({ blog }: BlogFormProps) {
     try {
       const formData = new FormData();
       formData.append("file", selectedFile);
-      formData.append("bucket", "main");
+      formData.append("bucket", "mutualist");
       formData.append("folder", "blogs");
       // Append the custom filename
       if (filenameInput) {

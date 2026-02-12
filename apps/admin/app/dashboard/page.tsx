@@ -2,25 +2,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { portfolioApi, blogsApi, worksApi } from "@/lib/api";
 import { auth } from "@/lib/auth";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Briefcase,
-  Layers,
-  Calendar,
-  ArrowRight,
-  Plus,
-  FileText,
-  Clock,
-  LayoutGrid,
-} from "lucide-react";
+import { Briefcase, Layers, Plus, FileText, LayoutGrid } from "lucide-react";
 
 // Helper function to validate URL
 function isValidUrl(url: string) {

@@ -1,0 +1,53 @@
+
+F:\PROJECTS\Web App\mutualist\apps\admin\app\life-projects\[id]\page.tsx
+  10:10  warning  'Button' is defined but never used     @typescript-eslint/no-unused-vars
+  11:10  warning  'Pencil' is defined but never used     @typescript-eslint/no-unused-vars
+  11:18  warning  'ArrowLeft' is defined but never used  @typescript-eslint/no-unused-vars
+  12:8   warning  'Link' is defined but never used       @typescript-eslint/no-unused-vars
+
+F:\PROJECTS\Web App\mutualist\apps\admin\app\life-projects\new\page.tsx
+  9:10  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\PROJECTS\Web App\mutualist\apps\admin\app\login\page.tsx
+  25:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  47:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+F:\PROJECTS\Web App\mutualist\apps\admin\app\users\page.tsx
+   8:3   warning  'Table' is defined but never used                @typescript-eslint/no-unused-vars
+   9:3   warning  'TableBody' is defined but never used            @typescript-eslint/no-unused-vars
+  10:3   warning  'TableCell' is defined but never used            @typescript-eslint/no-unused-vars
+  11:3   warning  'TableHead' is defined but never used            @typescript-eslint/no-unused-vars
+  12:3   warning  'TableHeader' is defined but never used          @typescript-eslint/no-unused-vars
+  13:3   warning  'TableRow' is defined but never used             @typescript-eslint/no-unused-vars
+  15:10  warning  'DeleteButton' is defined but never used         @typescript-eslint/no-unused-vars
+  16:10  warning  'ResetPasswordButton' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\PROJECTS\Web App\mutualist\apps\admin\components\app-sidebar.tsx
+    5:8   warning  'Image' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  107:9   warning  'filteredGroups' is assigned a value but never used                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  119:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+F:\PROJECTS\Web App\mutualist\apps\admin\components\blog-form.tsx
+  10:16  warning  'X' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\PROJECTS\Web App\mutualist\apps\admin\components\login-marquee.tsx
+   3:8   warning  'Image' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   4:10  warning  'useEffect' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   4:21  warning  'useState' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  54:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+F:\PROJECTS\Web App\mutualist\apps\admin\components\portfolio-form\basic-info-form.tsx
+  20:37  warning  'formState' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+F:\PROJECTS\Web App\mutualist\apps\admin\components\portfolio-form\content-form.tsx
+   39:3   warning  'arrayMove' is defined but never used  @typescript-eslint/no-unused-vars
+  177:42  warning  'file' is defined but never used       @typescript-eslint/no-unused-vars
+
+F:\PROJECTS\Web App\mutualist\apps\admin\components\portfolio-form\sortable-item.tsx
+  6:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+F:\PROJECTS\Web App\mutualist\apps\admin\components\portfolio-form\teams-form.tsx
+  17:20  warning  'register' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 28 problems (0 errors, 28 warnings)
+

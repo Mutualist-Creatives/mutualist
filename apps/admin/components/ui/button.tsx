@@ -33,7 +33,7 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 function Button({
@@ -49,7 +49,7 @@ function Button({
   const Comp = asChild ? Slot : "button";
 
   return (
-    // @ts-ignore
+    // @ts-expect-error - Slot is valid but types are missing
     <Comp
       data-slot="button"
       data-variant={variant}

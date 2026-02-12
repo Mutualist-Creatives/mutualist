@@ -19,7 +19,10 @@ export interface Blog {
   content: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const API_URL =
+  typeof window === "undefined" && process.env.INTERNAL_API_URL
+    ? process.env.INTERNAL_API_URL
+    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 export async function fetchWorks() {
   try {
