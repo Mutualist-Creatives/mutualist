@@ -1,12 +1,16 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UploadService } from '../upload/upload.service';
 import { Prisma } from '@prisma/client';
 import { CreateMutualistBlogDto } from './dto/create-mutualist-blog.dto';
 import { UpdateMutualistBlogDto } from './dto/update-mutualist-blog.dto';
 
 @Injectable()
 export class MutualistBlogService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private uploadService: UploadService,
+  ) {}
 
   async create(data: CreateMutualistBlogDto) {
     try {
@@ -43,6 +47,19 @@ export class MutualistBlogService {
 
   async update(slug: string, data: UpdateMutualistBlogDto) {
     try {
+      // Get existing blog to check for image changes
+      const existing = await this.findOne(slug);
+
+      if (
+        existing &&
+        data.image &&
+        existing.image &&
+        data.image !== existing.image
+      ) {
+        // Image changed, delete old one
+        await this.uploadService.deleteFile(existing.image);
+      }
+
       return await this.prisma.mutualistBlog.update({
         where: { slug },
         data,
@@ -63,6 +80,12 @@ export class MutualistBlogService {
 
   async remove(slug: string) {
     try {
+      const blog = await this.findOne(slug);
+
+      if (blog && blog.image) {
+        await this.uploadService.deleteFile(blog.image);
+      }
+
       return await this.prisma.mutualistBlog.delete({
         where: { slug },
       });

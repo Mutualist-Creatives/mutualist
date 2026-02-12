@@ -65,6 +65,7 @@ export class MutualistPortfolioService {
         throw new HttpException('Portfolio not found', HttpStatus.NOT_FOUND);
       }
 
+      // Cleanup removed content images
       if (data.content) {
         const oldImages = this.extractImagesFromContent(
           existing.content as Array<{ type: string; images: string[] }>,
@@ -89,6 +90,27 @@ export class MutualistPortfolioService {
         }
       }
 
+      // Cleanup removed service icons
+      if (data.serviceIcons) {
+        const oldIcons = existing.serviceIcons || [];
+        const newIcons = data.serviceIcons;
+
+        const iconsToDelete = oldIcons.filter(
+          (icon) => !newIcons.includes(icon),
+        );
+
+        if (iconsToDelete.length > 0) {
+          console.log(
+            `Cleaning up ${iconsToDelete.length} removed service icons for portfolio ${slug}`,
+          );
+          try {
+            await this.uploadService.deleteMultipleFiles(iconsToDelete);
+          } catch (error) {
+            console.error('Failed to delete some icons:', error);
+          }
+        }
+      }
+
       return await this.prisma.mutualistPortfolio.update({
         where: { slug },
         data,
@@ -109,16 +131,19 @@ export class MutualistPortfolioService {
         throw new HttpException('Portfolio not found', HttpStatus.NOT_FOUND);
       }
 
-      const imagesToDelete = this.extractImagesFromContent(
+      const contentImages = this.extractImagesFromContent(
         portfolio.content as Array<{ type: string; images: string[] }>,
       );
 
-      if (imagesToDelete.length > 0) {
+      const serviceIcons = portfolio.serviceIcons || [];
+      const allImagesToDelete = [...contentImages, ...serviceIcons];
+
+      if (allImagesToDelete.length > 0) {
         console.log(
-          `Deleting ${imagesToDelete.length} images for portfolio ${slug}`,
+          `Deleting ${allImagesToDelete.length} images/icons for portfolio ${slug}`,
         );
         try {
-          await this.uploadService.deleteMultipleFiles(imagesToDelete);
+          await this.uploadService.deleteMultipleFiles(allImagesToDelete);
           console.log('Images deletion attempted');
         } catch (error) {
           console.error('Failed to delete some images from storage:', error);

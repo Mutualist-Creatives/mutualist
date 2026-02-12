@@ -75,11 +75,10 @@ export function BlogForm({ blog }: BlogFormProps) {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [filenameInput, setFilenameInput] = useState("");
   const [uploading, setUploading] = useState(false);
 
-  // File Select Handler
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -89,58 +88,49 @@ export function BlogForm({ blog }: BlogFormProps) {
       return;
     }
 
-    // Set preview immediately
+    // Set preview immediately (local)
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
 
-    // Set state for renaming
+    // Store file for upload on submit
     setSelectedFile(file);
-    // Default name: original name without extension
-    const nameWithoutExt =
-      file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
-    setFilenameInput(nameWithoutExt);
-  };
 
-  // Actual Upload Handler
-  const handleUploadConfirm = async () => {
-    if (!selectedFile) return;
-    setUploading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("bucket", "mutualist");
-      formData.append("folder", "blogs");
-      // Append the custom filename
-      if (filenameInput) {
-        formData.append("filename", filenameInput);
-      }
-
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
-      const res = await fetch(`${apiUrl}/upload`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Failed to upload image");
-      const data = await res.json();
-      form.setValue("image", data.publicUrl);
-      toast.success("Image uploaded successfully");
-
-      // Clear selection state after success
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error("Failed to upload image");
-    } finally {
-      setUploading(false);
-    }
+    // Update form to mark as dirty if needed
+    // We don't set "image" value yet, as we want to keep old value until new one uploaded
+    // But we might want to ensure Dirty check passes if they only changed image
+    form.setValue("image", form.getValues("image"), { shouldDirty: true });
   };
 
   const onSubmit = async (values: BlogFormValues) => {
     setLoading(true);
+
     try {
+      let imageUrl = values.image;
+
+      // Upload file if selected
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("bucket", "mutualist");
+        formData.append("folder", "blogs");
+
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
+        const res = await fetch(`${apiUrl}/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Failed to upload image");
+        const data = await res.json();
+        imageUrl = data.publicUrl;
+
+        // Update values with new URL
+        values.image = imageUrl;
+      }
+
+      // Proceed to save blog
+
       const apiUrl =
         process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002/api";
       const url = blog
@@ -311,31 +301,11 @@ export function BlogForm({ blog }: BlogFormProps) {
                     </div>
                   )}
 
-                  {/* File Rename & Upload Action */}
-                  {selectedFile && (
-                    <div className="flex gap-2 items-end animate-in fade-in slide-in-from-top-1">
-                      <div className="flex-1 space-y-1">
-                        <FormLabel className="text-xs">File Name</FormLabel>
-                        <Input
-                          value={filenameInput}
-                          onChange={(e) => setFilenameInput(e.target.value)}
-                          placeholder="filename-without-extension"
-                          className="h-8"
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={handleUploadConfirm}
-                        disabled={uploading}
-                      >
-                        {uploading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Upload className="h-4 w-4" />
-                        )}
-                        <span className="ml-2">Upload</span>
-                      </Button>
+                  {/* File Rename & Upload Action - REMOVED for auto-upload */}
+                  {uploading && (
+                    <div className="flex items-center space-x-2 text-sm text-muted-foreground animate-pulse">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Uploading...</span>
                     </div>
                   )}
 
@@ -393,7 +363,11 @@ export function BlogForm({ blog }: BlogFormProps) {
         </div>
 
         <div className="flex gap-4 pt-4 border-t">
-          <Button type="submit" disabled={loading} className="gap-2">
+          <Button
+            type="submit"
+            disabled={loading || uploading}
+            className="gap-2"
+          >
             {loading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
