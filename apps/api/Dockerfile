@@ -33,6 +33,10 @@ WORKDIR /app
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+# Create uploads directory with correct ownership
+RUN mkdir -p /app/uploads && chown -R nextjs:nodejs /app/uploads
+
 USER nextjs
 
 COPY --from=installer --chown=nextjs:nodejs /app/apps/api/package.json .
