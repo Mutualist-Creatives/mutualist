@@ -63,6 +63,8 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - UPLOAD_DIR=/app/uploads
       - API_BASE_URL=${API_BASE_URL}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - NODE_ENV=production
     volumes:
       - uploads_data:/app/uploads
     depends_on:
