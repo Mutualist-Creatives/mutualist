@@ -25,6 +25,8 @@ RUN bun install --ignore-scripts
 
 # Build the project
 COPY --from=builder /app/out/full/ .
+# Generate Prisma client (skipped by --ignore-scripts)
+RUN bunx prisma generate --schema=apps/api/prisma/schema.prisma
 RUN bun run build --filter=api...
 
 FROM base AS runner
