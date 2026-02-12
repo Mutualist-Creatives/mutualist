@@ -18,20 +18,8 @@ export function setupApp(app: INestApplication) {
   );
 
   // --- CORS Configuration ---
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-
-  // Define origin based on environment
-  const origin = isDevelopment
-    ? true // In dev, allow all origins (or reflect request origin)
-    : process.env.ALLOWED_ORIGINS?.split(',') || [
-        // In prod, use ENV or fall back
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3002',
-      ];
-
   app.enableCors({
-    origin: origin,
+    origin: true,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Authorization',
