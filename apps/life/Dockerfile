@@ -25,6 +25,9 @@ RUN bun install
 
 # Build the project
 COPY --from=builder /app/out/full/ .
+# Set build-time env vars (NEXT_PUBLIC_* must be available at build time)
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 # Set NODE_OPTIONS directly (cross-env is not available in Docker)
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN bun run build --filter=life...
