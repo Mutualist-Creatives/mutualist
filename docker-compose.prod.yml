@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  mutualist:
+    container_name: mutualist-web-app
+    image: mutualist-web-app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # No ports - Dokploy/Traefik handles routing via domain
+    restart: always
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - INTERNAL_API_URL=http://mutualist-api:8080/api
+
+  mutualist-admin:
+    container_name: mutualist-admin
+    image: mutualist-admin:latest
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+    # No ports - Dokploy/Traefik handles routing via domain
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - INTERNAL_API_URL=http://mutualist-api:8080/api
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+    depends_on:
+      - mutualist-api
+    restart: always
+
+  mutualist-life:
+    container_name: mutualist-life
+    image: mutualist-life:latest
+    build:
+      context: .
+      dockerfile: apps/life/Dockerfile
+    # No ports - Dokploy/Traefik handles routing via domain
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - INTERNAL_API_URL=http://mutualist-api:8080/api
+    depends_on:
+      - mutualist-api
+    restart: always
+
+  mutualist-api:
+    container_name: mutualist-api
+    image: mutualist-api:latest
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    # No ports - Dokploy/Traefik handles routing via domain
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-mutualist}?schema=public
+      - JWT_SECRET=${JWT_SECRET}
+      - UPLOAD_DIR=/app/uploads
+      - API_BASE_URL=${API_BASE_URL}
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-mutualist}
+    # No external ports - only accessible within Docker network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
+  uploads_data:
