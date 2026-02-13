@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   reactStrictMode: false,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -11,10 +13,16 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "https",
-        hostname: "aqmiasmqtueuqvdsgiez.supabase.co",
-        port: "",
-        pathname: "/storage/v1/object/public/**",
+        protocol: "http",
+        hostname: "localhost",
+        port: "8080",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "mutualist-api",
+        port: "8080",
+        pathname: "/uploads/**",
       },
       {
         protocol: "https",

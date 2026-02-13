@@ -207,7 +207,7 @@ export function ClientPortfolioSearch({ works }: { works: Work[] }) {
 
                   <div className="flex gap-2 pt-2">
                     <Link
-                      href={`/main-portfolios/${work.slug}`}
+                      href={`/mutualist-portfolios/${work.slug}`}
                       className="flex-1"
                     >
                       <Button
@@ -222,7 +222,7 @@ export function ClientPortfolioSearch({ works }: { works: Work[] }) {
                     <DeleteButton
                       id={work.slug}
                       title={work.title}
-                      endpoint="main-portfolios"
+                      endpoint="mutualist-portfolios"
                       variant="outline"
                     />
                   </div>

@@ -107,8 +107,8 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
         const p = (async () => {
           const formData = new FormData();
           formData.append("file", file);
-          formData.append("bucket", "main");
-          formData.append("folder", "portfolio");
+          formData.append("bucket", "mutualist");
+          formData.append("folder", "portfolios");
 
           // Custom filename: title-blockX-imgY
           const customName = `${sanitizedTitle}-block${blockIndex}-img${imgIndex}`;
@@ -179,7 +179,7 @@ export function PortfolioForm({ initialData }: PortfolioFormProps) {
       // Clear files state after success to prevent re-upload on subsequent saves
       setContentFiles({});
 
-      router.push("/main-portfolios");
+      router.push("/mutualist-portfolios");
       router.refresh();
     } catch (err) {
       const error = err as Error;

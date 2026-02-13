@@ -3,13 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 
-model LifePortfolio {
+model LifeProject {
   id          String   @id @default(cuid())
   title       String
   createdBy   String
@@ -20,7 +19,7 @@ model LifePortfolio {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@map("life_portfolios")
+  @@map("life_projects")
 }
 
 enum Role {
@@ -40,7 +39,7 @@ model User {
   @@map("users")
 }
 
-model MainPortfolio {
+model MutualistPortfolio {
   id           String   @id @default(cuid())
   slug         String   @unique
   title        String
@@ -54,10 +53,10 @@ model MainPortfolio {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  @@map("main_portfolios")
+  @@map("mutualist_portfolios")
 }
 
-model Blog {
+model MutualistBlog {
   id        String   @id @default(cuid())
   slug      String   @unique
   title     String
@@ -69,5 +68,5 @@ model Blog {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("blogs")
+  @@map("mutualist_blogs")
 }

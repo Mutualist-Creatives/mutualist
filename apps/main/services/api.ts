@@ -19,11 +19,14 @@ export interface Blog {
   content: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const API_URL =
+  typeof window === "undefined" && process.env.INTERNAL_API_URL
+    ? process.env.INTERNAL_API_URL
+    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 export async function fetchWorks() {
   try {
-    const res = await fetch(`${API_URL}/main-portfolios`, {
+    const res = await fetch(`${API_URL}/mutualist-portfolios`, {
       next: { revalidate: 60 },
     });
     if (!res.ok) {
@@ -40,7 +43,7 @@ export async function fetchWorks() {
 
 export async function fetchWorkBySlug(slug: string) {
   try {
-    const res = await fetch(`${API_URL}/main-portfolios/${slug}`, {
+    const res = await fetch(`${API_URL}/mutualist-portfolios/${slug}`, {
       next: { revalidate: 60 },
     });
     if (!res.ok) return undefined;
@@ -54,7 +57,9 @@ export async function fetchWorkBySlug(slug: string) {
 
 export async function fetchBlogs() {
   try {
-    const res = await fetch(`${API_URL}/blogs`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/mutualist-blogs`, {
+      cache: "no-store",
+    });
     if (!res.ok) return [];
     const text = await res.text();
     return text ? JSON.parse(text) : [];
@@ -66,7 +71,9 @@ export async function fetchBlogs() {
 
 export async function fetchBlogBySlug(slug: string) {
   try {
-    const res = await fetch(`${API_URL}/blogs/${slug}`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/mutualist-blogs/${slug}`, {
+      cache: "no-store",
+    });
     if (!res.ok) return undefined;
     const text = await res.text();
     return text ? JSON.parse(text) : undefined;

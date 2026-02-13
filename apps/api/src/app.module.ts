@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { PrismaModule } from './prisma/prisma.module';
-import { LifePortfolioModule } from './life-portfolio/life-portfolio.module';
+import { LifeProjectModule } from './life-project/life-project.module';
 import { UploadModule } from './upload/upload.module';
-import { MainPortfolioModule } from './main-portfolio/main-portfolio.module';
-import { BlogsModule } from './blogs/blogs.module';
+import { MutualistPortfolioModule } from './mutualist-portfolio/mutualist-portfolio.module';
+import { MutualistBlogModule } from './mutualist-blog/mutualist-blog.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
@@ -14,13 +16,17 @@ import { UsersModule } from './users/users.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: process.env.UPLOAD_DIR || join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+    }),
     PrismaModule,
     UsersModule,
     AuthModule,
-    LifePortfolioModule,
+    LifeProjectModule,
     UploadModule,
-    MainPortfolioModule,
-    BlogsModule,
+    MutualistPortfolioModule,
+    MutualistBlogModule,
   ],
   controllers: [],
   providers: [],

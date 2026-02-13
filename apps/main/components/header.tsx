@@ -20,7 +20,7 @@ const navItems = [
       { name: "Social Media", href: "/services/social-media" },
     ],
   },
-  { name: "Blogs", href: "/blogs" },
+  { name: "Blogs", href: "/mutualist-blogs" },
 ];
 
 export default function Header() {

@@ -1,7 +1,10 @@
 import { auth } from "./auth";
 import { getSession } from "next-auth/react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+const API_URL =
+  process.env.INTERNAL_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:8080/api";
 
 const getAuthHeaders = async (tokenOverride?: string) => {
   if (tokenOverride) {
@@ -73,7 +76,7 @@ export interface UpdatePortfolioDto {
 
 export const portfolioApi = {
   async getAll(): Promise<Portfolio[]> {
-    const res = await fetch(`${API_URL}/life-portfolios`, {
+    const res = await fetch(`${API_URL}/life-projects`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch portfolios");
@@ -81,7 +84,7 @@ export const portfolioApi = {
   },
 
   async getById(id: string): Promise<Portfolio> {
-    const res = await fetch(`${API_URL}/life-portfolios/${id}`, {
+    const res = await fetch(`${API_URL}/life-projects/${id}`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch portfolio");
@@ -89,7 +92,7 @@ export const portfolioApi = {
   },
 
   async getCategories(): Promise<string[]> {
-    const res = await fetch(`${API_URL}/life-portfolios/categories`, {
+    const res = await fetch(`${API_URL}/life-projects/categories`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch categories");
@@ -98,7 +101,7 @@ export const portfolioApi = {
 
   async create(data: CreatePortfolioDto): Promise<Portfolio> {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/life-portfolios`, {
+    const res = await fetch(`${API_URL}/life-projects`, {
       method: "POST",
       headers,
       body: JSON.stringify(data),
@@ -109,7 +112,7 @@ export const portfolioApi = {
 
   async update(id: string, data: UpdatePortfolioDto): Promise<Portfolio> {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/life-portfolios/${id}`, {
+    const res = await fetch(`${API_URL}/life-projects/${id}`, {
       method: "PUT",
       headers,
       body: JSON.stringify(data),
@@ -120,7 +123,7 @@ export const portfolioApi = {
 
   async delete(id: string): Promise<void> {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/life-portfolios/${id}`, {
+    const res = await fetch(`${API_URL}/life-projects/${id}`, {
       method: "DELETE",
       headers,
     });
@@ -169,14 +172,14 @@ export interface CreateWorkDto {
 
 export const worksApi = {
   async getAll(): Promise<Work[]> {
-    const res = await fetch(`${API_URL}/main-portfolios`, {
+    const res = await fetch(`${API_URL}/mutualist-portfolios`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch works");
     return res.json();
   },
   async getBySlug(slug: string): Promise<Work> {
-    const res = await fetch(`${API_URL}/main-portfolios/${slug}`, {
+    const res = await fetch(`${API_URL}/mutualist-portfolios/${slug}`, {
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Failed to fetch work");
@@ -184,7 +187,7 @@ export const worksApi = {
   },
   async create(data: CreateWorkDto, token?: string): Promise<Work> {
     const headers = await getAuthHeaders(token);
-    const res = await fetch(`${API_URL}/main-portfolios`, {
+    const res = await fetch(`${API_URL}/mutualist-portfolios`, {
       method: "POST",
       headers,
       body: JSON.stringify(data),
@@ -195,10 +198,10 @@ export const worksApi = {
   async update(
     slug: string,
     data: Partial<CreateWorkDto>,
-    token?: string
+    token?: string,
   ): Promise<Work> {
     const headers = await getAuthHeaders(token);
-    const res = await fetch(`${API_URL}/main-portfolios/${slug}`, {
+    const res = await fetch(`${API_URL}/mutualist-portfolios/${slug}`, {
       method: "PATCH",
       headers,
       body: JSON.stringify(data),
@@ -208,7 +211,7 @@ export const worksApi = {
   },
   async delete(slug: string, token?: string): Promise<void> {
     const headers = await getAuthHeaders(token);
-    const res = await fetch(`${API_URL}/main-portfolios/${slug}`, {
+    const res = await fetch(`${API_URL}/mutualist-portfolios/${slug}`, {
       method: "DELETE",
       headers,
     });
@@ -241,18 +244,22 @@ export interface CreateBlogDto {
 
 export const blogsApi = {
   async getAll(): Promise<Blog[]> {
-    const res = await fetch(`${API_URL}/blogs`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/mutualist-blogs`, {
+      cache: "no-store",
+    });
     if (!res.ok) throw new Error("Failed to fetch blogs");
     return res.json();
   },
   async getBySlug(slug: string): Promise<Blog> {
-    const res = await fetch(`${API_URL}/blogs/${slug}`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/mutualist-blogs/${slug}`, {
+      cache: "no-store",
+    });
     if (!res.ok) throw new Error("Failed to fetch blog");
     return res.json();
   },
   async create(data: CreateBlogDto): Promise<Blog> {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/blogs`, {
+    const res = await fetch(`${API_URL}/mutualist-blogs`, {
       method: "POST",
       headers,
       body: JSON.stringify(data),
@@ -262,7 +269,7 @@ export const blogsApi = {
   },
   async update(slug: string, data: Partial<CreateBlogDto>): Promise<Blog> {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/blogs/${slug}`, {
+    const res = await fetch(`${API_URL}/mutualist-blogs/${slug}`, {
       method: "PATCH",
       headers,
       body: JSON.stringify(data),
@@ -272,7 +279,7 @@ export const blogsApi = {
   },
   async delete(slug: string): Promise<void> {
     const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/blogs/${slug}`, {
+    const res = await fetch(`${API_URL}/mutualist-blogs/${slug}`, {
       method: "DELETE",
       headers,
     });
