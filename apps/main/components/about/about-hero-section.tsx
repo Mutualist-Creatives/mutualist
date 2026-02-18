@@ -3,17 +3,33 @@ import React from "react";
 export default function AboutHeroSection() {
   return (
     <section className="w-full h-[70vh] relative overflow-hidden bg-cream-mutu">
-      {/* Video Background */}
+      {/* Video Background — Portrait for mobile, Landscape for desktop */}
       <div className="absolute inset-0 w-full h-full">
+        {/* Mobile: Portrait video */}
         <video
-          className="w-full h-full object-cover opacity-50"
+          className="w-full h-full object-cover opacity-50 md:hidden"
           autoPlay
           muted
           loop
           playsInline
         >
-          <source src="/assets/about/hero/video_1.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
+          <source
+            src="/assets/about/hero/(1080x1920) Mutualist_Motion web New.mp4"
+            type="video/mp4"
+          />
+        </video>
+        {/* Desktop: Landscape video */}
+        <video
+          className="w-full h-full object-cover opacity-50 hidden md:block"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source
+            src="/assets/about/hero/(1920x1080) Mutualist_Motion.mp4"
+            type="video/mp4"
+          />
         </video>
         {/* Fallback/Overlay */}
         <div className="absolute inset-0 bg-cream-mutu/20" />

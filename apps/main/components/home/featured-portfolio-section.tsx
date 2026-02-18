@@ -7,11 +7,11 @@ import Image from "next/image";
 import { Work } from "@/services/api";
 
 const itemsData = [
-  { color: "bg-purple-mutu", rotate: 2, x: -240 },
-  { color: "bg-green-mutu", rotate: 1, x: -120 },
-  { color: "bg-yellow-mutu", rotate: -1, x: 0 },
-  { color: "bg-black-mutu", rotate: -2, x: 120 },
-  { color: "bg-purple-mutu", rotate: 1, x: 240 },
+  { rotate: 2, x: -240 },
+  { rotate: 1, x: -120 },
+  { rotate: -1, x: 0 },
+  { rotate: -2, x: 120 },
+  { rotate: 1, x: 240 },
 ];
 
 interface FeaturedPortfolioSectionProps {
@@ -55,7 +55,7 @@ export default function FeaturedPortfolioSection({
           stagger: 0.06,
           ease: "elastic.out(1, 0.8)",
           delay: 0.5,
-        }
+        },
       );
     }, containerRef);
 
@@ -75,7 +75,7 @@ export default function FeaturedPortfolioSection({
 
   const getPushedTransform = (
     baseTransform: string,
-    offsetX: number
+    offsetX: number,
   ): string => {
     const translateRegex = /translate\(([-0-9.]+)px\)/;
     const match = baseTransform.match(translateRegex);
@@ -158,7 +158,7 @@ export default function FeaturedPortfolioSection({
       <div className="max-w-screen-2xl mx-auto w-full py-[2em] md:py-[2em] lg:py-20 flex flex-col items-center justify-center relative">
         <div
           ref={containerRef}
-          className="relative w-full max-w-6xl h-[180px] md:h-[280px] lg:h-[400px] flex items-center justify-center"
+          className="relative w-full max-w-6xl h-[200px] md:h-[300px] lg:h-[420px] flex items-center justify-center"
         >
           {itemsData.map((item, index) => {
             const work = works[index];
@@ -174,8 +174,7 @@ export default function FeaturedPortfolioSection({
                 href={work ? `/works/${work.slug}` : "#"}
                 className={`
               card card-${index}
-              absolute w-40 h-28 md:w-60 md:h-40 lg:w-80 lg:h-56 xl:w-96 xl:h-64 rounded-xl shadow-lg cursor-pointer
-              ${item.color}
+              absolute w-40 h-30 md:w-60 md:h-45 lg:w-80 lg:h-60 xl:w-96 xl:h-72 rounded-xl shadow-lg cursor-pointer
               flex items-center justify-center overflow-hidden
             `}
                 style={{ transform: getResponsiveTransform(item) }}
@@ -187,9 +186,9 @@ export default function FeaturedPortfolioSection({
                     src={bgImage}
                     alt={work.title || "Project"}
                     fill
-                    className="object-cover opacity-90 transition-opacity hover:opacity-100"
+                    className="object-cover transition-opacity"
                   />
-                  <div className="absolute inset-0 bg-black/20 hover:bg-black/0 transition-colors" />
+
                   <span className="relative z-10 text-white font-medium text-xs md:text-sm lg:text-xl opacity-0 hover:opacity-100 transition-opacity pointer-events-none drop-shadow-md">
                     {work.title}
                   </span>

@@ -3,8 +3,8 @@ import Image from "next/image";
 export default function SlingshotSection() {
   return (
     <section className="w-full bg-purple-mutu relative z-20">
-      <div className="max-w-screen-2xl mx-auto w-full py-20 md:py-24 lg:py-32 xl:py-40 2xl:py-52 px-6 md:px-20 flex flex-col items-center justify-center text-center relative z-20">
-        <div className="-mt-26 md:-mt-32 lg:-mt-44 xl:-mt-54 2xl:-mt-64 mb-[-30px] md:mb-[-40px] lg:mb-[-50px] 2xl:mb-[-60px] relative z-0">
+      <div className="max-w-screen-2xl mx-auto w-full py-8 md:py-10 lg:py-12 xl:py-16 2xl:py-20 px-6 md:px-20 flex flex-col items-center justify-center text-center relative z-20">
+        <div className="-mt-14 md:-mt-20 lg:-mt-24 xl:-mt-28 2xl:-mt-36 mb-[-30px] md:mb-[-40px] lg:mb-[-50px] 2xl:mb-[-60px] relative z-0">
           <Image
             src="/assets/home/slingshot/slingshot_mascot.png"
             alt="Slingshot Mascot"

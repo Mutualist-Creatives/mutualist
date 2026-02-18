@@ -170,49 +170,59 @@ export default function FallingShapes() {
       bodies.push(box);
     });
 
-    // 3. Mascot Images
-    const mascots = [
-      {
-        texture: "/assets/home/hero/mutualist_home_mascot_1.svg",
-        xScale: 140 / 535,
-        yScale: 140 / 565,
-      },
-      {
-        texture: "/assets/home/hero/mutualist_home_mascot_2.svg",
-        xScale: 140 / 560,
-        yScale: 140 / 485,
-      },
+    // 3. Mascot Images (Animated GIF overlay approach)
+    const mascotGifs = [
+      "/assets/home/hero/mutualist_home_mascot_1.gif",
+      "/assets/home/hero/mutualist_home_mascot_2.gif",
+      "/assets/home/hero/mutualist_home_mascot_3.gif",
     ];
 
-    mascots.forEach((item) => {
+    const mascotSize =
+      width < 768
+        ? 80
+        : width < 1024
+          ? 100
+          : width < 1280
+            ? 120
+            : width < 1536
+              ? 140
+              : 170;
+
+    // Store mascot body-to-element mappings for syncing
+    const mascotOverlays: { body: Matter.Body; el: HTMLImageElement }[] = [];
+
+    mascotGifs.forEach((gifSrc) => {
       const x = Math.random() * width;
       const y = -Math.random() * 500 - 100;
 
-      const mascotSize =
-        width < 768
-          ? 80
-          : width < 1024
-            ? 100
-            : width < 1280
-              ? 120
-              : width < 1536
-                ? 140
-                : 170;
-
-      const mascot = Bodies.rectangle(x, y, mascotSize, mascotSize, {
+      // Create invisible physics body (no visible render)
+      const mascotBody = Bodies.rectangle(x, y, mascotSize, mascotSize, {
         chamfer: { radius: 15 },
         restitution: 0.9,
         friction: 0.5,
         frictionAir: 0.01,
         render: {
-          sprite: {
-            texture: item.texture,
-            xScale: item.xScale * (mascotSize / 140),
-            yScale: item.yScale * (mascotSize / 140),
-          },
+          visible: false, // Hide from canvas — rendered via DOM overlay
         },
       });
-      bodies.push(mascot);
+      bodies.push(mascotBody);
+
+      // Create DOM <img> element for the animated GIF
+      const img = document.createElement("img");
+      img.src = gifSrc;
+      img.alt = "Mascot";
+      img.draggable = false;
+      img.style.position = "absolute";
+      img.style.width = `${mascotSize}px`;
+      img.style.height = `${mascotSize}px`;
+      img.style.objectFit = "contain";
+      img.style.pointerEvents = "none"; // Let clicks pass through to canvas
+      img.style.willChange = "transform";
+      img.style.top = "0";
+      img.style.left = "0";
+      sceneRef.current!.appendChild(img);
+
+      mascotOverlays.push({ body: mascotBody, el: img });
     });
 
     // Add bodies to world
@@ -229,21 +239,21 @@ export default function FallingShapes() {
       height + 50,
       width,
       100,
-      wallOptions
+      wallOptions,
     );
     const leftWall = Bodies.rectangle(
       -50,
       height / 2,
       100,
       height,
-      wallOptions
+      wallOptions,
     );
     const rightWall = Bodies.rectangle(
       width + 50,
       height / 2,
       100,
       height,
-      wallOptions
+      wallOptions,
     );
     Composite.add(world, [ground, leftWall, rightWall]);
 
@@ -311,7 +321,7 @@ export default function FallingShapes() {
         const endPoint = event.mouse.position;
         const distance = Math.sqrt(
           Math.pow(endPoint.x - startPoint.x, 2) +
-            Math.pow(endPoint.y - startPoint.y, 2)
+            Math.pow(endPoint.y - startPoint.y, 2),
         );
 
         // Reset opacity
@@ -388,6 +398,13 @@ export default function FallingShapes() {
           context.restore();
         }
       });
+
+      // Sync mascot GIF overlays with physics bodies
+      mascotOverlays.forEach(({ body, el }) => {
+        const { x, y } = body.position;
+        const angle = body.angle;
+        el.style.transform = `translate(${x - mascotSize / 2}px, ${y - mascotSize / 2}px) rotate(${angle}rad)`;
+      });
     });
 
     // Run the engine
@@ -425,15 +442,15 @@ export default function FallingShapes() {
         // Update vertices
         Matter.Body.setVertices(
           ground,
-          Matter.Bodies.rectangle(width / 2, height + 50, width, 100).vertices
+          Matter.Bodies.rectangle(width / 2, height + 50, width, 100).vertices,
         );
         Matter.Body.setVertices(
           leftWall,
-          Matter.Bodies.rectangle(-50, height / 2, 100, height).vertices
+          Matter.Bodies.rectangle(-50, height / 2, 100, height).vertices,
         );
         Matter.Body.setVertices(
           rightWall,
-          Matter.Bodies.rectangle(width + 50, height / 2, 100, height).vertices
+          Matter.Bodies.rectangle(width + 50, height / 2, 100, height).vertices,
         );
       }
     });
@@ -444,6 +461,8 @@ export default function FallingShapes() {
 
     return () => {
       resizeObserver.disconnect();
+      // Remove mascot GIF overlay elements
+      mascotOverlays.forEach(({ el }) => el.remove());
       Render.stop(render);
       Runner.stop(runner);
       if (render.canvas) {

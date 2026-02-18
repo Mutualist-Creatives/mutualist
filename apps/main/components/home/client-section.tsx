@@ -40,7 +40,7 @@ export default function ClientSection() {
           </h2>
         </div>
 
-        <div className="flex-1 md:w-3/4 columns-2 md:columns-3 lg:columns-5 gap-4 md:gap-8 space-y-4">
+        <div className="flex-1 md:w-3/4 columns-2 md:columns-3 lg:columns-3 gap-4 md:gap-8 space-y-4">
           {clients.map((client, index) => (
             <div key={index} className="break-inside-avoid mb-4">
               <span className="text-white text-xs md:text-sm lg:text-lg font-normal block">
