@@ -101,6 +101,29 @@ const serviceData = {
         "Detailed monthly performance reports analyze your social media to refine strategies and focus on what drives the best results.",
     },
   ],
+  "website-development": [
+    {
+      id: 1,
+      image: "/assets/services/website-development/MTU_USP_WEB THAT WORKS.png",
+      title: "Website that works for you & your customer",
+      description:
+        "Build website that not only beautiful and easy to use, but also align with your vision and goals.",
+    },
+    {
+      id: 2,
+      image: "/assets/services/website-development/MTU_USP_PRO EXECUTION.png",
+      title: "Professional execution, from design to code",
+      description:
+        "You\u2019re in a good hands. We work with the industry standard process to create working, scalable websites, from design to development.",
+    },
+    {
+      id: 3,
+      image: "/assets/services/website-development/MTU_USP_REAL ASSET.png",
+      title: "A real asset for your business to grow",
+      description:
+        "Walk away with confidence by having a real long term asset that can act as leverage for your business to grow.",
+    },
+  ],
 };
 
 type ServiceCategory = keyof typeof serviceData;
@@ -227,7 +250,7 @@ export function WhatComesWithMagic({ category }: WhatComesWithMagicProps) {
               style={{ zIndex: 30 - index * 10 }}
             >
               {/* Image */}
-              <div className="w-full h-48 md:h-28 lg:h-48 relative mb-6 md:mb-4 lg:mb-6">
+              <div className="w-full h-32 md:h-20 lg:h-32 relative mb-6 md:mb-4 lg:mb-6">
                 <Image
                   src={card.image}
                   alt={card.title}

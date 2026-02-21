@@ -18,6 +18,7 @@ const navItems = [
       { name: "Branding", href: "/services/branding" },
       { name: "Character Design", href: "/services/character-design" },
       { name: "Social Media", href: "/services/social-media" },
+      { name: "Website Development", href: "/services/website-development" },
     ],
   },
   { name: "Blogs", href: "/mutualist-blogs" },

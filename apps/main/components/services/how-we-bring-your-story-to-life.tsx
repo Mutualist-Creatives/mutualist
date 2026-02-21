@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const steps = [
+const defaultSteps = [
   {
     id: 1,
     image: "/assets/services/how-we-bring-your-story-to-life/1.png",
@@ -17,7 +17,7 @@ const steps = [
   {
     id: 2,
     image: "/assets/services/how-we-bring-your-story-to-life/2.png",
-    description: "We'll Customize The Solution for You",
+    description: "We\u2019ll Customize The Solution for You",
   },
   {
     id: 3,
@@ -31,8 +31,51 @@ const steps = [
   },
 ];
 
-export function HowWeBringYourStoryToLife() {
+const websiteSteps = [
+  {
+    id: 1,
+    image: "/assets/services/the-right-process-the-right-outcome/1.jpeg",
+    description:
+      "We\u2019ll start by understanding your business, brand, product & customer",
+  },
+  {
+    id: 2,
+    image: "/assets/services/the-right-process-the-right-outcome/2.jpeg",
+    description:
+      "We tailor the user experience & journey specific to your case",
+  },
+  {
+    id: 3,
+    image: "/assets/services/the-right-process-the-right-outcome/3.jpeg",
+    description: "We craft visuals with brand & scalability in mind",
+  },
+  {
+    id: 4,
+    image: "/assets/services/the-right-process-the-right-outcome/4.jpeg",
+    description:
+      "Then we\u2019ll start building your site with the right technology.",
+  },
+  {
+    id: 5,
+    image: "/assets/services/the-right-process-the-right-outcome/5.jpeg",
+    description: "Finally, we\u2019ll launch your website!",
+  },
+];
+
+interface HowWeBringYourStoryToLifeProps {
+  category?: string;
+}
+
+export function HowWeBringYourStoryToLife({
+  category,
+}: HowWeBringYourStoryToLifeProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const isWebsite = category === "website-development";
+  const activeSteps = isWebsite ? websiteSteps : defaultSteps;
+  const title = isWebsite
+    ? "\u201CThe right process = the right outcome\u201D"
+    : "How We Bring Your Story to Life";
+
   useGSAP(
     () => {
       const balls = gsap.utils.toArray<HTMLElement>(".roll-in-ball");
@@ -69,8 +112,7 @@ export function HowWeBringYourStoryToLife() {
         ease: "power2.out",
       });
 
-      // Animation: Text pops in (starts after first ball finishes, synchronized via stagger)
-      // duration of ball is 1.5. Text should start appearing for first ball at 1.5
+      // Animation: Text pops in
       tl.to(
         texts,
         {
@@ -78,12 +120,12 @@ export function HowWeBringYourStoryToLife() {
           scale: 1,
           duration: 0.5,
           stagger: 0.2,
-          ease: "back.out(1.7)", // Pop effect
+          ease: "back.out(1.7)",
         },
-        1.5 // Absolute start time to match ball completion
+        1.5,
       );
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   return (
@@ -94,12 +136,18 @@ export function HowWeBringYourStoryToLife() {
       <div className="flex flex-col items-center max-w-7xl mx-auto">
         {/* Title */}
         <h2 className="text-xl md:text-3xl lg:text-5xl font-medium text-purple-mutu mb-12 md:mb-20 text-center font-sans">
-          How We Bring Your Story to Life
+          {title}
         </h2>
 
         {/* Steps Container */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-16 md:gap-3 lg:gap-10 w-full place-items-center">
-          {steps.map((step) => (
+        <div
+          className={`grid gap-y-16 md:gap-3 lg:gap-10 w-full place-items-center ${
+            isWebsite
+              ? "grid-cols-2 md:grid-cols-5"
+              : "grid-cols-2 md:grid-cols-4"
+          }`}
+        >
+          {activeSteps.map((step) => (
             <div
               key={step.id}
               className="flex flex-col items-center text-center w-full"
