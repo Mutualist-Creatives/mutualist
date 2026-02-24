@@ -6,7 +6,7 @@ interface WorkSidebarProps {
 }
 
 export default function WorkSidebar({ work }: WorkSidebarProps) {
-  const allServices: ServiceType[] = ["A", "B", "C", "S"];
+  const allServices: ServiceType[] = ["A", "B", "C", "D", "S"];
 
   return (
     <aside className="w-full md:w-2/5 lg:w-1/3 md:h-screen md:sticky md:top-0 bg-white px-0 md:pr-10 pt-24 pb-5 md:py-32 flex flex-col gap-8 md:gap-12 overflow-y-auto no-scrollbar self-start">
@@ -70,7 +70,7 @@ export default function WorkSidebar({ work }: WorkSidebarProps) {
                 if (existing) {
                   // detailed check to avoid duplicates if user enters same name
                   const newNames = curr.names.filter(
-                    (n) => !existing.names.includes(n)
+                    (n) => !existing.names.includes(n),
                   );
                   existing.names.push(...newNames);
                 } else {
@@ -78,7 +78,7 @@ export default function WorkSidebar({ work }: WorkSidebarProps) {
                 }
                 return acc;
               },
-              [] as typeof work.teams
+              [] as typeof work.teams,
             );
 
             return groupedTeams.map((team, index) => (

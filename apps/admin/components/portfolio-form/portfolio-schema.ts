@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const SERVICE_ICONS = ["A", "B", "C", "S"];
+export const SERVICE_ICONS = ["A", "B", "C", "D", "S"];
 export const BLOCK_TYPES = [
   "full-width",
   "two-column",
@@ -26,7 +26,7 @@ export const portfolioSchema = z.object({
     z.object({
       role: z.string().min(1, "Role is required"),
       names: z.array(z.string().min(1, "Name is required")),
-    })
+    }),
   ),
   content: z.array(
     z.object({
@@ -35,7 +35,7 @@ export const portfolioSchema = z.object({
       // We will handle file uploads separately/imperatively in the form,
       // or effectively "dirty" file states that aren't yet URLs.
       // But for the final submission, it must be strings (URLs).
-    })
+    }),
   ),
 });
 

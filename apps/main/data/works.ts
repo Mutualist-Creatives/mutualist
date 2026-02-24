@@ -1,4 +1,4 @@
-export type ServiceType = "A" | "B" | "C" | "S";
+export type ServiceType = "A" | "B" | "C" | "D" | "S";
 
 export interface TeamMember {
   role: string;

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { fetchWorks, Work } from "../../services/api";
 import Link from "next/link";
@@ -9,7 +10,11 @@ import Image from "next/image";
 export default function WorksPage() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<string[]>([]);
+  const searchParams = useSearchParams();
+  const [filters, setFilters] = useState<string[]>(() => {
+    const filterParam = searchParams.get("filter");
+    return filterParam ? filterParam.split(",") : [];
+  });
 
   useEffect(() => {
     async function loadWorks() {
@@ -36,7 +41,7 @@ export default function WorksPage() {
 
         {/* Filters */}
         <div className="flex gap-2 justify-center">
-          {["A", "B", "C", "S"].map((label) => {
+          {["A", "B", "C", "D", "S"].map((label) => {
             const isActive = filters.includes(label);
             return (
               <button
@@ -137,7 +142,7 @@ export default function WorksPage() {
                       </div>
                       <div className="w-auto h-auto">
                         <div className="flex gap-0.5 md:gap-1.5 lg:gap-1.5 xl:gap-2 shrink-0 justify-end">
-                          {["A", "B", "C", "S"].map((label) => {
+                          {["A", "B", "C", "D", "S"].map((label) => {
                             const isActive = work.serviceIcons?.includes(label);
                             return (
                               <div

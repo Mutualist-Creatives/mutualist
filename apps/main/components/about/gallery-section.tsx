@@ -1,38 +1,39 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Combine the images from Gallery with the layout properties from Featured Portfolio
 const items = [
   {
     image: "/assets/about/gallery/1.jpeg",
-    color: "bg-purple-mutu",
+    color: "",
     rotate: 2,
     x: -240,
   },
   {
     image: "/assets/about/gallery/2.jpeg",
-    color: "bg-green-mutu",
+    color: "",
     rotate: 1,
     x: -120,
   },
   {
     image: "/assets/about/gallery/3.jpeg",
-    color: "bg-yellow-mutu",
+    color: "",
     rotate: -1,
     x: 0,
   },
   {
     image: "/assets/about/gallery/4.jpeg",
-    color: "bg-black-mutu",
+    color: "",
     rotate: -2,
     x: 120,
   },
   {
     image: "/assets/about/gallery/5.jpeg",
-    color: "bg-purple-mutu",
+    color: "",
     rotate: 1,
     x: 240,
   },
@@ -42,6 +43,25 @@ export default function GallerySection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scaleFactor, setScaleFactor] = useState(1);
   const [isSmall, setIsSmall] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Close lightbox on Escape
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") setSelectedImage(null);
+  }, []);
+
+  useEffect(() => {
+    if (selectedImage) {
+      document.addEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [selectedImage, handleKeyDown]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -196,6 +216,7 @@ export default function GallerySection() {
               style={{ transform: getResponsiveTransform(item) }}
               onMouseEnter={() => pushSiblings(index)}
               onMouseLeave={resetSiblings}
+              onClick={() => setSelectedImage(item.image)}
             >
               {item.image && (
                 <Image
@@ -221,6 +242,37 @@ export default function GallerySection() {
           className="w-full h-auto object-contain"
         />
       </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm cursor-pointer"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.div
+              className="relative w-[90vw] max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl"
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.85, opacity: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={selectedImage}
+                alt="Gallery Image Enlarged"
+                fill
+                className="object-contain bg-black"
+                sizes="90vw"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

@@ -6,7 +6,19 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Work, fetchWorks } from "../../services/api";
 
-export default function SeeMoreWorks() {
+export default function ServiceWorks({
+  serviceLabel,
+  title,
+  ctaText,
+  ctaHref,
+  limit = 3,
+}: {
+  serviceLabel: string;
+  title: string;
+  ctaText: string;
+  ctaHref: string;
+  limit?: number;
+}) {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,10 +26,13 @@ export default function SeeMoreWorks() {
     async function loadWorks() {
       try {
         const data = await fetchWorks();
-        const sortedData = [...data].sort((a, b) => {
-          return parseInt(b.year) - parseInt(a.year);
-        });
-        setWorks(sortedData.slice(0, 6));
+        const filtered = data.filter((w: Work) =>
+          w.serviceIcons?.includes(serviceLabel),
+        );
+        const sorted = [...filtered].sort(
+          (a: Work, b: Work) => parseInt(b.year) - parseInt(a.year),
+        );
+        setWorks(sorted.slice(0, limit));
       } catch (error) {
         console.error("Failed to load works", error);
       } finally {
@@ -25,26 +40,20 @@ export default function SeeMoreWorks() {
       }
     }
     loadWorks();
-  }, []);
+  }, [serviceLabel, limit]);
 
   return (
-    <section className="w-full bg-cream-mutu relative z-30">
-      <div className="max-w-screen-2xl mx-auto w-full py-20 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24">
+    <section className="w-full bg-white">
+      <div className="max-w-screen-2xl mx-auto w-full py-16 md:py-20 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24">
         <div className="w-full relative flex justify-center items-end mb-8 md:mb-12 lg:mb-16">
-          <h2 className="text-3xl md:text-6xl font-medium text-purple-mutu text-center">
-            See More Works
+          <h2 className="text-2xl md:text-5xl lg:text-6xl font-medium text-purple-mutu text-center">
+            {title}
           </h2>
-          <Link
-            href="/works"
-            className="absolute right-0 bottom-2 hidden md:block text-xs md:text-lg font-medium text-purple-mutu hover:opacity-70"
-          >
-            See All
-          </Link>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
+            {[...Array(limit)].map((_, i) => (
               <div key={i} className="flex flex-col gap-4 animate-pulse">
                 <div className="w-full aspect-4/3 bg-gray-200 rounded-lg"></div>
                 <div className="flex flex-col gap-2">
@@ -55,16 +64,16 @@ export default function SeeMoreWorks() {
             ))}
           </div>
         ) : works.length === 0 ? (
-          <div className="w-full py-20 flex flex-col items-center justify-center text-center px-4">
+          <div className="w-full py-16 flex flex-col items-center justify-center text-center px-4">
             <p className="text-lg md:text-xl lg:text-2xl text-purple-mutu/60 font-medium">
               No works found at the moment.
             </p>
-            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-(family-name:--font-instrument-sans)">
+            <p className="mt-2 text-xs md:text-sm lg:text-base text-purple-mutu/40 font-instrument">
               Please check back later or refresh the page.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-x-8 md:gap-y-12">
             {works.map((work, index) => {
               const tilt = index % 2 === 0 ? 2 : -2;
 
@@ -73,7 +82,11 @@ export default function SeeMoreWorks() {
                   <motion.div
                     className="flex flex-col gap-2 md:gap-4 group cursor-pointer"
                     whileHover={{ rotate: tilt, scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                    }}
                   >
                     {/* Image */}
                     <div className="w-full aspect-4/3 bg-gray-200 rounded-lg overflow-hidden relative">
@@ -136,14 +149,14 @@ export default function SeeMoreWorks() {
           </div>
         )}
 
-        {/* See All button at bottom */}
+        {/* CTA Button */}
         {!loading && works.length > 0 && (
-          <div className="w-full flex md:hidden justify-center mt-8 md:mt-12">
+          <div className="w-full flex justify-center mt-10 md:mt-14">
             <Link
-              href="/works"
-              className="text-sm md:text-lg font-medium text-purple-mutu border-2 border-purple-mutu rounded-full px-4 py-1"
+              href={ctaHref}
+              className="text-sm md:text-lg font-medium text-purple-mutu border-2 border-purple-mutu rounded-full px-6 py-2 hover:bg-purple-mutu hover:text-cream-mutu transition-colors"
             >
-              See All
+              {ctaText}
             </Link>
           </div>
         )}

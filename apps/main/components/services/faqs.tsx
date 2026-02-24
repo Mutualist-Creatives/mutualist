@@ -132,7 +132,7 @@ const websiteFaqsData = [
   },
 ];
 
-type ServiceCategory = keyof typeof faqsData | "website-development";
+type ServiceCategory = keyof typeof faqsData | "development-website";
 
 interface FAQsProps {
   category: ServiceCategory;
@@ -198,7 +198,7 @@ function FAQAccordion({
 export function FAQs({ category }: FAQsProps) {
   const [faqPage, setFaqPage] = useState(0);
 
-  if (category === "website-development") {
+  if (category === "development-website") {
     const currentGroup = websiteFaqsData[faqPage];
 
     return (

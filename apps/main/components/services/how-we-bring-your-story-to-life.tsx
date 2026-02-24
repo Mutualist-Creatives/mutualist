@@ -34,30 +34,30 @@ const defaultSteps = [
 const websiteSteps = [
   {
     id: 1,
-    image: "/assets/services/the-right-process-the-right-outcome/1.jpeg",
+    image: "/assets/services/the-right-process-the-right-outcome/1.png",
     description:
       "We\u2019ll start by understanding your business, brand, product & customer",
   },
   {
     id: 2,
-    image: "/assets/services/the-right-process-the-right-outcome/2.jpeg",
+    image: "/assets/services/the-right-process-the-right-outcome/2.png",
     description:
       "We tailor the user experience & journey specific to your case",
   },
   {
     id: 3,
-    image: "/assets/services/the-right-process-the-right-outcome/3.jpeg",
+    image: "/assets/services/the-right-process-the-right-outcome/3.png",
     description: "We craft visuals with brand & scalability in mind",
   },
   {
     id: 4,
-    image: "/assets/services/the-right-process-the-right-outcome/4.jpeg",
+    image: "/assets/services/the-right-process-the-right-outcome/4.png",
     description:
       "Then we\u2019ll start building your site with the right technology.",
   },
   {
     id: 5,
-    image: "/assets/services/the-right-process-the-right-outcome/5.jpeg",
+    image: "/assets/services/the-right-process-the-right-outcome/5.png",
     description: "Finally, we\u2019ll launch your website!",
   },
 ];
@@ -70,7 +70,7 @@ export function HowWeBringYourStoryToLife({
   category,
 }: HowWeBringYourStoryToLifeProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const isWebsite = category === "website-development";
+  const isWebsite = category === "development-website";
   const activeSteps = isWebsite ? websiteSteps : defaultSteps;
   const title = isWebsite
     ? "\u201CThe right process = the right outcome\u201D"

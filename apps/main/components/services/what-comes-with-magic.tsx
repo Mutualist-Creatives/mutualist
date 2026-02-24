@@ -101,24 +101,24 @@ const serviceData = {
         "Detailed monthly performance reports analyze your social media to refine strategies and focus on what drives the best results.",
     },
   ],
-  "website-development": [
+  "development-website": [
     {
       id: 1,
-      image: "/assets/services/website-development/MTU_USP_WEB THAT WORKS.png",
+      image: "/assets/services/website-development/1.png",
       title: "Website that works for you & your customer",
       description:
         "Build website that not only beautiful and easy to use, but also align with your vision and goals.",
     },
     {
       id: 2,
-      image: "/assets/services/website-development/MTU_USP_PRO EXECUTION.png",
+      image: "/assets/services/website-development/2.png",
       title: "Professional execution, from design to code",
       description:
         "You\u2019re in a good hands. We work with the industry standard process to create working, scalable websites, from design to development.",
     },
     {
       id: 3,
-      image: "/assets/services/website-development/MTU_USP_REAL ASSET.png",
+      image: "/assets/services/website-development/3.png",
       title: "A real asset for your business to grow",
       description:
         "Walk away with confidence by having a real long term asset that can act as leverage for your business to grow.",

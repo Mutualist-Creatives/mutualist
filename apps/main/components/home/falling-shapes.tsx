@@ -55,6 +55,48 @@ export default function FallingShapes() {
       yellow: "#EFDB2C",
     };
 
+    // Helper: lighten a hex color by increasing HSL lightness
+    function lightenColor(hex: string, amount: number = 20): string {
+      const r = parseInt(hex.slice(1, 3), 16) / 255;
+      const g = parseInt(hex.slice(3, 5), 16) / 255;
+      const b = parseInt(hex.slice(5, 7), 16) / 255;
+      const max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+      let h = 0,
+        s = 0,
+        l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max - min);
+        switch (max) {
+          case r:
+            h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+            break;
+          case g:
+            h = ((b - r) / d + 2) / 6;
+            break;
+          case b:
+            h = ((r - g) / d + 4) / 6;
+            break;
+        }
+      }
+      l = Math.min(1, l + amount / 100);
+      function hue2rgb(p: number, q: number, t: number) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      }
+      const q2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p2 = 2 * l - q2;
+      const rr = Math.round(hue2rgb(p2, q2, h + 1 / 3) * 255);
+      const gg = Math.round(hue2rgb(p2, q2, h) * 255);
+      const bb = Math.round(hue2rgb(p2, q2, h - 1 / 3) * 255);
+      return `#${rr.toString(16).padStart(2, "0")}${gg.toString(16).padStart(2, "0")}${bb.toString(16).padStart(2, "0")}`;
+    }
+
     const bodies: Matter.Body[] = [];
 
     // Determine extra count based on height
@@ -128,6 +170,7 @@ export default function FallingShapes() {
       { text: "A", bg: colors.purple, route: "/services/advertising" },
       { text: "B", bg: colors.green, route: "/services/branding" },
       { text: "C", bg: colors.yellow, route: "/services/character-design" },
+      { text: "D", bg: colors.purple, route: "/services/development-website" },
       { text: "'s", bg: colors.black, route: "/services/social-media" },
     ];
 
@@ -311,8 +354,8 @@ export default function FallingShapes() {
       if (body && body.plugin && body.plugin.route) {
         selectedBody = body;
         startPoint = { ...event.mouse.position };
-        // Visual Feedback
-        body.render.opacity = 0.7;
+        // Visual Feedback — lighten color
+        body.render.fillStyle = lightenColor(body.plugin.originalFill, 10);
       }
     });
 
@@ -324,8 +367,8 @@ export default function FallingShapes() {
             Math.pow(endPoint.y - startPoint.y, 2),
         );
 
-        // Reset opacity
-        selectedBody.render.opacity = 1;
+        // Reset color
+        selectedBody.render.fillStyle = selectedBody.plugin.originalFill;
 
         // Navigate only if movement is small (it's a click, not a drag)
         // Increased threshold to 30px for better touch tolerance
@@ -355,23 +398,41 @@ export default function FallingShapes() {
       context.textBaseline = "middle";
       context.fillStyle = colors.cream;
 
-      // Hover Logic
+      // Hover Logic — smooth fade via lerp
       const mousePosition = mouse.position;
       const hoveredBodies = Matter.Query.point(bodies, mousePosition);
       let isHoveringInteractive = false;
 
-      // Reset opacity for all interactive bodies first
+      const hoveredSet = new Set(hoveredBodies);
+
       bodies.forEach((body) => {
         if (body.plugin && body.plugin.route) {
-          body.render.opacity = 1;
-        }
-      });
+          const isHovered = hoveredSet.has(body);
+          if (isHovered) isHoveringInteractive = true;
 
-      // Apply hover effect
-      hoveredBodies.forEach((body) => {
-        if (body.plugin && body.plugin.route) {
-          isHoveringInteractive = true;
-          body.render.opacity = 0.8; // Dim on hover
+          // Initialize hoverProgress if not set
+          if (body.plugin.hoverProgress === undefined) {
+            body.plugin.hoverProgress = 0;
+          }
+
+          const target = isHovered ? 1 : 0;
+          const speed = 0.08; // Smooth fade speed
+          body.plugin.hoverProgress +=
+            (target - body.plugin.hoverProgress) * speed;
+
+          // Snap to target when close enough
+          if (Math.abs(body.plugin.hoverProgress - target) < 0.01) {
+            body.plugin.hoverProgress = target;
+          }
+
+          if (body.plugin.hoverProgress > 0) {
+            body.render.fillStyle = lightenColor(
+              body.plugin.originalFill,
+              body.plugin.hoverProgress * 10,
+            );
+          } else {
+            body.render.fillStyle = body.plugin.originalFill;
+          }
         }
       });
 
