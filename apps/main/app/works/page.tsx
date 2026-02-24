@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { fetchWorks, Work } from "../../services/api";
@@ -8,6 +8,14 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function WorksPage() {
+  return (
+    <Suspense>
+      <WorksContent />
+    </Suspense>
+  );
+}
+
+function WorksContent() {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
