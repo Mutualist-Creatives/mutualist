@@ -109,6 +109,15 @@ export default function FolderSection() {
       ],
     },
     {
+      title: "Development Website",
+      href: "/services/development-website",
+      images: [
+        "/assets/home/folder/dev-website/1.png",
+        "/assets/home/folder/dev-website/2.png",
+        "/assets/home/folder/dev-website/3.png",
+      ],
+    },
+    {
       title: "Social Media",
       href: "/services/social-media",
       images: [
@@ -122,7 +131,7 @@ export default function FolderSection() {
   return (
     <section className="w-full bg-cream-mutu relative z-20">
       <div className="max-w-screen-2xl mx-auto w-full py-20 md:py-24 lg:py-32 xl:py-40 2xl:py-48 flex justify-center items-center px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 lg:gap-12 xl:gap-24 2xl:gap-32 justify-items-center">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12 lg:gap-12 xl:gap-24 2xl:gap-32 justify-items-center">
           {folders.map((folder, index) => (
             <FolderItem
               key={index}

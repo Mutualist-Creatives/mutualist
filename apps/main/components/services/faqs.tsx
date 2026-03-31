@@ -79,58 +79,52 @@ const faqsData = {
         "Yes! We offer monthly packages for consistent content creation so your feed never runs dry.",
     },
   ],
+  "development-website": [
+    {
+      question: "What is UX design and how does it contribute to a project?",
+      answer:
+        "UX design is the crucial step on designing websites where we focus on crafting the user experience. Designing the site structure, user journey, while also considering the tech feasibility. This phase helps us move toward the right direction while avoiding unnecessary back and forth in the development forward.",
+    },
+    {
+      question: "Do you provide domain purchasing?",
+      answer:
+        "We require our clients to purchase their own domains, when somebody else purchases your domain, they own it forever.",
+    },
+    {
+      question: "Do your service cover Hosting?",
+      answer:
+        "We can help you set up hosting for your website, with you as the account owner and us as the administrator to help manage the site.",
+    },
+    {
+      question: "How about website copywriting?",
+      answer:
+        "Our service includes the basic copywritings suggestions for e.g. headings, microcopy, paragraphs that you can easily adjust anytime from CMS. However, for article based & industry specific contents such as blogs, FAQs, product elaborations, we suggest you as the subject matter expert to done it internally with your team.",
+    },
+    {
+      question: "Do you provide post-launch support?",
+      answer:
+        "Yes, this service includes 20 days of complementary support after the launch for bug fixes and small adjustments.",
+    },
+    {
+      question: "Do your service includes CMS (Content Management System)?",
+      answer: "Yes, (to be discussed later with the tech lead)",
+    },
+    {
+      question: "Will your process consider mobile layout & SEO?",
+      answer:
+        "We understand the importance of this era where people are mostly access sites from their phone, we make sure our design is mobile responsive, and follows the basic SEO practices such as, image optimization, internal linking, meta description & page speed optimization.",
+    },
+    {
+      question: "Do you provide website maintenance?",
+      answer: "Yes, (to be discussed later with the tech lead)",
+    },
+  ],
 };
 
-const websiteFaqsData = [
-  {
-    title: "FAQ 1/2",
-    items: [
-      {
-        question: "What is UX design and how does it contribute to a project?",
-        answer:
-          "UX design is the crucial step on designing websites where we focus on crafting the user experience. Designing the site structure, user journey, while also considering the tech feasibility. This phase helps us move toward the right direction while avoiding unnecessary back and forth in the development forward.",
-      },
-      {
-        question: "Do you provide domain purchasing?",
-        answer:
-          "We require our clients to purchase their own domains, when somebody else purchases your domain, they own it forever.",
-      },
-      {
-        question: "Do your service cover Hosting?",
-        answer:
-          "We can help you set up hosting for your website, with you as the account owner and us as the administrator to help manage the site.",
-      },
-      {
-        question: "How about website copywriting?",
-        answer:
-          "Our service includes the basic copywritings suggestions for e.g. headings, microcopy, paragraphs that you can easily adjust anytime from CMS. However, for article based & industry specific contents such as blogs, FAQs, product elaborations, we suggest you as the subject matter expert to done it internally with your team.",
-      },
-    ],
-  },
-  {
-    title: "FAQ 2/2",
-    items: [
-      {
-        question: "Do you provide post-launch support?",
-        answer:
-          "Yes, this service includes 20 days of complementary support after the launch for bug fixes and small adjustments.",
-      },
-      {
-        question: "Do your service includes CMS (Content Management System)?",
-        answer: "Yes, (to be discussed later with the tech lead)",
-      },
-      {
-        question: "Will your process consider mobile layout & SEO?",
-        answer:
-          "We understand the importance of this era where people are mostly access sites from their phone, we make sure our design is mobile responsive, and follows the basic SEO practices such as, image optimization, internal linking, meta description & page speed optimization.",
-      },
-      {
-        question: "Do you provide website maintenance?",
-        answer: "Yes, (to be discussed later with the tech lead)",
-      },
-    ],
-  },
-];
+const mutuQuotes: Record<string, string> = {
+  "development-website": "A strong website starts with a clear direction. We design with strategy in mind, aligning structure, content, and flow to support your goals.",
+  default: "Good ads don't shout. They strike with purpose. We craft bold, thoughtful visuals that speak clearly and powerfully, so you don't have to explain twice.",
+};
 
 type ServiceCategory = keyof typeof faqsData | "development-website";
 
@@ -172,14 +166,14 @@ function FAQAccordion({
               )}
             </div>
             <div className="flex-1">
-              <h3 className="text-sm md:text-base lg:text-lg font-bold text-black-mutu py-1 font-sans">
+              <h3 className="text-sm md:text-base lg:text-lg font-bold text-black-mutu pt-1 font-sans">
                 {item.question}
               </h3>
               <div
                 className={clsx(
                   "overflow-hidden transition-all duration-300 ease-in-out",
                   openIndex === index
-                    ? "max-h-96 opacity-100 mt-2"
+                    ? "max-h-96 opacity-100 mt-1"
                     : "max-h-0 opacity-0",
                 )}
               >
@@ -196,76 +190,8 @@ function FAQAccordion({
 }
 
 export function FAQs({ category }: FAQsProps) {
-  const [faqPage, setFaqPage] = useState(0);
-
-  if (category === "development-website") {
-    const currentGroup = websiteFaqsData[faqPage];
-
-    return (
-      <section className="w-full bg-white py-10 md:py-20 px-6 md:px-14">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-20">
-          {/* Left Column: FAQs */}
-          <div className="md:col-span-7 lg:col-span-7">
-            <h2 className="text-3xl md:text-4xl lg:text-7xl font-medium text-purple-mutu mb-8 md:mb-12 font-sans">
-              {currentGroup.title}
-            </h2>
-            <FAQAccordion key={faqPage} questions={currentGroup.items} />
-
-            {/* Navigation */}
-            <div className="mt-8 flex items-center gap-4">
-              {faqPage > 0 && (
-                <button
-                  onClick={() => setFaqPage(faqPage - 1)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-purple-mutu text-white font-medium text-sm hover:bg-purple-mutu/90 transition-colors cursor-pointer"
-                >
-                  <ChevronLeft size={16} />
-                  Previous
-                </button>
-              )}
-              {faqPage < websiteFaqsData.length - 1 && (
-                <button
-                  onClick={() => setFaqPage(faqPage + 1)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-purple-mutu text-white font-medium text-sm hover:bg-purple-mutu/90 transition-colors cursor-pointer"
-                >
-                  Next
-                  <ChevronRight size={16} />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Right Column: Mutu Said Card */}
-          <div className="md:col-span-5 lg:col-span-4 lg:col-start-9 mt-8 md:mt-0">
-            <div className="bg-cream-mutu rounded-2xl p-6 md:p-6 lg:p-8 flex flex-col items-center text-center shadow-sm h-full md:h-auto sticky md:top-24">
-              {/* Mascot */}
-              <div className="relative w-28 h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 mb-4 md:mb-6">
-                <Image
-                  src="/assets/services/faqs/faqs_mascot.png"
-                  alt="Mutu Mascot"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-
-              {/* Title */}
-              <h3 className="text-xl md:text-xl lg:text-2xl font-bold text-green-mutu mb-2 md:mb-4 font-sans">
-                Mutu Said,
-              </h3>
-
-              {/* Quote */}
-              <p className="text-black-mutu font-medium text-sm md:text-sm lg:text-base leading-relaxed">
-                Good ads don&apos;t shout. They strike with purpose. We craft
-                bold, thoughtful visuals that speak clearly and powerfully, so
-                you don&apos;t have to explain twice.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   const questions = faqsData[category as keyof typeof faqsData] || [];
+  const mutuQuote = mutuQuotes[category] || mutuQuotes.default;
 
   return (
     <section className="w-full bg-white py-10 md:py-20 px-6 md:px-14">
@@ -298,9 +224,7 @@ export function FAQs({ category }: FAQsProps) {
 
             {/* Quote */}
             <p className="text-black-mutu font-medium text-sm md:text-sm lg:text-base leading-relaxed">
-              Good ads don&apos;t shout. They strike with purpose. We craft
-              bold, thoughtful visuals that speak clearly and powerfully, so you
-              don&apos;t have to explain twice.
+              {mutuQuote}
             </p>
           </div>
         </div>

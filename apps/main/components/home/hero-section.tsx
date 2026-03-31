@@ -8,7 +8,7 @@ export default function HeroSection() {
           10+ Years of
         </p>
         <h1 className="text-4xl md:text-6xl lg:text-[88px] xl:text-[94px] 2xl:text-[100px] leading-[115%] font-medium text-purple-mutu max-w-[15em] text-center pointer-events-none">
-          Creating the <br /> ABC&apos;s of Brand
+          Creating the <br /> ABCD&apos;s of Brand
         </h1>
       </main>
       <div className="absolute inset-0 z-20">

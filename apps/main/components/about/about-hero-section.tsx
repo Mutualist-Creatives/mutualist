@@ -6,13 +6,7 @@ export default function AboutHeroSection() {
       {/* Video Background — Portrait for mobile, Landscape for desktop */}
       <div className="w-full">
         {/* Mobile: Portrait video */}
-        <video
-          className="w-full opacity-50 md:hidden"
-          autoPlay
-          muted
-          loop
-          playsInline
-        >
+        <video className="w-full md:hidden" autoPlay muted loop playsInline>
           <source
             src="/assets/about/hero/(1080x1920) Mutualist_Motion web New.mp4"
             type="video/mp4"
@@ -20,7 +14,7 @@ export default function AboutHeroSection() {
         </video>
         {/* Desktop: Landscape video */}
         <video
-          className="w-full opacity-50 hidden md:block"
+          className="w-full hidden md:block"
           autoPlay
           muted
           loop

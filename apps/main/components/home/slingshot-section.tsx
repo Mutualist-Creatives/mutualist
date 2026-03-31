@@ -10,7 +10,7 @@ export default function SlingshotSection() {
             alt="Slingshot Mascot"
             width={300}
             height={300}
-            className="object-contain w-[160px] md:w-[220px] lg:w-[250px] xl:w-[300px] 2xl:w-[450px] h-auto"
+            className="object-contain w-[160px] md:w-[220px] lg:w-[250px] xl:w-[300px] 2xl:w-[400px] h-auto"
           />
         </div>
         <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-medium text-yellow-mutu max-w-xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mb-6 md:mb-8 lg:mb-10 2xl:mb-12 leading-tight relative z-10">

@@ -73,7 +73,7 @@ export function HowWeBringYourStoryToLife({
   const isWebsite = category === "development-website";
   const activeSteps = isWebsite ? websiteSteps : defaultSteps;
   const title = isWebsite
-    ? "\u201CThe right process = the right outcome\u201D"
+    ? "The right process = the right outcome"
     : "How We Bring Your Story to Life";
 
   useGSAP(

@@ -25,7 +25,7 @@ export default function WebsiteDevelopmentPage() {
             </h1>
             <Link
               href="https://wa.me/6287787242397"
-              className="inline-block px-5 py-2.5 lg:px-8 lg:py-3 2xl:px-10 2xl:py-4 rounded-full bg-green-mutu text-yellow-mutu font-bold text-sm md:text-base lg:text-lg 2xl:text-xl hover:bg-purple-mutu transition-all duration-300 whitespace-nowrap"
+              className="inline-block px-5 py-2.5 lg:px-8 lg:py-3 2xl:px-10 2xl:py-4 rounded-full bg-purple-mutu text-yellow-mutu font-bold text-sm md:text-base lg:text-lg 2xl:text-xl hover:bg-green-mutu transition-all duration-300 whitespace-nowrap"
             >
               Work with Us
             </Link>
